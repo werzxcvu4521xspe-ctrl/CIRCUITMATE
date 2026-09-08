@@ -97,6 +97,7 @@ export default function Home() {
   const [selectedStation, setSelectedStation] = useState(stations[0]);
   const [selectedSession, setSelectedSession] = useState(sessions[0]);
   const [bookingSent, setBookingSent] = useState(false);
+  const [bookingOpen, setBookingOpen] = useState(false);
   const nextSessionLabel = useMemo(() => selectedSession.split(' ')[0] + ' ' + selectedSession.split(' ')[1], [selectedSession]);
 
   function handleBooking(event: FormEvent<HTMLFormElement>) {
@@ -118,9 +119,9 @@ export default function Home() {
             </a>
           ))}
         </nav>
-        <a className="header-cta" href="#booking">
+        <button className="header-cta" type="button" onClick={() => setBookingOpen(true)}>
           세션 예약
-        </a>
+        </button>
       </header>
 
       <section className="hero section-block">
@@ -131,9 +132,9 @@ export default function Home() {
           <h1>CIRCUITMATE</h1>
           <p className="hero-copy">땀 흘린 뒤 찾아오는 가장 건강한 교류</p>
           <div className="hero-actions">
-            <a className="primary-button" href="#booking">
+            <button className="primary-button" type="button" onClick={() => setBookingOpen(true)}>
               세션 예약하기
-            </a>
+            </button>
             <a className="secondary-button" href="#program">
               프로그램 미리보기
             </a>
@@ -141,9 +142,9 @@ export default function Home() {
         </div>
       </section>
 
-      <a className="floating-cta" href="#booking">
+      <button className="floating-cta" type="button" onClick={() => setBookingOpen(true)}>
         예약하기
-      </a>
+      </button>
 
       <section className="section highlight-section" aria-label="세션 하이라이트">
         <div className="section-heading compact">
@@ -434,8 +435,84 @@ export default function Home() {
           <strong>CIRCUITMATE</strong>
           <p>사업자 정보, 이용약관, 개인정보처리방침, 공식 SNS 링크와 실시간 문의 채널이 들어가는 하단 고정 영역입니다.</p>
         </div>
-        <a href="#booking">다음 세션 예약</a>
+        <button type="button" onClick={() => setBookingOpen(true)}>
+          다음 세션 예약
+        </button>
       </footer>
+
+      {bookingOpen && (
+        <div className="booking-modal" role="dialog" aria-modal="true" aria-labelledby="quick-booking-title">
+          <button
+            type="button"
+            className="modal-backdrop"
+            aria-label="예약 패널 닫기"
+            onClick={() => setBookingOpen(false)}
+          />
+          <section className="bottom-sheet">
+            <div className="sheet-handle" aria-hidden="true" />
+            <div className="sheet-header">
+              <div>
+                <p className="eyebrow">Quick Booking</p>
+                <h2 id="quick-booking-title">바로 예약하기</h2>
+              </div>
+              <button type="button" className="close-button" onClick={() => setBookingOpen(false)} aria-label="닫기">
+                닫기
+              </button>
+            </div>
+            <form onSubmit={handleBooking} className="sheet-form">
+              <label>
+                일정 선택
+                <select value={selectedSession} onChange={(event) => setSelectedSession(event.target.value)}>
+                  {sessions.map((session) => (
+                    <option key={session} value={session}>
+                      {session} / 잔여 12석
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <div className="form-row">
+                <label>
+                  이름
+                  <input name="quickName" placeholder="홍길동" required />
+                </label>
+                <label>
+                  연락처
+                  <input name="quickPhone" inputMode="tel" placeholder="010-0000-0000" required />
+                </label>
+              </div>
+              <div className="form-row">
+                <label>
+                  운동 수준
+                  <select name="quickLevel" defaultValue="intro">
+                    <option value="intro">입문자</option>
+                    <option value="experienced">경험자</option>
+                  </select>
+                </label>
+                <label>
+                  신청 유형
+                  <select name="quickParty" defaultValue="solo">
+                    <option value="solo">개인 신청</option>
+                    <option value="with-friend">동반인 있음</option>
+                    <option value="team">팀 단위 신청</option>
+                  </select>
+                </label>
+              </div>
+              <label className="checkbox-row">
+                <input type="checkbox" required />
+                준비물과 환불 규정을 확인했습니다.
+              </label>
+              <div className="sheet-summary">
+                <span>{selectedSession}</span>
+                <strong>49,000원</strong>
+              </div>
+              <button type="submit" className="sheet-submit">
+                예약 및 결제 안내 받기
+              </button>
+              {bookingSent && <p className="success-message">접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
+            </form>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

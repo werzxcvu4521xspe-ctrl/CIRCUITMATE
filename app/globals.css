@@ -775,6 +775,102 @@ select {
   text-align: center;
 }
 
+.footer-section button {
+  min-width: 144px;
+}
+
+.booking-modal {
+  inset: 0;
+  position: fixed;
+  z-index: 80;
+}
+
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.72);
+  inset: 0;
+  min-height: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+}
+
+.bottom-sheet {
+  background: #fbfaff;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  bottom: 18px;
+  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.46);
+  color: #100d18;
+  left: 50%;
+  max-height: min(88vh, 760px);
+  max-width: 720px;
+  overflow: auto;
+  padding: 12px 22px 22px;
+  position: absolute;
+  transform: translateX(-50%);
+  width: min(calc(100% - 28px), 720px);
+}
+
+.sheet-handle {
+  background: rgba(16, 13, 24, 0.2);
+  height: 5px;
+  margin: 0 auto 18px;
+  width: 54px;
+}
+
+.sheet-header {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.sheet-header .eyebrow {
+  color: var(--violet);
+  margin-bottom: 8px;
+}
+
+.sheet-header h2 {
+  font-size: clamp(30px, 7vw, 52px);
+}
+
+.close-button {
+  background: #100d18;
+  color: white;
+  min-height: 42px;
+  padding: 0 14px;
+}
+
+.sheet-form {
+  display: grid;
+  gap: 0;
+}
+
+.sheet-summary {
+  align-items: center;
+  background: #100d18;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding: 16px;
+}
+
+.sheet-summary span {
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 800;
+}
+
+.sheet-summary strong {
+  color: var(--lime);
+  font-size: 22px;
+}
+
+.sheet-submit {
+  min-height: 56px;
+  width: 100%;
+}
+
 @media (max-width: 1080px) {
   .site-header {
     grid-template-columns: 1fr auto;
@@ -813,6 +909,33 @@ select {
   .footer-section {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .bottom-sheet {
+    border-bottom: 0;
+    bottom: 0;
+    max-height: 92vh;
+    padding: 10px 16px 18px;
+    width: 100%;
+  }
+
+  .sheet-header {
+    position: sticky;
+    top: 0;
+    background: #fbfaff;
+    padding-top: 4px;
+    z-index: 2;
+  }
+
+  input,
+  select,
+  .slot-list button,
+  .header-cta,
+  .primary-button,
+  .secondary-button,
+  .floating-cta,
+  button {
+    min-height: 52px;
   }
 }
 
