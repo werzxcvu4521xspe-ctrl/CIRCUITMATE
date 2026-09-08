@@ -3,79 +3,111 @@
 import { FormEvent, useMemo, useState } from 'react';
 
 const navItems = [
-  ['Brand', '#brand'],
-  ['Sessions', '#sessions'],
-  ['F&B', '#perks'],
-  ['Booking', '#booking'],
-  ['Survey', '#survey'],
-  ['FAQ', '#faq'],
+  ['01. Home', '#home'],
+  ['02. Brand', '#brand'],
+  ['03. Program', '#program'],
+  ['04. Recovery', '#recovery'],
+  ['05. Awards', '#awards'],
+  ['06. Booking', '#booking'],
+  ['07. Location & FAQ', '#location'],
 ];
 
-const sessionFlow = [
-  ['19:00', '체크인 & 웰컴 드링크', '컨디션 확인, 팀 배정, 라이트 네트워킹'],
+const highlights = [
+  ['D-12', '다음 세션까지'],
+  ['32', '잔여 티켓'],
+  ['6', '서킷 스테이션'],
+];
+
+const previewCards = [
+  ['Warm-up', '관절 가동성, 호흡, 코트 적응'],
+  ['Main Circuit', '하체, 코어, 파워, 밸런스 6스테이션'],
+  ['Team Relay', '순발력 코트 터치 게임과 대형 이어달리기'],
+];
+
+const socialProof = [
+  ['@mate_min', '처음 와도 팀 미션 덕분에 어색함이 금방 풀렸어요.'],
+  ['@courtjun', '테니스 코트 조명과 서킷 루틴 조합이 진짜 새로웠습니다.'],
+  ['@recover_y', '운동 후 리커버리 테이블까지 있어서 모임 완성도가 높았어요.'],
+];
+
+const timeline = [
+  ['19:00', '입장 & 체크인', '컨디션 확인, 팀 배정, 웰컴 드링크'],
   ['19:20', '다이내믹 웜업', '관절 가동성과 코트 적응을 위한 리듬 워밍업'],
-  ['19:40', '6 스테이션 서킷', '하체, 코어, 파워, 밸런스를 순환 트레이닝'],
-  ['20:45', '팀 이어달리기', '협업 미션과 스피드 챌린지로 분위기 피크업'],
-  ['21:10', '리커버리 파티', 'F&B, 어워즈, 후기 공유, 다음 세션 안내'],
+  ['19:40', '메인 서킷', '6개 스테이션을 순환하며 전신 트레이닝'],
+  ['20:45', '미니게임 & 릴레이', '순발력 코트 터치와 팀 이어달리기'],
+  ['21:10', '리커버리 & 어워즈', 'F&B, 수상, 포토 리뷰, 다음 세션 안내'],
 ];
 
 const stations = [
-  ['Lunge Twist', '런지 트위스트', '회전 코어와 하체 안정성을 동시에 깨웁니다.'],
-  ['Burpee Jump', '버피 점프', '전신 심박을 끌어올리는 고강도 파워 루틴.'],
-  ['Push Press', '덤벨 푸쉬 프레스', '어깨와 코어를 연결해 폭발적인 추진력을 만듭니다.'],
-  ['Ball Tap', '플랭크 볼 탭', '흔들림 속에서도 중심을 잡는 밸런스 코어.'],
-  ['Court Sprint', '코트 스프린트', '짧은 거리 반응 속도와 민첩성을 강화합니다.'],
-  ['Partner Rally', '파트너 랠리', '운동 뒤 자연스럽게 대화가 시작되는 팀 미션.'],
+  {
+    key: 'lunge',
+    title: '런지 트위스트',
+    cue: '무릎은 발끝 방향, 회전은 흉추에서 시작',
+    effect: '하체 안정성과 회전 코어를 동시에 깨웁니다.',
+  },
+  {
+    key: 'burpee',
+    title: '버피 점프',
+    cue: '착지는 부드럽게, 점프 전 복부 긴장 유지',
+    effect: '짧은 시간 심박과 전신 파워를 끌어올립니다.',
+  },
+  {
+    key: 'press',
+    title: '덤벨 푸쉬 프레스',
+    cue: '다리 반동을 어깨까지 연결하고 허리는 꺾지 않기',
+    effect: '상체 추진력과 코어 연결성을 강화합니다.',
+  },
+  {
+    key: 'plank',
+    title: '플랭크 볼 탭',
+    cue: '골반 흔들림을 줄이고 손끝은 가볍게 터치',
+    effect: '밸런스와 코어 지구력을 선명하게 만듭니다.',
+  },
 ];
 
-const perks = [
-  ['Protein', '치킨 샌드위치', '운동 후 부담 없이 채우는 든든한 단백질 리커버리.'],
-  ['Vitamin', '5종 과일컵', '수분감과 비타민을 빠르게 채우는 컬러풀한 과일 컵.'],
-  ['Hydrate', '전해질 드링크', '땀 흘린 뒤 컨디션 회복을 돕는 라이트 드링크.'],
+const recoveryItems = [
+  ['Protein', '치킨 샌드위치', '훈련 뒤 필요한 단백질을 부담 없이 채우는 시그니처 리커버리 메뉴.'],
+  ['Vitamin', '5종 과일컵', '수분감 있는 제철 과일로 비타민과 당을 빠르게 보충합니다.'],
+  ['Hydrate', '전해질 드링크', '땀 배출 후 밸런스를 회복하도록 돕는 라이트 드링크.'],
 ];
 
-const awards = ['허슬상', '베스트 드레서', '분위기 메이커', '챔피언'];
-
-const reviews = [
-  ['민지', '운동 강도는 확실한데 분위기가 부담스럽지 않아서 처음 온 사람도 금방 섞였어요.', '9.6'],
-  ['준호', '테니스 코트 조명, 음악, 팀 미션이 합쳐지니까 일반 운동 모임과 완전히 달랐습니다.', '9.3'],
-  ['서연', '끝나고 샌드위치 먹으면서 얘기하는 시간이 제일 좋았어요. 다음 회차도 예약할게요.', '9.8'],
+const wellnessGuide = [
+  ['운동 후 20분', '단백질과 수분을 먼저 채우고 가벼운 대화를 이어갑니다.'],
+  ['회복 루틴', '종아리, 둔근, 어깨를 순서대로 풀어 다음날 피로를 줄입니다.'],
+  ['매너 가이드', '팀원 속도에 맞추고, 서로의 기록보다 완주를 먼저 응원합니다.'],
 ];
+
+const awards = [
+  ['허슬상', '끝까지 밀어붙인 에너지와 성실한 태도를 기념합니다.'],
+  ['베스트 드레서', '코트 조명 아래 가장 선명한 에슬레저 룩을 선정합니다.'],
+  ['분위기 메이커', '팀의 긴장을 풀고 모두의 몰입을 끌어올린 참가자에게.'],
+  ['챔피언', '미니게임과 릴레이를 종합해 그날의 팀 퍼포먼스를 축하합니다.'],
+];
+
+const sessions = ['9월 21일 토 19:00', '9월 28일 토 19:00', '10월 5일 토 19:00'];
 
 const faqs = [
-  ['운동 초보도 참여할 수 있나요?', '네. 입문자와 경험자를 나눠 강도를 조절하고, 각 스테이션마다 쉬운 옵션을 제공합니다.'],
-  ['개인 신청도 가능한가요?', '가능합니다. 현장에서 밸런스를 맞춰 팀을 배정해 드립니다.'],
-  ['무엇을 준비하면 되나요?', '운동복, 깨끗한 실내 운동화, 개인 텀블러를 권장합니다.'],
+  ['혼자 참여 가능한가요?', '가능합니다. 현장에서 운동 수준과 성향을 고려해 팀을 배정합니다.'],
+  ['운동 초보도 가능한가요?', '가능합니다. 각 종목마다 기본 옵션과 챌린지 옵션을 함께 안내합니다.'],
+  ['비가 와도 진행하나요?', '실내 코트에서 진행되므로 날씨와 무관하게 운영합니다.'],
+  ['환불 규정은 어떻게 되나요?', '세션 3일 전까지 전액 환불, 이후에는 현장 준비 비용을 제외하고 안내됩니다.'],
 ];
 
 export default function Home() {
+  const [selectedStation, setSelectedStation] = useState(stations[0]);
+  const [selectedSession, setSelectedSession] = useState(sessions[0]);
   const [bookingSent, setBookingSent] = useState(false);
-  const [surveySent, setSurveySent] = useState(false);
-  const nextSession = useMemo(() => {
-    const today = new Date();
-    const target = new Date(today);
-    target.setDate(today.getDate() + 12);
-    return target.toLocaleDateString('ko-KR', {
-      month: 'long',
-      day: 'numeric',
-      weekday: 'short',
-    });
-  }, []);
+  const nextSessionLabel = useMemo(() => selectedSession.split(' ')[0] + ' ' + selectedSession.split(' ')[1], [selectedSession]);
 
   function handleBooking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setBookingSent(true);
   }
 
-  function handleSurvey(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    setSurveySent(true);
-  }
-
   return (
-    <main>
+    <main id="home">
       <header className="site-header">
-        <a className="brand-mark" href="#top" aria-label="Circuitmate home">
+        <a className="brand-mark" href="#home" aria-label="Circuitmate home">
           <span>CM</span>
           CIRCUITMATE
         </a>
@@ -87,42 +119,24 @@ export default function Home() {
           ))}
         </nav>
         <a className="header-cta" href="#booking">
-          지금 예약
+          세션 예약
         </a>
       </header>
 
-      <section id="top" className="hero">
-        <img
-          src="/circuitmate-hero.png"
-          alt="보랏빛 실내 테니스 코트에서 진행되는 서킷 트레이닝"
-          className="hero-image"
-        />
+      <section className="hero section-block">
+        <img src="/circuitmate-hero.png" alt="보랏빛 실내 테니스 코트 서킷 트레이닝" className="hero-image" />
         <div className="hero-overlay" />
         <div className="hero-content">
-          <p className="eyebrow">Night circuit training & wellness socialing</p>
+          <p className="eyebrow">01. Home</p>
           <h1>CIRCUITMATE</h1>
           <p className="hero-copy">땀 흘린 뒤 찾아오는 가장 건강한 교류</p>
           <div className="hero-actions">
             <a className="primary-button" href="#booking">
-              다음 세션 예약하기
+              세션 예약하기
             </a>
-            <a className="secondary-button" href="#sessions">
-              프로그램 보기
+            <a className="secondary-button" href="#program">
+              프로그램 미리보기
             </a>
-          </div>
-          <div className="hero-stats" aria-label="다음 세션 요약">
-            <span>
-              <strong>D-12</strong>
-              다음 세션
-            </span>
-            <span>
-              <strong>{nextSession}</strong>
-              19:00-21:30
-            </span>
-            <span>
-              <strong>32명</strong>
-              선착순 모집
-            </span>
           </div>
         </div>
       </section>
@@ -131,205 +145,297 @@ export default function Home() {
         예약하기
       </a>
 
-      <section id="brand" className="section brand-section">
-        <div className="section-heading">
-          <p className="eyebrow">Brand</p>
-          <h2>운동, 회복, 대화가 한 코트에서 이어지는 밤</h2>
+      <section className="section highlight-section" aria-label="세션 하이라이트">
+        <div className="section-heading compact">
+          <p className="eyebrow">1.2 Session Highlight</p>
+          <h2>다음 세션과 잔여석을 한눈에 확인하세요.</h2>
         </div>
-        <div className="brand-grid">
+        <div className="metric-grid">
+          {highlights.map(([value, label]) => (
+            <article key={label}>
+              <strong>{value}</strong>
+              <span>{label}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section preview-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">1.3 Program Preview</p>
+            <h2>웜업부터 메인 서킷, 팀 릴레이까지 가로로 훑어보기</h2>
+          </div>
+          <p>각 단계는 운동 설명, 핵심 큐잉, 팀 인터랙션이 자연스럽게 이어지도록 구성했습니다.</p>
+        </div>
+        <div className="horizontal-cards">
+          {previewCards.map(([title, desc]) => (
+            <article key={title}>
+              <span>{title}</span>
+              <h3>{desc}</h3>
+            </article>
+          ))}
+        </div>
+        <div className="social-grid" aria-label="참가자 현장 스케치와 포토 리뷰">
+          {socialProof.map(([name, text]) => (
+            <article key={name}>
+              <div className="photo-tile" />
+              <strong>{name}</strong>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section id="brand" className="section brand-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">02. Brand</p>
+            <h2>건강한 땀과 진정성 있는 교류를 만드는 나이트 웰니스 커뮤니티</h2>
+          </div>
+          <p>서킷메이트는 운동을 매개로 낯선 사람들이 서로의 에너지를 안전하게 나누는 새로운 스포츠 소셜 문화를 지향합니다.</p>
+        </div>
+        <div className="story-panel">
           <article>
-            <span>01</span>
-            <h3>나이트 웰니스 커뮤니티</h3>
-            <p>서킷메이트는 단순한 운동 모임이 아니라 건강한 에너지와 온전한 리커버리를 함께 나누는 스포츠 소셜 파티입니다.</p>
+            <span>Mission</span>
+            <p>건강한 몰입, 절제된 분위기, 회복의 시간을 통해 일회성 파티보다 오래 남는 연결을 만듭니다.</p>
           </article>
           <article>
-            <span>02</span>
-            <h3>보랏빛 실내 코트 무드</h3>
-            <p>감각적인 조명, 탄성 있는 바닥, 코트 라인 위에서 움직임이 더 선명해지는 몰입형 공간을 만듭니다.</p>
+            <span>Community</span>
+            <p>개인의 기록보다 팀의 완주와 응원을 우선하는 웰니스 소셜링 규칙을 운영합니다.</p>
           </article>
           <article>
-            <span>03</span>
-            <h3>낯선 사람도 팀메이트로</h3>
-            <p>운동 난이도와 팀 미션을 조율해 처음 만난 참가자도 자연스럽게 협업하고 대화하도록 설계합니다.</p>
+            <span>Space</span>
+            <p>실내테니스팡의 보랏빛 코트와 조명은 야간 운동의 선명한 무드를 브랜드 자산으로 만듭니다.</p>
           </article>
         </div>
       </section>
 
-      <section id="sessions" className="section dark-section">
+      <section id="program" className="section program-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">Sessions</p>
-            <h2>19:00부터 21:30까지 이어지는 5단계 플로우</h2>
+            <p className="eyebrow">03. Program</p>
+            <h2>19:00-21:30 상세 타임라인과 종목별 가이드</h2>
           </div>
-          <p>운동 강도는 선명하게, 소셜링은 자연스럽게. 각 단계가 다음 대화의 계기가 되도록 구성했습니다.</p>
+          <p>시간표는 세로형 스텝으로 읽히고, 종목은 탭으로 전환하며 동작 요약과 핵심 큐잉을 빠르게 확인합니다.</p>
         </div>
-        <div className="timeline">
-          {sessionFlow.map(([time, title, desc]) => (
-            <article key={time}>
-              <time>{time}</time>
+        <div className="program-layout">
+          <div className="vertical-timeline">
+            {timeline.map(([time, title, desc]) => (
+              <article key={time}>
+                <time>{time}</time>
+                <div>
+                  <h3>{title}</h3>
+                  <p>{desc}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="station-guide">
+            <div className="tab-list" role="tablist" aria-label="서킷 종목 가이드">
+              {stations.map((station) => (
+                <button
+                  key={station.key}
+                  type="button"
+                  className={selectedStation.key === station.key ? 'active' : ''}
+                  onClick={() => setSelectedStation(station)}
+                >
+                  {station.title}
+                </button>
+              ))}
+            </div>
+            <article className="station-detail">
+              <div className="loop-gif" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+              </div>
+              <p>동작 요약</p>
+              <h3>{selectedStation.title}</h3>
+              <dl>
+                <div>
+                  <dt>핵심 큐잉</dt>
+                  <dd>{selectedStation.cue}</dd>
+                </div>
+                <div>
+                  <dt>효과</dt>
+                  <dd>{selectedStation.effect}</dd>
+                </div>
+              </dl>
+            </article>
+          </div>
+        </div>
+        <div className="mini-game-card">
+          <span>3.3 Mini Game & Relay</span>
+          <h3>순발력 코트 터치 게임과 코트 대형 이어달리기</h3>
+          <p>팀원 간 사인을 맞추며 코트 라인을 터치하고, 마지막 릴레이에서 자연스럽게 응원과 사진이 만들어집니다.</p>
+        </div>
+      </section>
+
+      <section id="recovery" className="section recovery-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">04. Recovery</p>
+            <h2>리커버리 테이블과 운동 후 회복 가이드</h2>
+          </div>
+          <p>카드형 메뉴 소개와 텍스트 기반 웰니스 가이드로 운동 뒤 필요한 선택을 명확하게 보여줍니다.</p>
+        </div>
+        <div className="recovery-grid">
+          {recoveryItems.map(([tag, title, desc]) => (
+            <article key={title}>
+              <span>{tag}</span>
               <h3>{title}</h3>
               <p>{desc}</p>
             </article>
           ))}
         </div>
-        <div className="station-grid">
-          {stations.map(([tag, title, desc], index) => (
-            <article key={title} className="station-card">
-              <div className="motion-tile" aria-hidden="true">
-                <span style={{ animationDelay: `${index * 120}ms` }} />
-              </div>
-              <p>{tag}</p>
-              <h3>{title}</h3>
-              <span>{desc}</span>
+        <div className="guide-grid">
+          {wellnessGuide.map(([title, desc]) => (
+            <article key={title}>
+              <strong>{title}</strong>
+              <p>{desc}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section id="perks" className="section perks-section">
-        <div className="section-heading split">
-          <div>
-            <p className="eyebrow">F&B & Awards</p>
-            <h2>운동 후에도 에너지가 꺼지지 않는 리커버리 테이블</h2>
-          </div>
-          <p>단백질, 비타민, 수분을 챙기고 네 가지 어워즈로 그날의 장면을 오래 기억하게 만듭니다.</p>
+      <section id="awards" className="section awards-section">
+        <div className="section-heading">
+          <p className="eyebrow">05. Awards</p>
+          <h2>시상식의 취지와 유쾌한 분위기를 전하는 네 가지 부문</h2>
         </div>
-        <div className="perks-grid">
-          {perks.map(([tag, title, desc]) => (
+        <div className="awards-slider" aria-label="서킷메이트 어워즈 부문">
+          {awards.map(([title, desc]) => (
             <article key={title}>
-              <p>{tag}</p>
+              <div className="award-icon" aria-hidden="true">{title.slice(0, 1)}</div>
               <h3>{title}</h3>
-              <span>{desc}</span>
+              <p>{desc}</p>
             </article>
-          ))}
-        </div>
-        <div className="awards-row">
-          {awards.map((award) => (
-            <span key={award}>{award}</span>
           ))}
         </div>
       </section>
 
       <section id="booking" className="section booking-section">
-        <div className="section-heading">
-          <p className="eyebrow">Booking</p>
-          <h2>다음 서킷에 합류하기</h2>
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">06. Booking</p>
+            <h2>일정 선택부터 결제 확인까지 한 번에</h2>
+          </div>
+          <p>날짜/시간 선택, 잔여 티켓 확인, 신청 폼, 체크리스트 동의, 결제 안내를 단계별로 배치했습니다.</p>
         </div>
-        <div className="form-layout">
+        <div className="booking-layout">
+          <aside className="slot-panel">
+            <h3>6.1 일정 선택</h3>
+            <div className="slot-list" role="listbox" aria-label="세션 일정">
+              {sessions.map((session) => (
+                <button
+                  key={session}
+                  type="button"
+                  className={selectedSession === session ? 'active' : ''}
+                  onClick={() => setSelectedSession(session)}
+                >
+                  <span>{session}</span>
+                  <strong>잔여 12석</strong>
+                </button>
+              ))}
+            </div>
+            <div className="ticket-box">
+              <span>선택 일정</span>
+              <strong>{nextSessionLabel} 세션</strong>
+              <p>입장권 1매 49,000원</p>
+            </div>
+          </aside>
           <form onSubmit={handleBooking} className="form-card">
-            <label>
-              성함
-              <input name="name" placeholder="홍길동" required />
-            </label>
-            <label>
-              연락처
-              <input name="phone" placeholder="010-0000-0000" required />
-            </label>
-            <label>
-              운동 수준
-              <select name="level" defaultValue="intro">
-                <option value="intro">입문</option>
-                <option value="experienced">경험자</option>
-              </select>
-            </label>
-            <label>
-              동반인
-              <select name="party" defaultValue="solo">
-                <option value="solo">개인 신청</option>
-                <option value="with-friend">동반인 있음</option>
-              </select>
+            <h3>6.2 신청 폼 작성</h3>
+            <div className="form-row">
+              <label>
+                성함
+                <input name="name" placeholder="홍길동" required />
+              </label>
+              <label>
+                연락처
+                <input name="phone" placeholder="010-0000-0000" required />
+              </label>
+            </div>
+            <div className="form-row">
+              <label>
+                운동 수준
+                <select name="level" defaultValue="intro">
+                  <option value="intro">입문자</option>
+                  <option value="experienced">경험자</option>
+                </select>
+              </label>
+              <label>
+                동반인 및 팀 배정
+                <select name="party" defaultValue="solo">
+                  <option value="solo">개인 신청</option>
+                  <option value="with-friend">동반인 있음</option>
+                  <option value="team">팀 단위 신청</option>
+                </select>
+              </label>
+            </div>
+            <h3>6.3 체크리스트 동의</h3>
+            <label className="checkbox-row">
+              <input type="checkbox" required />
+              실내 운동화, 운동복, 텀블러 준비를 확인했습니다.
             </label>
             <label className="checkbox-row">
               <input type="checkbox" required />
-              운동복, 깨끗한 실내 운동화, 개인 텀블러 준비에 동의합니다.
+              환불 규정과 세션 운영 정책에 동의합니다.
             </label>
-            <button type="submit">예약 요청 보내기</button>
-            {bookingSent && <p className="success-message">예약 요청이 접수되었습니다. 안내 메시지를 곧 보내드릴게요.</p>}
-          </form>
-          <aside className="info-panel">
-            <h3>실내테니스팡</h3>
-            <p>서울 도심권 실내 코트. 주차 가능, 지하철역 도보권. 정확한 위치와 입장 동선은 예약 확정 후 안내됩니다.</p>
-            <div className="map-mock" aria-label="장소 지도 목업">
-              <span>COURT</span>
+            <div className="payment-box">
+              <h3>6.4 결제 및 확인</h3>
+              <p>간편결제 연동 또는 입금 안내 후 예약 완료 화면과 알림톡으로 확정됩니다.</p>
             </div>
-          </aside>
+            <button type="submit">결제 안내 받기</button>
+            {bookingSent && <p className="success-message">예약 신청이 접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
+          </form>
         </div>
       </section>
 
-      <section id="survey" className="section survey-section">
+      <section id="location" className="section location-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">Review & Survey</p>
-            <h2>참가 후기를 남기고 다음 회차를 더 좋게 만들기</h2>
+            <p className="eyebrow">07. Location & FAQ</p>
+            <h2>공간 아이덴티티, 오시는 길, 자주 묻는 질문</h2>
           </div>
-          <div className="score-strip">
-            <span>평균 만족도 9.6</span>
-            <span>재참여 의향 94%</span>
-          </div>
+          <p>실내테니스팡의 보랏빛 코트 무드와 시설 안내, 네이버 지도 연동을 고려한 길찾기 구성을 담았습니다.</p>
         </div>
-        <div className="review-grid">
-          {reviews.map(([name, quote, score]) => (
-            <article key={name}>
-              <strong>{score}</strong>
-              <p>{quote}</p>
-              <span>{name}</span>
-            </article>
-          ))}
-        </div>
-        <form onSubmit={handleSurvey} className="survey-form">
-          <div className="survey-row">
-            <label>
-              닉네임
-              <input name="nickname" placeholder="참가자 닉네임" required />
-            </label>
-            <label>
-              참여 회차
-              <input name="round" placeholder="예: 8월 2주차" />
-            </label>
-          </div>
-          <label>
-            한 줄 후기
-            <input name="shortReview" placeholder="오늘의 서킷메이트를 한 문장으로 남겨주세요." required />
-          </label>
-          <div className="rating-grid">
-            {['전체 만족도', '운동 강도', '진행/코치', 'F&B', '소셜링 분위기'].map((item) => (
-              <label key={item}>
-                {item}
-                <input type="range" min="1" max="10" defaultValue="9" aria-label={`${item} 점수`} />
-              </label>
-            ))}
-          </div>
-          <label>
-            친구에게 추천할 의향이 있나요?
-            <select name="nps" defaultValue="promoter">
-              <option value="promoter">꼭 추천하고 싶어요</option>
-              <option value="passive">상황에 따라 추천할게요</option>
-              <option value="detractor">아직은 고민돼요</option>
-            </select>
-          </label>
-          <label>
-            개선 의견
-            <textarea name="feedback" placeholder="좋았던 점, 아쉬웠던 점, 다음에 추가되면 좋은 프로그램을 알려주세요." />
-          </label>
-          <button type="submit">만족도 제출하기</button>
-          {surveySent && <p className="success-message">후기와 만족도 조사가 저장되었습니다. 다음 코트에서 더 좋은 흐름으로 만날게요.</p>}
-        </form>
-      </section>
-
-      <section id="faq" className="section faq-section">
-        <div className="section-heading">
-          <p className="eyebrow">FAQ</p>
-          <h2>처음 오기 전에 궁금한 것들</h2>
+        <div className="location-layout">
+          <article className="space-gallery">
+            <h3>7.1 공간 아이덴티티</h3>
+            <p>코트 조명, 탄성 바닥, 탈의실과 정수기 등 편의시설을 사전 안내해 첫 방문의 불안을 줄입니다.</p>
+            <div className="gallery-strip">
+              <span>COURT</span>
+              <span>LIGHT</span>
+              <span>RECOVERY</span>
+            </div>
+          </article>
+          <article className="map-panel">
+            <h3>7.2 오시는 길</h3>
+            <div className="map-mock" aria-label="네이버 지도 영역 목업">
+              <span>NAVER MAP</span>
+            </div>
+            <p>상세 주소, 길찾기 링크, 대중교통 및 주차 지원 가이드를 배치할 수 있습니다.</p>
+          </article>
         </div>
         <div className="faq-list">
-          {faqs.map(([q, a]) => (
-            <details key={q}>
-              <summary>{q}</summary>
-              <p>{a}</p>
+          {faqs.map(([question, answer]) => (
+            <details key={question}>
+              <summary>{question}</summary>
+              <p>{answer}</p>
             </details>
           ))}
         </div>
       </section>
+
+      <footer className="footer-section">
+        <div>
+          <strong>CIRCUITMATE</strong>
+          <p>사업자 정보, 이용약관, 개인정보처리방침, 공식 SNS 링크와 실시간 문의 채널이 들어가는 하단 고정 영역입니다.</p>
+        </div>
+        <a href="#booking">다음 세션 예약</a>
+      </footer>
     </main>
   );
 }
