@@ -29,6 +29,26 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+main {
+  isolation: isolate;
+  overflow: hidden;
+  position: relative;
+}
+
+main::before {
+  background: radial-gradient(circle at var(--spotlight-x, 50%) var(--spotlight-y, 16%), rgba(168, 85, 247, 0.24), transparent 22rem);
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 1;
+}
+
+main > * {
+  position: relative;
+  z-index: 2;
+}
+
 button,
 input,
 select,
@@ -185,6 +205,12 @@ button {
 
 .hero-image {
   object-fit: cover;
+  transform: scale(1.03);
+  transition: transform 900ms ease;
+}
+
+.hero:hover .hero-image {
+  transform: scale(1.08);
 }
 
 .hero-overlay {
@@ -215,6 +241,42 @@ button {
   font-weight: 900;
   line-height: 1.2;
   max-width: 620px;
+}
+
+.ticker-section {
+  background: var(--lime);
+  color: #101207;
+  overflow: hidden;
+  padding: 14px 0;
+}
+
+.ticker-track {
+  animation: tickerMove 24s linear infinite;
+  display: flex;
+  gap: 36px;
+  min-width: max-content;
+  white-space: nowrap;
+}
+
+.ticker-track span {
+  font-size: clamp(20px, 3vw, 42px);
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ticker-track span::after {
+  content: '/';
+  margin-left: 36px;
+}
+
+@keyframes tickerMove {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .hero-actions {
@@ -306,10 +368,50 @@ button {
 
 .preview-section,
 .program-section,
-.awards-section {
+.awards-section,
+.selected-section,
+.figures-section {
   background:
     linear-gradient(180deg, #11111a, #08070c),
     var(--black);
+}
+
+.figures-grid {
+  border-top: 1px solid var(--line);
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-top: 40px;
+}
+
+.figures-grid article {
+  border-right: 1px solid var(--line);
+  min-height: 210px;
+  padding: 22px 18px;
+}
+
+.figures-grid article:last-child {
+  border-right: 0;
+}
+
+.figures-grid span {
+  color: rgba(248, 247, 255, 0.38);
+  display: block;
+  font-weight: 900;
+  margin-bottom: 28px;
+}
+
+.figures-grid strong {
+  color: var(--lime);
+  display: block;
+  font-size: clamp(40px, 5vw, 82px);
+  letter-spacing: 0;
+  line-height: 0.9;
+  margin-bottom: 14px;
+}
+
+.figures-grid p {
+  color: var(--muted);
+  font-weight: 800;
 }
 
 .horizontal-cards {
@@ -365,11 +467,62 @@ button {
 .recovery-grid p,
 .guide-grid p,
 .awards-slider p,
+.moment-card p,
 .space-gallery p,
 .map-panel p,
 .faq-list p {
   color: var(--muted);
   line-height: 1.62;
+}
+
+.moment-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(4, minmax(220px, 1fr));
+  margin-top: 42px;
+}
+
+.moment-card {
+  cursor: pointer;
+}
+
+.moment-media {
+  aspect-ratio: 3 / 4;
+  background: #171320;
+  margin-bottom: 18px;
+  overflow: hidden;
+  position: relative;
+}
+
+.moment-media img {
+  filter: saturate(0.9) contrast(1.08);
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.12);
+  transition: filter 420ms ease, transform 520ms ease;
+  width: 100%;
+}
+
+.moment-card:hover .moment-media img {
+  filter: saturate(1.35) contrast(1.16);
+  transform: scale(1.03);
+}
+
+.moment-media::after {
+  background: linear-gradient(0deg, rgba(7, 7, 11, 0.82), transparent 48%);
+  content: '';
+  inset: 0;
+  position: absolute;
+}
+
+.moment-media span {
+  bottom: 16px;
+  color: var(--lime);
+  font-size: 42px;
+  font-weight: 900;
+  left: 16px;
+  position: absolute;
+  z-index: 1;
 }
 
 .brand-section {
@@ -752,9 +905,21 @@ select {
   background: #07070b;
   border-top: 1px solid var(--line);
   display: flex;
+  flex-wrap: wrap;
   gap: 20px;
   justify-content: space-between;
   padding: 28px clamp(20px, 5vw, 76px);
+}
+
+.footer-section::before {
+  color: rgba(248, 247, 255, 0.06);
+  content: 'LET US MAKE IT A CIRCUIT NIGHT';
+  display: block;
+  font-size: clamp(44px, 11vw, 150px);
+  font-weight: 900;
+  line-height: 0.86;
+  margin-bottom: 20px;
+  width: 100%;
 }
 
 .footer-section strong {
@@ -896,6 +1061,22 @@ select {
   .guide-grid,
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .figures-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .figures-grid article:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .moment-grid {
+    grid-auto-columns: minmax(250px, 78vw);
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    overflow-x: auto;
+    padding-bottom: 12px;
   }
 
   .vertical-timeline article {

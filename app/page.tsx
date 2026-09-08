@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { CSSProperties, FormEvent, MouseEvent, useMemo, useState } from 'react';
 
 const navItems = [
   ['01. Home', '#home'],
@@ -18,6 +18,25 @@ const highlights = [
   ['6', '서킷 스테이션'],
 ];
 
+const badgeLoop = [
+  'Night Court',
+  'Circuit Training',
+  'Wellness Recovery',
+  'Social Relay',
+  'Purple Lights',
+  'Team Energy',
+  'Healthy Exchange',
+];
+
+const keyFigures = [
+  ['01', '180+', '누적 참가자'],
+  ['02', '94%', '재참여 의향'],
+  ['03', '6', '서킷 종목'],
+  ['04', '4', '어워즈 부문'],
+  ['05', '150', '분 세션'],
+  ['06', '1', '나이트 코트'],
+];
+
 const previewCards = [
   ['Warm-up', '관절 가동성, 호흡, 코트 적응'],
   ['Main Circuit', '하체, 코어, 파워, 밸런스 6스테이션'],
@@ -28,6 +47,13 @@ const socialProof = [
   ['@mate_min', '처음 와도 팀 미션 덕분에 어색함이 금방 풀렸어요.'],
   ['@courtjun', '테니스 코트 조명과 서킷 루틴 조합이 진짜 새로웠습니다.'],
   ['@recover_y', '운동 후 리커버리 테이블까지 있어서 모임 완성도가 높았어요.'],
+];
+
+const selectedMoments = [
+  ['Opening Rally', '웰컴 드링크와 팀 배정이 시작되는 입장 장면'],
+  ['Station Heat', '보랏빛 조명 아래 이어지는 6스테이션 전신 서킷'],
+  ['Relay Peak', '응원과 기록이 동시에 터지는 팀 이어달리기'],
+  ['Recovery Table', '치킨 샌드위치, 과일컵, 전해질 드링크로 마무리'],
 ];
 
 const timeline = [
@@ -98,6 +124,7 @@ export default function Home() {
   const [selectedSession, setSelectedSession] = useState(sessions[0]);
   const [bookingSent, setBookingSent] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [spotlight, setSpotlight] = useState({ x: 50, y: 18 });
   const nextSessionLabel = useMemo(() => selectedSession.split(' ')[0] + ' ' + selectedSession.split(' ')[1], [selectedSession]);
 
   function handleBooking(event: FormEvent<HTMLFormElement>) {
@@ -105,8 +132,25 @@ export default function Home() {
     setBookingSent(true);
   }
 
+  function handlePointer(event: MouseEvent<HTMLElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    setSpotlight({
+      x: Math.round(((event.clientX - rect.left) / rect.width) * 100),
+      y: Math.round(((event.clientY - rect.top) / rect.height) * 100),
+    });
+  }
+
   return (
-    <main id="home">
+    <main
+      id="home"
+      onMouseMove={handlePointer}
+      style={
+        {
+          '--spotlight-x': `${spotlight.x}%`,
+          '--spotlight-y': `${spotlight.y}%`,
+        } as CSSProperties
+      }
+    >
       <header className="site-header">
         <a className="brand-mark" href="#home" aria-label="Circuitmate home">
           <span>CM</span>
@@ -142,6 +186,14 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="ticker-section" aria-label="서킷메이트 핵심 무드">
+        <div className="ticker-track">
+          {[...badgeLoop, ...badgeLoop].map((item, index) => (
+            <span key={`${item}-${index}`}>{item}</span>
+          ))}
+        </div>
+      </section>
+
       <button className="floating-cta" type="button" onClick={() => setBookingOpen(true)}>
         예약하기
       </button>
@@ -156,6 +208,22 @@ export default function Home() {
             <article key={label}>
               <strong>{value}</strong>
               <span>{label}</span>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section figures-section">
+        <div className="section-heading compact">
+          <p className="eyebrow">Key Figures</p>
+          <h2>한 번의 밤을 숫자로 읽으면, 운영 흐름이 더 선명해집니다.</h2>
+        </div>
+        <div className="figures-grid">
+          {keyFigures.map(([index, value, label]) => (
+            <article key={label}>
+              <span>{index}</span>
+              <strong>{value}</strong>
+              <p>{label}</p>
             </article>
           ))}
         </div>
@@ -183,6 +251,28 @@ export default function Home() {
               <div className="photo-tile" />
               <strong>{name}</strong>
               <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="section selected-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">Selected Moments</p>
+            <h2>프레임 단위로 기억되는 네 개의 장면</h2>
+          </div>
+          <p>레퍼런스의 프로젝트 카드 흐름처럼, 세션을 하나의 스포츠 필름 시퀀스로 보여줍니다.</p>
+        </div>
+        <div className="moment-grid">
+          {selectedMoments.map(([title, desc], index) => (
+            <article key={title} className="moment-card">
+              <div className="moment-media">
+                <img src="/circuitmate-hero.png" alt="" />
+                <span>{String(index + 1).padStart(2, '0')}</span>
+              </div>
+              <h3>{title}</h3>
+              <p>{desc}</p>
             </article>
           ))}
         </div>
