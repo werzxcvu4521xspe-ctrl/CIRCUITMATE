@@ -151,13 +151,49 @@ export default function Home() {
   const [selectedStation, setSelectedStation] = useState(stations[0]);
   const [selectedSession, setSelectedSession] = useState(sessions[0]);
   const [bookingSent, setBookingSent] = useState(false);
+  const [bookingError, setBookingError] = useState('');
+  const [bookingSending, setBookingSending] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [spotlight, setSpotlight] = useState({ x: 50, y: 18 });
   const nextSessionLabel = useMemo(() => selectedSession.split(' ')[0] + ' ' + selectedSession.split(' ')[1], [selectedSession]);
 
-  function handleBooking(event: FormEvent<HTMLFormElement>) {
+  async function handleBooking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setBookingSent(true);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
+    const isQuickBooking = formData.has('quickName');
+    const payload = {
+      session: selectedSession,
+      name: String(formData.get(isQuickBooking ? 'quickName' : 'name') ?? ''),
+      phone: String(formData.get(isQuickBooking ? 'quickPhone' : 'phone') ?? ''),
+      level: String(formData.get(isQuickBooking ? 'quickLevel' : 'level') ?? ''),
+      party: String(formData.get(isQuickBooking ? 'quickParty' : 'party') ?? ''),
+      source: isQuickBooking ? 'quick' : 'booking',
+    };
+
+    setBookingSending(true);
+    setBookingError('');
+    setBookingSent(false);
+
+    try {
+      const response = await fetch('/api/reservations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? '예약 접수에 실패했습니다.');
+      }
+
+      form.reset();
+      setBookingSent(true);
+    } catch (error) {
+      setBookingError(error instanceof Error ? error.message : '예약 접수에 실패했습니다.');
+    } finally {
+      setBookingSending(false);
+    }
   }
 
   function handlePointer(event: MouseEvent<HTMLElement>) {
@@ -545,8 +581,11 @@ export default function Home() {
               <h3>6.4 결제 및 확인</h3>
               <p>간편결제 연동 또는 입금 안내 후 예약 완료 화면과 알림톡으로 확정됩니다.</p>
             </div>
-            <button type="submit">결제 안내 받기</button>
+            <button type="submit" disabled={bookingSending}>
+              {bookingSending ? '접수 중' : '결제 안내 받기'}
+            </button>
             {bookingSent && <p className="success-message">예약 신청이 접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
+            {bookingError && <p className="error-message">{bookingError}</p>}
           </form>
         </div>
       </section>
@@ -605,6 +644,9 @@ export default function Home() {
         <div>
           <strong>CIRCUITMATE</strong>
           <p>사업자 정보, 이용약관, 개인정보처리방침, 공식 SNS 링크와 실시간 문의 채널이 들어가는 하단 고정 영역입니다.</p>
+          <a className="admin-link" href="/admin">
+            관리자
+          </a>
         </div>
         <button type="button" onClick={() => setBookingOpen(true)}>
           다음 세션 예약
@@ -676,10 +718,11 @@ export default function Home() {
                 <span>{selectedSession}</span>
                 <strong>39,000원</strong>
               </div>
-              <button type="submit" className="sheet-submit">
-                예약 및 결제 안내 받기
+              <button type="submit" className="sheet-submit" disabled={bookingSending}>
+                {bookingSending ? '접수 중' : '예약 및 결제 안내 받기'}
               </button>
               {bookingSent && <p className="success-message">접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
+              {bookingError && <p className="error-message">{bookingError}</p>}
             </form>
           </section>
         </div>
