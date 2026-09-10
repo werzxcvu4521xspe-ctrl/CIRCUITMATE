@@ -12,6 +12,15 @@
   --court: #203d2e;
   --line: rgba(255, 255, 255, 0.14);
   --dark-line: rgba(13, 10, 22, 0.14);
+  --font-sans: 'Pretendard', 'SUIT', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Arial, sans-serif;
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.35rem;
+  --leading-tight: 1.08;
+  --leading-title: 1.16;
+  --leading-body: 1.72;
 }
 
 * {
@@ -20,13 +29,20 @@
 
 html {
   scroll-behavior: smooth;
+  text-size-adjust: 100%;
 }
 
 body {
   margin: 0;
   background: var(--black);
   color: var(--ink);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: var(--leading-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
 }
 
 main {
@@ -54,6 +70,7 @@ input,
 select,
 textarea {
   font: inherit;
+  line-height: 1.35;
 }
 
 button,
@@ -74,24 +91,37 @@ p {
 }
 
 h1 {
-  font-size: clamp(58px, 13vw, 164px);
+  font-size: clamp(56px, 12.4vw, 152px);
+  font-weight: 900;
   letter-spacing: 0;
-  line-height: 0.82;
-  margin-bottom: 22px;
+  line-height: 0.9;
+  margin-bottom: 24px;
   max-width: 980px;
+  text-wrap: balance;
 }
 
 h2 {
-  font-size: clamp(32px, 5.2vw, 72px);
+  font-size: clamp(34px, 4.8vw, 68px);
+  font-weight: 850;
   letter-spacing: 0;
-  line-height: 0.98;
+  line-height: var(--leading-tight);
   margin-bottom: 0;
+  text-wrap: balance;
 }
 
 h3 {
-  font-size: clamp(20px, 2vw, 28px);
+  font-size: clamp(21px, 1.8vw, 27px);
+  font-weight: 820;
   letter-spacing: 0;
-  line-height: 1.12;
+  line-height: var(--leading-title);
+  text-wrap: balance;
+}
+
+p,
+li,
+dd,
+summary {
+  overflow-wrap: anywhere;
 }
 
 .site-header {
@@ -113,8 +143,8 @@ h3 {
 .brand-mark {
   align-items: center;
   display: inline-flex;
-  font-size: 14px;
-  font-weight: 900;
+  font-size: var(--text-sm);
+  font-weight: 850;
   gap: 10px;
   letter-spacing: 0;
   white-space: nowrap;
@@ -125,7 +155,7 @@ h3 {
   background: var(--lime);
   color: #101207;
   display: inline-flex;
-  font-size: 12px;
+  font-size: var(--text-xs);
   height: 36px;
   justify-content: center;
   width: 36px;
@@ -140,8 +170,9 @@ nav {
 
 nav a {
   color: rgba(248, 247, 255, 0.72);
-  font-size: 12px;
-  font-weight: 800;
+  font-size: var(--text-xs);
+  font-weight: 750;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
@@ -154,10 +185,13 @@ button {
   border: 0;
   cursor: pointer;
   display: inline-flex;
-  font-weight: 900;
+  font-size: var(--text-sm);
+  font-weight: 850;
   justify-content: center;
+  line-height: 1.2;
   min-height: 46px;
   padding: 0 18px;
+  text-align: center;
 }
 
 .header-cta,
@@ -228,8 +262,9 @@ button {
 
 .eyebrow {
   color: var(--lime);
-  font-size: 12px;
-  font-weight: 900;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.25;
   letter-spacing: 0;
   margin-bottom: 16px;
   text-transform: uppercase;
@@ -237,10 +272,11 @@ button {
 
 .hero-copy {
   color: rgba(248, 247, 255, 0.9);
-  font-size: clamp(21px, 2.8vw, 36px);
-  font-weight: 900;
-  line-height: 1.2;
+  font-size: clamp(20px, 2.35vw, 32px);
+  font-weight: 760;
+  line-height: 1.35;
   max-width: 620px;
+  text-wrap: balance;
 }
 
 .ticker-section {
@@ -259,8 +295,9 @@ button {
 }
 
 .ticker-track span {
-  font-size: clamp(20px, 3vw, 42px);
-  font-weight: 900;
+  font-size: clamp(20px, 2.7vw, 38px);
+  font-weight: 880;
+  line-height: 1;
   text-transform: uppercase;
 }
 
@@ -299,14 +336,17 @@ button {
 .trust-bar span {
   color: rgba(248, 247, 255, 0.72);
   display: grid;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: var(--text-sm);
+  font-weight: 680;
   gap: 6px;
+  line-height: 1.42;
 }
 
 .trust-bar strong {
   color: var(--lime);
-  font-size: clamp(18px, 2vw, 28px);
+  font-size: clamp(19px, 1.8vw, 27px);
+  font-weight: 850;
+  line-height: 1.1;
 }
 
 .section-heading {
@@ -327,8 +367,10 @@ button {
 
 .section-heading.split > p {
   color: var(--muted);
-  font-size: 18px;
-  line-height: 1.55;
+  font-size: clamp(17px, 1.35vw, 20px);
+  font-weight: 500;
+  line-height: 1.72;
+  margin-bottom: 0;
 }
 
 .highlight-section {
@@ -379,14 +421,17 @@ button {
 
 .metric-grid strong {
   color: var(--lime);
-  font-size: clamp(42px, 7vw, 94px);
-  line-height: 0.9;
+  font-size: clamp(42px, 6.4vw, 88px);
+  font-weight: 900;
+  line-height: 0.95;
 }
 
 .metric-grid span {
   align-self: end;
   color: var(--muted);
-  font-weight: 800;
+  font-size: var(--text-sm);
+  font-weight: 680;
+  line-height: 1.5;
 }
 
 .preview-section,
@@ -419,14 +464,17 @@ button {
 .figures-grid span {
   color: rgba(248, 247, 255, 0.38);
   display: block;
-  font-weight: 900;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.2;
   margin-bottom: 28px;
 }
 
 .figures-grid strong {
   color: var(--lime);
   display: block;
-  font-size: clamp(40px, 5vw, 82px);
+  font-size: clamp(40px, 4.6vw, 76px);
+  font-weight: 900;
   letter-spacing: 0;
   line-height: 0.9;
   margin-bottom: 14px;
@@ -434,7 +482,10 @@ button {
 
 .figures-grid p {
   color: var(--muted);
-  font-weight: 800;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  line-height: 1.52;
+  margin-bottom: 0;
 }
 
 .horizontal-cards {
@@ -460,8 +511,9 @@ button {
 .recovery-grid span,
 .mini-game-card span {
   color: var(--lime);
-  font-size: 12px;
-  font-weight: 900;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.25;
   text-transform: uppercase;
 }
 
@@ -495,7 +547,9 @@ button {
 .map-panel p,
 .faq-list p {
   color: var(--muted);
-  line-height: 1.62;
+  font-size: var(--text-base);
+  font-weight: 500;
+  line-height: var(--leading-body);
 }
 
 .moment-grid {
@@ -541,8 +595,9 @@ button {
 .moment-media span {
   bottom: 16px;
   color: var(--lime);
-  font-size: 42px;
+  font-size: clamp(34px, 4vw, 42px);
   font-weight: 900;
+  line-height: 1;
   left: 16px;
   position: absolute;
   z-index: 1;
@@ -592,12 +647,14 @@ button {
 
 .vertical-timeline time {
   color: var(--lime);
-  font-weight: 900;
+  font-weight: 850;
+  line-height: 1.25;
 }
 
 .vertical-timeline p {
   color: var(--muted);
-  line-height: 1.55;
+  line-height: 1.68;
+  margin-bottom: 0;
 }
 
 .station-guide {
@@ -608,10 +665,11 @@ button {
 .cue-banner {
   background: var(--lime);
   color: #101207;
-  font-size: clamp(20px, 2.6vw, 34px);
-  font-weight: 900;
-  line-height: 1.22;
+  font-size: clamp(19px, 2.1vw, 30px);
+  font-weight: 850;
+  line-height: 1.34;
   padding: 22px;
+  text-wrap: balance;
 }
 
 .tab-list {
@@ -680,7 +738,8 @@ button {
 
 .station-detail p {
   color: var(--lime);
-  font-weight: 900;
+  font-weight: 800;
+  line-height: 1.5;
 }
 
 .station-detail dl {
@@ -691,13 +750,13 @@ button {
 
 .station-detail dt {
   color: var(--ink);
-  font-weight: 900;
+  font-weight: 800;
   margin-bottom: 5px;
 }
 
 .station-detail dd {
   color: var(--muted);
-  line-height: 1.55;
+  line-height: 1.7;
   margin: 0;
 }
 
@@ -754,13 +813,16 @@ button {
 
 .value-list span {
   color: #2f293b;
-  font-size: clamp(17px, 2vw, 24px);
-  font-weight: 900;
+  font-size: clamp(17px, 1.75vw, 22px);
+  font-weight: 780;
+  line-height: 1.36;
 }
 
 .value-list strong {
   color: var(--violet);
-  font-size: clamp(24px, 3vw, 42px);
+  font-size: clamp(24px, 2.75vw, 38px);
+  font-weight: 900;
+  line-height: 1;
   white-space: nowrap;
 }
 
@@ -775,17 +837,21 @@ button {
 
 .earlybird-box span {
   color: var(--lime);
-  font-weight: 900;
+  font-weight: 850;
+  line-height: 1.25;
 }
 
 .earlybird-box strong {
-  font-size: clamp(44px, 7vw, 86px);
-  line-height: 0.9;
+  font-size: clamp(44px, 6.4vw, 78px);
+  font-weight: 900;
+  line-height: 0.95;
 }
 
 .earlybird-box p {
   color: rgba(255, 255, 255, 0.72);
-  font-weight: 800;
+  font-weight: 600;
+  line-height: 1.6;
+  margin-bottom: 0;
 }
 
 .recovery-grid {
@@ -816,7 +882,7 @@ button {
   border: 1px solid rgba(200, 255, 77, 0.45);
   display: flex;
   font-size: 30px;
-  font-weight: 900;
+  font-weight: 880;
   height: 62px;
   justify-content: center;
   margin-bottom: 24px;
@@ -873,6 +939,10 @@ button {
   width: 100%;
 }
 
+.slot-list button span {
+  line-height: 1.35;
+}
+
 .ticket-box,
 .payment-box {
   background: #f0ebfb;
@@ -883,13 +953,15 @@ button {
 .ticket-box span {
   color: var(--violet);
   display: block;
-  font-weight: 900;
+  font-weight: 850;
+  line-height: 1.25;
   margin-bottom: 8px;
 }
 
 .ticket-box strong {
   display: block;
-  font-size: 22px;
+  font-size: var(--text-xl);
+  line-height: 1.25;
   margin-bottom: 8px;
 }
 
@@ -902,9 +974,10 @@ button {
 label {
   color: #332c43;
   display: grid;
-  font-size: 14px;
-  font-weight: 900;
+  font-size: var(--text-sm);
+  font-weight: 780;
   gap: 8px;
+  line-height: 1.38;
   margin-bottom: 16px;
 }
 
@@ -913,6 +986,9 @@ select {
   background: #f2effa;
   border: 1px solid var(--dark-line);
   color: #100d18;
+  font-size: 1rem;
+  font-weight: 550;
+  line-height: 1.45;
   min-height: 48px;
   padding: 12px 14px;
   width: 100%;
@@ -936,13 +1012,14 @@ select {
 
 .payment-box p {
   color: #5b5368;
-  line-height: 1.55;
+  line-height: 1.68;
   margin-bottom: 0;
 }
 
 .success-message {
   color: #236333;
-  font-weight: 900;
+  font-weight: 800;
+  line-height: 1.45;
   margin: 14px 0 0;
 }
 
@@ -972,8 +1049,9 @@ select {
     #100d18;
   color: white;
   display: flex;
-  font-size: 12px;
-  font-weight: 900;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.25;
   justify-content: center;
 }
 
@@ -987,8 +1065,9 @@ select {
   background-size: 28% 34%;
   color: white;
   display: flex;
-  font-size: clamp(26px, 4vw, 54px);
-  font-weight: 900;
+  font-size: clamp(26px, 3.6vw, 50px);
+  font-weight: 880;
+  line-height: 1.05;
   justify-content: center;
   margin: 18px 0;
 }
@@ -1020,27 +1099,30 @@ select {
 .operation-grid strong {
   color: var(--lime);
   display: block;
-  font-size: 22px;
+  font-size: var(--text-xl);
+  line-height: 1.22;
   margin-bottom: 14px;
 }
 
 .operation-grid p {
   color: rgba(248, 247, 255, 0.76);
-  line-height: 1.62;
+  line-height: 1.7;
   margin-bottom: 0;
 }
 
 .faq-list summary {
   cursor: pointer;
-  font-size: clamp(18px, 2vw, 24px);
-  font-weight: 900;
-  line-height: 1.3;
+  font-size: clamp(18px, 1.65vw, 22px);
+  font-weight: 780;
+  line-height: 1.42;
+  padding-right: 16px;
+  text-wrap: pretty;
 }
 
 .faq-list p {
-  font-size: 17px;
-  line-height: 1.7;
-  margin: 12px 0 0;
+  font-size: clamp(16px, 1.2vw, 18px);
+  line-height: 1.82;
+  margin: 14px 0 0;
 }
 
 .footer-section {
@@ -1058,9 +1140,9 @@ select {
   color: rgba(248, 247, 255, 0.06);
   content: 'LET US MAKE IT A CIRCUIT NIGHT';
   display: block;
-  font-size: clamp(44px, 11vw, 150px);
+  font-size: clamp(42px, 9.4vw, 130px);
   font-weight: 900;
-  line-height: 0.86;
+  line-height: 0.95;
   margin-bottom: 20px;
   width: 100%;
 }
@@ -1071,13 +1153,15 @@ select {
 
 .footer-section p {
   color: var(--muted);
+  line-height: 1.55;
   margin: 8px 0 0;
 }
 
 .footer-section a {
   background: var(--lime);
   color: #101207;
-  font-weight: 900;
+  font-weight: 850;
+  line-height: 1.2;
   min-width: 144px;
   padding: 14px 18px;
   text-align: center;
@@ -1139,7 +1223,7 @@ select {
 }
 
 .sheet-header h2 {
-  font-size: clamp(30px, 7vw, 52px);
+  font-size: clamp(30px, 6.2vw, 50px);
 }
 
 .close-button {
@@ -1166,12 +1250,15 @@ select {
 
 .sheet-summary span {
   color: rgba(255, 255, 255, 0.72);
-  font-weight: 800;
+  font-size: var(--text-sm);
+  font-weight: 650;
+  line-height: 1.35;
 }
 
 .sheet-summary strong {
   color: var(--lime);
-  font-size: 22px;
+  font-size: var(--text-xl);
+  line-height: 1.12;
 }
 
 .sheet-submit {
@@ -1284,11 +1371,31 @@ select {
   }
 
   h1 {
-    font-size: clamp(50px, 18vw, 82px);
+    font-size: clamp(46px, 16.5vw, 78px);
+    line-height: 0.95;
   }
 
   .hero-content {
     padding-top: 118px;
+  }
+
+  .hero-copy {
+    font-size: clamp(19px, 6vw, 28px);
+    line-height: 1.42;
+  }
+
+  .section-heading.split > p,
+  .social-grid p,
+  .story-panel p,
+  .mini-game-card p,
+  .recovery-grid p,
+  .guide-grid p,
+  .awards-slider p,
+  .moment-card p,
+  .space-gallery p,
+  .map-panel p,
+  .faq-list p {
+    line-height: 1.78;
   }
 
   .floating-cta {
