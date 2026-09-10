@@ -13,9 +13,9 @@ const navItems = [
 ];
 
 const highlights = [
-  ['D-12', '다음 세션까지'],
-  ['32', '잔여 티켓'],
-  ['6', '서킷 스테이션'],
+  ['1인 참가 비율', '83%'],
+  ['부상 방지 전문 코치', 'On-Site'],
+  ['클린 바', '100% Non-Alcohol'],
 ];
 
 const badgeLoop = [
@@ -30,11 +30,11 @@ const badgeLoop = [
 
 const keyFigures = [
   ['01', '180+', '누적 참가자'],
-  ['02', '94%', '재참여 의향'],
+  ['02', '83%', '1인 참가 비율'],
   ['03', '6', '서킷 종목'],
   ['04', '4', '어워즈 부문'],
   ['05', '150', '분 세션'],
-  ['06', '1', '나이트 코트'],
+  ['06', '39K', '얼리버드 티켓'],
 ];
 
 const previewCards = [
@@ -103,6 +103,18 @@ const wellnessGuide = [
   ['매너 가이드', '팀원 속도에 맞추고, 서로의 기록보다 완주를 먼저 응원합니다.'],
 ];
 
+const valueStack = [
+  ['프리미엄 단독 코트 대관 및 서킷 프로그램', '50,000원'],
+  ['올인원 생과일 뷔페 & 리프레시 드링크 바', '15,000원'],
+  ['서킷메이트 어워즈 트로피 & 단체 포토 아카이빙', '20,000원'],
+];
+
+const operationDetails = [
+  ['입장 데스크', '참가자 전원에게 팀 컬러 손목 밴드를 배부하고, 혼자 온 참가자도 자연스럽게 해당 컬러 구역으로 이동합니다.'],
+  ['서킷 스테이션', '각 스테이션마다 초급 / 중급 / 고급 3단계 난이도 픽토그램 보드를 거치합니다.'],
+  ['리커버리 전환', '메인 릴레이 종료 즉시 조명을 앰버-퍼플 톤으로 전환하고, 쿨다운 BGM과 함께 쿨링 물티슈 및 전해질 음료를 지급한 뒤 과일 바를 오픈합니다.'],
+];
+
 const awards = [
   ['허슬상', '끝까지 밀어붙인 에너지와 성실한 태도를 기념합니다.'],
   ['베스트 드레서', '코트 조명 아래 가장 선명한 에슬레저 룩을 선정합니다.'],
@@ -113,10 +125,26 @@ const awards = [
 const sessions = ['9월 21일 토 19:00', '9월 28일 토 19:00', '10월 5일 토 19:00'];
 
 const faqs = [
-  ['혼자 참여 가능한가요?', '가능합니다. 현장에서 운동 수준과 성향을 고려해 팀을 배정합니다.'],
-  ['운동 초보도 가능한가요?', '가능합니다. 각 종목마다 기본 옵션과 챌린지 옵션을 함께 안내합니다.'],
-  ['비가 와도 진행하나요?', '실내 코트에서 진행되므로 날씨와 무관하게 운영합니다.'],
-  ['환불 규정은 어떻게 되나요?', '세션 3일 전까지 전액 환불, 이후에는 현장 준비 비용을 제외하고 안내됩니다.'],
+  [
+    '운동을 잘 못하거나 체력이 약한데 따라갈 수 있을까요?',
+    "절대 무게나 횟수로 경쟁하지 않습니다. 서킷메이트는 '1분 동안 내 호흡에 맞춰 움직이는 자율 인터벌 방식'입니다. 모든 스테이션에 초심자를 위한 대체 동작(스케일링) 가이드와 전문 코치가 상주하므로 부상 걱정 없이 안전하게 자신의 페이스대로 즐기실 수 있습니다.",
+  ],
+  [
+    '혼자 신청해도 어색하거나 겉돌지 않을까요?',
+    "참가자의 83%가 혼자 신청합니다. 입장 즉시 컬러 밴드로 5인 1조 팀이 자동 매칭되며, 메인 운동 전 15분간 진행되는 '순발력 미니게임'을 통해 자연스럽게 하이파이브하며 팀원이 됩니다.",
+  ],
+  [
+    '일반적인 친목 모임이나 가벼운 헌팅 포차 분위기인가요?',
+    "아닙니다. 서킷메이트는 과도한 음주가 없는 100% 클린 웰니스 스포츠 파티입니다. 분 단위로 설계된 고강도 인터벌 서킷과 팀 릴레이, 신선한 생과일 케이터링 바와 4대 어워즈로 구성되어 '진짜 운동과 건강한 에너지'에 몰입합니다.",
+  ],
+  [
+    '땀 흘리고 화장이 지워져서 사진 찍기 민망할까 봐 걱정돼요.',
+    '운동 종료 직후 땀을 식히고 매무새를 정돈할 수 있는 10분간의 리프레시 & 과일 케이터링 타임이 주어집니다. 시상식과 포토타임은 땀방울마저 탄탄하고 감각적으로 연출되는 전용 보랏빛 무드 조명 아래에서 진행됩니다.',
+  ],
+  [
+    '참가비 대비 프로그램 구성이 아깝지 않을까요?',
+    '단 한 장의 티켓으로 프리미엄 실내 코트 대관, 5개 스테이션 전문 코칭, 제철 생과일 뷔페 바 & 전해질 음료 무제한, 4대 어워즈 굿즈, 고화질 프로필 포토 아카이빙까지 총 85,000원 이상의 웰니스 풀패키지 가치를 한 번에 누리실 수 있습니다.',
+  ],
 ];
 
 export default function Home() {
@@ -183,6 +211,14 @@ export default function Home() {
               프로그램 미리보기
             </a>
           </div>
+          <div className="trust-bar" aria-label="서킷메이트 신뢰 지표">
+            {highlights.map(([label, value]) => (
+              <span key={label}>
+                <strong>{value}</strong>
+                {label}
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -201,13 +237,13 @@ export default function Home() {
       <section className="section highlight-section" aria-label="세션 하이라이트">
         <div className="section-heading compact">
           <p className="eyebrow">1.2 Session Highlight</p>
-          <h2>다음 세션과 잔여석을 한눈에 확인하세요.</h2>
+          <h2>안전하고 깨끗한 웰니스 스포츠 파티라는 약속</h2>
         </div>
         <div className="metric-grid">
           {highlights.map(([value, label]) => (
             <article key={label}>
-              <strong>{value}</strong>
-              <span>{label}</span>
+              <strong>{label}</strong>
+              <span>{value}</span>
             </article>
           ))}
         </div>
@@ -323,6 +359,9 @@ export default function Home() {
             ))}
           </div>
           <div className="station-guide">
+            <div className="cue-banner">
+              남과 비교하지 마세요. 1분 동안 내 숨소리에 집중하는 것이 유일한 룰입니다.
+            </div>
             <div className="tab-list" role="tablist" aria-label="서킷 종목 가이드">
               {stations.map((station) => (
                 <button
@@ -390,6 +429,34 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="section value-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">Value Stack</p>
+            <h2>85,000원 이상의 웰니스 풀패키지를 한 장의 티켓으로</h2>
+          </div>
+          <p>참가비가 단순 입장료가 아니라 코트, 코칭, 리커버리, 어워즈, 사진 아카이빙까지 포함하는 올패스 티켓임을 명확하게 보여줍니다.</p>
+        </div>
+        <div className="value-card">
+          <div className="value-list">
+            {valueStack.map(([item, price]) => (
+              <div key={item}>
+                <span>{item}</span>
+                <strong>{price}</strong>
+              </div>
+            ))}
+          </div>
+          <div className="earlybird-box">
+            <span>원데이 올패스 티켓</span>
+            <strong>39,000원</strong>
+            <p>한정 수량 얼리버드</p>
+            <button type="button" onClick={() => setBookingOpen(true)}>
+              얼리버드 예약
+            </button>
+          </div>
+        </div>
+      </section>
+
       <section id="awards" className="section awards-section">
         <div className="section-heading">
           <p className="eyebrow">05. Awards</p>
@@ -433,7 +500,7 @@ export default function Home() {
             <div className="ticket-box">
               <span>선택 일정</span>
               <strong>{nextSessionLabel} 세션</strong>
-              <p>입장권 1매 49,000원</p>
+              <p>원데이 올패스 티켓 39,000원</p>
             </div>
           </aside>
           <form onSubmit={handleBooking} className="form-card">
@@ -509,6 +576,20 @@ export default function Home() {
             </div>
             <p>상세 주소, 길찾기 링크, 대중교통 및 주차 지원 가이드를 배치할 수 있습니다.</p>
           </article>
+        </div>
+        <div className="operation-manual">
+          <div className="section-heading compact">
+            <p className="eyebrow">Operation Detail</p>
+            <h2>혼자 와도 자연스럽고, 초보도 안전하게 움직이는 현장 운영</h2>
+          </div>
+          <div className="operation-grid">
+            {operationDetails.map(([title, desc]) => (
+              <article key={title}>
+                <strong>{title}</strong>
+                <p>{desc}</p>
+              </article>
+            ))}
+          </div>
         </div>
         <div className="faq-list">
           {faqs.map(([question, answer]) => (
@@ -593,7 +674,7 @@ export default function Home() {
               </label>
               <div className="sheet-summary">
                 <span>{selectedSession}</span>
-                <strong>49,000원</strong>
+                <strong>39,000원</strong>
               </div>
               <button type="submit" className="sheet-submit">
                 예약 및 결제 안내 받기

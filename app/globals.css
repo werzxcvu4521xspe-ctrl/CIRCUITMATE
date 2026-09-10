@@ -286,6 +286,29 @@ button {
   margin-top: 32px;
 }
 
+.trust-bar {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 36px;
+  max-width: 880px;
+  padding-top: 20px;
+}
+
+.trust-bar span {
+  color: rgba(248, 247, 255, 0.72);
+  display: grid;
+  font-size: 14px;
+  font-weight: 800;
+  gap: 6px;
+}
+
+.trust-bar strong {
+  color: var(--lime);
+  font-size: clamp(18px, 2vw, 28px);
+}
+
 .section-heading {
   max-width: 1060px;
 }
@@ -582,6 +605,15 @@ button {
   gap: 14px;
 }
 
+.cue-banner {
+  background: var(--lime);
+  color: #101207;
+  font-size: clamp(20px, 2.6vw, 34px);
+  font-weight: 900;
+  line-height: 1.22;
+  padding: 22px;
+}
+
 .tab-list {
   display: flex;
   flex-wrap: wrap;
@@ -678,6 +710,82 @@ button {
   background:
     radial-gradient(circle at 18% 16%, rgba(32, 61, 46, 0.76), transparent 32%),
     #100d18;
+}
+
+.value-section {
+  background: #f6f3ff;
+  color: #100d18;
+}
+
+.value-section .eyebrow {
+  color: var(--violet);
+}
+
+.value-section .section-heading.split > p {
+  color: #5b5368;
+}
+
+.value-card {
+  background: white;
+  border: 1px solid var(--dark-line);
+  display: grid;
+  gap: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(290px, 0.42fr);
+  margin-top: 40px;
+}
+
+.value-list {
+  display: grid;
+}
+
+.value-list div {
+  align-items: center;
+  border-bottom: 1px solid var(--dark-line);
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  min-height: 96px;
+  padding: 22px;
+}
+
+.value-list div:last-child {
+  border-bottom: 0;
+}
+
+.value-list span {
+  color: #2f293b;
+  font-size: clamp(17px, 2vw, 24px);
+  font-weight: 900;
+}
+
+.value-list strong {
+  color: var(--violet);
+  font-size: clamp(24px, 3vw, 42px);
+  white-space: nowrap;
+}
+
+.earlybird-box {
+  align-content: center;
+  background: #100d18;
+  color: white;
+  display: grid;
+  gap: 12px;
+  padding: 28px;
+}
+
+.earlybird-box span {
+  color: var(--lime);
+  font-weight: 900;
+}
+
+.earlybird-box strong {
+  font-size: clamp(44px, 7vw, 86px);
+  line-height: 0.9;
+}
+
+.earlybird-box p {
+  color: rgba(255, 255, 255, 0.72);
+  font-weight: 800;
 }
 
 .recovery-grid {
@@ -891,12 +999,47 @@ select {
   margin-top: 18px;
 }
 
+.operation-manual {
+  margin-top: 34px;
+}
+
+.operation-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 24px;
+}
+
+.operation-grid article {
+  background: #100d18;
+  border: 1px solid rgba(16, 13, 24, 0.16);
+  color: white;
+  padding: 24px;
+}
+
+.operation-grid strong {
+  color: var(--lime);
+  display: block;
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.operation-grid p {
+  color: rgba(248, 247, 255, 0.76);
+  line-height: 1.62;
+  margin-bottom: 0;
+}
+
 .faq-list summary {
   cursor: pointer;
+  font-size: clamp(18px, 2vw, 24px);
   font-weight: 900;
+  line-height: 1.3;
 }
 
 .faq-list p {
+  font-size: 17px;
+  line-height: 1.7;
   margin: 12px 0 0;
 }
 
@@ -1059,8 +1202,19 @@ select {
   .story-panel,
   .recovery-grid,
   .guide-grid,
+  .operation-grid,
   .form-row {
     grid-template-columns: 1fr;
+  }
+
+  .trust-bar,
+  .value-card {
+    grid-template-columns: 1fr;
+  }
+
+  .value-list div {
+    align-items: start;
+    flex-direction: column;
   }
 
   .figures-grid {
