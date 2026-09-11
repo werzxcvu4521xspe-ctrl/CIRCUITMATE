@@ -56,6 +56,8 @@ const selectedMoments = [
   ['Recovery Table', '치킨 샌드위치, 과일컵, 전해질 드링크로 마무리'],
 ];
 
+const momentImages = ['/circuitmate-live.png', '/circuitmate-concept.png', '/circuitmate-live.png', '/circuitmate-concept.png'];
+
 const timeline = [
   ['19:00', '입장 & 체크인', '컨디션 확인, 팀 배정, 웰컴 드링크'],
   ['19:20', '다이내믹 웜업', '관절 가동성과 코트 적응을 위한 리듬 워밍업'],
@@ -101,6 +103,15 @@ const wellnessGuide = [
   ['운동 후 20분', '단백질과 수분을 먼저 채우고 가벼운 대화를 이어갑니다.'],
   ['회복 루틴', '종아리, 둔근, 어깨를 순서대로 풀어 다음날 피로를 줄입니다.'],
   ['매너 가이드', '팀원 속도에 맞추고, 서로의 기록보다 완주를 먼저 응원합니다.'],
+];
+
+const colorSystem = [
+  ['Pantone Black 6 C', 'Court Black', '#101820', '헤더, 푸터, 관리자 화면의 기본 배경'],
+  ['Pantone 2627 C', 'Deep Court Purple', '#3C1053', '섹션 배경과 카드의 깊은 보랏빛 면'],
+  ['Pantone 2685 C', 'Royal Violet', '#330072', '코트 그림자, 오버레이, 공간감'],
+  ['Pantone 806 C', 'Neon Magenta', '#FF0090', '바닥 반사광과 하이라이트 라인'],
+  ['Pantone 1788 C', 'Signal Red', '#EE2737', '예약 CTA, 조명 포인트, 핵심 강조'],
+  ['Pantone 663 C', 'Mist White', '#E5DCEA', '본문 텍스트와 밝은 섹션 바탕'],
 ];
 
 const valueStack = [
@@ -254,7 +265,7 @@ export default function Home() {
       </header>
 
       <section className="hero section-block">
-        <img src="/circuitmate-hero.png" alt="보랏빛 실내 테니스 코트 서킷 트레이닝" className="hero-image" />
+        <img src="/circuitmate-live.png" alt="보랏빛 실내 코트에서 진행 중인 서킷메이트 현장" className="hero-image" />
         <div className="hero-overlay" />
         <div className="hero-content">
           <p className="eyebrow">01. Home</p>
@@ -361,7 +372,7 @@ export default function Home() {
           {selectedMoments.map(([title, desc], index) => (
             <article key={title} className="moment-card">
               <div className="moment-media">
-                <img src="/circuitmate-hero.png" alt="" />
+                <img src={momentImages[index]} alt="" />
                 <span>{String(index + 1).padStart(2, '0')}</span>
               </div>
               <h3>{title}</h3>
@@ -392,6 +403,18 @@ export default function Home() {
             <span>Space</span>
             <p>실내테니스팡의 보랏빛 코트와 조명은 야간 운동의 선명한 무드를 브랜드 자산으로 만듭니다.</p>
           </article>
+        </div>
+        <div className="palette-panel" aria-label="서킷메이트 Pantone 컬러 시스템">
+          {colorSystem.map(([pantone, name, hex, usage]) => (
+            <article key={pantone}>
+              <span className="swatch" style={{ backgroundColor: hex }} />
+              <div>
+                <strong>{pantone}</strong>
+                <p>{name}</p>
+                <small>{usage}</small>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
 
