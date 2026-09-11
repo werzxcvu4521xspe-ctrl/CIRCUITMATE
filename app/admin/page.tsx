@@ -11,6 +11,7 @@ type Reservation = {
   session: string;
   level: string;
   party: string;
+  pass_type: string;
   status: ReservationStatus;
   source: string;
   created_at: string;
@@ -23,6 +24,11 @@ const statusLabels: Record<ReservationStatus, string> = {
 };
 
 const statusOrder: ReservationStatus[] = ['pending', 'confirmed', 'cancelled'];
+
+const passLabels: Record<string, string> = {
+  single: '원데이',
+  monthly: '월간',
+};
 
 export default function AdminPage() {
   const [password, setPassword] = useState('');
@@ -172,6 +178,7 @@ export default function AdminPage() {
                     <th>예약자</th>
                     <th>연락처</th>
                     <th>일정</th>
+                    <th>패스</th>
                     <th>수준/유형</th>
                     <th>접수일</th>
                     <th>관리</th>
@@ -186,6 +193,7 @@ export default function AdminPage() {
                       <td>{reservation.name}</td>
                       <td>{reservation.phone}</td>
                       <td>{reservation.session}</td>
+                      <td>{passLabels[reservation.pass_type] ?? reservation.pass_type}</td>
                       <td>
                         {reservation.level} / {reservation.party}
                       </td>

@@ -9,6 +9,10 @@ function asText(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+function normalizePassType(value: unknown) {
+  return value === 'monthly' ? 'monthly' : 'single';
+}
+
 function isAuthorized(request: Request) {
   const adminPassword = (env as RuntimeEnv).ADMIN_PASSWORD?.trim();
 
@@ -38,7 +42,7 @@ export async function GET(request: Request) {
     const db = getReservationsDb();
     const { results } = await db
       .prepare(
-        `SELECT id, name, phone, session, level, party, status, source, created_at
+        `SELECT id, name, phone, session, level, party, pass_type, status, source, created_at
          FROM reservations
          ORDER BY datetime(created_at) DESC, id DESC
          LIMIT 200`
@@ -59,6 +63,7 @@ export async function POST(request: Request) {
     const session = asText(payload.session);
     const level = asText(payload.level) || '입문자';
     const party = asText(payload.party) || '개인 신청';
+    const passType = normalizePassType(payload.passType);
     const source = asText(payload.source) || 'main';
 
     if (!name || !phone || !session) {
@@ -68,10 +73,10 @@ export async function POST(request: Request) {
     const db = getReservationsDb();
     await db
       .prepare(
-        `INSERT INTO reservations (name, phone, session, level, party, status, source)
-         VALUES (?, ?, ?, ?, ?, 'pending', ?)`
+        `INSERT INTO reservations (name, phone, session, level, party, pass_type, status, source)
+         VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`
       )
-      .bind(name, phone, session, level, party, source)
+      .bind(name, phone, session, level, party, passType, source)
       .run();
 
     return Response.json({ ok: true }, { status: 201 });

@@ -34,7 +34,7 @@ const keyFigures = [
   ['03', '6', '서킷 종목'],
   ['04', '4', '어워즈 부문'],
   ['05', '150', '분 세션'],
-  ['06', '39K', '얼리버드 티켓'],
+  ['06', '2', '패스 선택지'],
 ];
 
 const previewCards = [
@@ -104,9 +104,29 @@ const wellnessGuide = [
 ];
 
 const valueStack = [
-  ['프리미엄 단독 코트 대관 및 서킷 프로그램', '50,000원'],
-  ['올인원 생과일 뷔페 & 리프레시 드링크 바', '15,000원'],
-  ['서킷메이트 어워즈 트로피 & 단체 포토 아카이빙', '20,000원'],
+  ['단발 참여', '이번 주 가능한 회차만 결제'],
+  ['손해 제로', '못 나오는 주에는 결제 0원'],
+  ['루틴 고정', '월간 패스는 회당 단가 절감'],
+  ['유연 운영', '잔여 횟수 이월 또는 스케줄 변경'],
+];
+
+const passOptions = [
+  {
+    value: 'single',
+    eyebrow: 'Single Pass',
+    title: '원데이 온디맨드 패스',
+    price: '39,000원',
+    note: '회차별 결제',
+    desc: '최소 인원이 모이면 호스트가 세션을 오픈하는 1회성 패스입니다. 가능한 날만 신청하고, 못 나오는 주에는 결제 부담이 없습니다.',
+  },
+  {
+    value: 'monthly',
+    eyebrow: 'Optional Monthly Pass',
+    title: '핏 인베스트먼트 먼슬리 패스',
+    price: '월 정기 패스',
+    note: '가격 별도 안내',
+    desc: '매주 꾸준히 참석해 갓생 루틴을 고정하고 싶은 참가자를 위한 선택형 구독 패스입니다. 원데이보다 합리적인 회당 단가와 이월/일정 변경 옵션을 제공합니다.',
+  },
 ];
 
 const operationDetails = [
@@ -143,7 +163,7 @@ const faqs = [
   ],
   [
     '참가비 대비 프로그램 구성이 아깝지 않을까요?',
-    '단 한 장의 티켓으로 프리미엄 실내 코트 대관, 5개 스테이션 전문 코칭, 제철 생과일 뷔페 바 & 전해질 음료 무제한, 4대 어워즈 굿즈, 고화질 프로필 포토 아카이빙까지 총 85,000원 이상의 웰니스 풀패키지 가치를 한 번에 누리실 수 있습니다.',
+    '원데이 온디맨드 패스는 가능한 회차만 결제하는 구조라 못 나오는 주의 손해가 없습니다. 꾸준히 루틴을 만들고 싶다면 회당 단가를 낮춘 선택형 월간 패스로 전환할 수 있습니다.',
   ],
 ];
 
@@ -168,6 +188,7 @@ export default function Home() {
       phone: String(formData.get(isQuickBooking ? 'quickPhone' : 'phone') ?? ''),
       level: String(formData.get(isQuickBooking ? 'quickLevel' : 'level') ?? ''),
       party: String(formData.get(isQuickBooking ? 'quickParty' : 'party') ?? ''),
+      passType: String(formData.get(isQuickBooking ? 'quickPassType' : 'passType') ?? 'single'),
       source: isQuickBooking ? 'quick' : 'booking',
     };
 
@@ -468,26 +489,37 @@ export default function Home() {
       <section className="section value-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">Value Stack</p>
-            <h2>85,000원 이상의 웰니스 풀패키지를 한 장의 티켓으로</h2>
+            <p className="eyebrow">Business Model</p>
+            <h2>필요한 날만 결제하거나, 루틴으로 투자하거나</h2>
           </div>
-          <p>참가비가 단순 입장료가 아니라 코트, 코칭, 리커버리, 어워즈, 사진 아카이빙까지 포함하는 올패스 티켓임을 명확하게 보여줍니다.</p>
+          <p>서킷메이트는 단발 참여의 부담 없는 진입과 꾸준한 참석을 위한 선택형 월간 패스를 함께 운영합니다.</p>
         </div>
         <div className="value-card">
-          <div className="value-list">
-            {valueStack.map(([item, price]) => (
-              <div key={item}>
-                <span>{item}</span>
-                <strong>{price}</strong>
-              </div>
+          <div className="pass-grid">
+            {passOptions.map((pass) => (
+              <article key={pass.value} className={pass.value === 'single' ? 'pass-card featured' : 'pass-card'}>
+                <span>{pass.eyebrow}</span>
+                <h3>{pass.title}</h3>
+                <strong>{pass.price}</strong>
+                <small>{pass.note}</small>
+                <p>{pass.desc}</p>
+              </article>
             ))}
           </div>
           <div className="earlybird-box">
-            <span>원데이 올패스 티켓</span>
-            <strong>39,000원</strong>
-            <p>한정 수량 얼리버드</p>
+            <span>Pricing Logic</span>
+            <strong>0% 손해 구조</strong>
+            <p>원데이는 신청한 회차만 결제하고, 월간 패스는 꾸준한 참가자에게 더 낮은 회당 단가와 유연한 일정 변경을 제공합니다.</p>
+            <div className="value-list compact">
+              {valueStack.map(([item, desc]) => (
+                <div key={item}>
+                  <span>{item}</span>
+                  <strong>{desc}</strong>
+                </div>
+              ))}
+            </div>
             <button type="button" onClick={() => setBookingOpen(true)}>
-              얼리버드 예약
+              패스 선택하고 예약
             </button>
           </div>
         </div>
@@ -568,6 +600,16 @@ export default function Home() {
                 </select>
               </label>
             </div>
+            <label>
+              패스 선택
+              <select name="passType" defaultValue="single">
+                {passOptions.map((pass) => (
+                  <option key={pass.value} value={pass.value}>
+                    {pass.title}
+                  </option>
+                ))}
+              </select>
+            </label>
             <h3>6.3 체크리스트 동의</h3>
             <label className="checkbox-row">
               <input type="checkbox" required />
@@ -579,7 +621,7 @@ export default function Home() {
             </label>
             <div className="payment-box">
               <h3>6.4 결제 및 확인</h3>
-              <p>간편결제 연동 또는 입금 안내 후 예약 완료 화면과 알림톡으로 확정됩니다.</p>
+              <p>원데이 패스는 회차별 결제로, 월간 패스는 잔여 횟수 이월과 일정 변경 옵션 안내 후 확정됩니다.</p>
             </div>
             <button type="submit" disabled={bookingSending}>
               {bookingSending ? '접수 중' : '결제 안내 받기'}
@@ -710,13 +752,23 @@ export default function Home() {
                   </select>
                 </label>
               </div>
+              <label>
+                패스 선택
+                <select name="quickPassType" defaultValue="single">
+                  {passOptions.map((pass) => (
+                    <option key={pass.value} value={pass.value}>
+                      {pass.title}
+                    </option>
+                  ))}
+                </select>
+              </label>
               <label className="checkbox-row">
                 <input type="checkbox" required />
                 준비물과 환불 규정을 확인했습니다.
               </label>
               <div className="sheet-summary">
                 <span>{selectedSession}</span>
-                <strong>39,000원</strong>
+                <strong>원데이 39,000원</strong>
               </div>
               <button type="submit" className="sheet-submit" disabled={bookingSending}>
                 {bookingSending ? '접수 중' : '예약 및 결제 안내 받기'}

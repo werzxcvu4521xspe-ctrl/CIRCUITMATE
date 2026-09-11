@@ -9,6 +9,7 @@ export type Reservation = {
   session: string;
   level: string;
   party: string;
+  pass_type: string;
   status: ReservationStatus;
   source: string;
   created_at: string;
