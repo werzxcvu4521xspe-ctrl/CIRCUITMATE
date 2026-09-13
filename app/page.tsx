@@ -64,7 +64,7 @@ const selectedMoments = [
 ];
 
 const momentImages = ['/circuitmate-live.png', '/circuitmate-concept.png', '/circuitmate-live.png', '/circuitmate-concept.png'];
-const defaultMapSearchUrl = 'https://map.naver.com/p/search/%EC%8B%A4%EB%82%B4%ED%85%8C%EB%8B%88%EC%8A%A4%ED%8C%A1';
+const defaultMapSearchUrl = 'https://naver.me/xOxcjJkf';
 
 type MapConfig = {
   configured: boolean;
@@ -981,7 +981,7 @@ export default function Home() {
             ) : (
               <div className="map-fallback">
                 <span>NAVER MAP</span>
-                <p>네이버 지도에서 위치를 확인하고 길찾기를 열 수 있습니다.</p>
+                <p>네이버 지도 장소 링크로 위치와 길찾기를 확인할 수 있습니다.</p>
               </div>
             )}
             <div className="map-actions">

@@ -11,7 +11,7 @@ type RuntimeEnv = {
 
 const defaultPlaceName = '실내테니스팡';
 const defaultAddress = '상세 주소 확인 중';
-const defaultSearchUrl = 'https://map.naver.com/p/search/%EC%8B%A4%EB%82%B4%ED%85%8C%EB%8B%88%EC%8A%A4%ED%8C%A1';
+const defaultSearchUrl = 'https://naver.me/xOxcjJkf';
 
 function toTrimmedText(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
