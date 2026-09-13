@@ -103,15 +103,6 @@ const wellnessGuide = [
   ['매너 가이드', '팀원 속도에 맞추고, 서로의 기록보다 완주를 먼저 응원합니다.'],
 ];
 
-const colorSystem = [
-  ['Pantone Black 6 C', 'Court Black', '#101820', '헤더, 푸터, 관리자 화면의 기본 배경'],
-  ['Pantone 2627 C', 'Deep Court Purple', '#3C1053', '섹션 배경과 카드의 깊은 보랏빛 면'],
-  ['Pantone 2685 C', 'Royal Violet', '#330072', '코트 그림자, 오버레이, 공간감'],
-  ['Pantone 806 C', 'Neon Magenta', '#FF0090', '바닥 반사광과 하이라이트 라인'],
-  ['Pantone 1788 C', 'Signal Red', '#EE2737', '예약 CTA, 조명 포인트, 핵심 강조'],
-  ['Pantone 663 C', 'Mist White', '#E5DCEA', '본문 텍스트와 밝은 섹션 바탕'],
-];
-
 const brandManifesto = [
   '에너지는 함께할수록 증폭됩니다. 이곳은 서로의 에너지를 빌리고 나눌 수 있는 거대한 에너지의 장입니다.',
   '에너지는 분자의 진동과 같아서, 강한 진동 에너지는 낮은 진동 에너지를 진동하게 만듭니다. 평일의 치열한 일상과 무기력에 처져 있던 나의 에너지가, 감각적인 사운드와 리듬 속에서 함께 뛰고 하이파이브를 나누는 또래들의 강한 진동을 만나 순식간에 뜨겁게 깨어납니다.',
@@ -509,18 +500,6 @@ export default function Home() {
             <span>Space</span>
             <p>실내테니스팡의 보랏빛 코트와 조명은 야간 운동의 선명한 무드를 브랜드 자산으로 만듭니다.</p>
           </article>
-        </div>
-        <div className="palette-panel" aria-label="서킷메이트 Pantone 컬러 시스템">
-          {colorSystem.map(([pantone, name, hex, usage]) => (
-            <article key={pantone}>
-              <span className="swatch" style={{ backgroundColor: hex }} />
-              <div>
-                <strong>{pantone}</strong>
-                <p>{name}</p>
-                <small>{usage}</small>
-              </div>
-            </article>
-          ))}
         </div>
       </section>
 

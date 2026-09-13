@@ -1737,6 +1737,32 @@ select:focus {
   line-height: 0.96;
 }
 
+.admin-palette {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--line);
+  margin-bottom: 18px;
+  padding: clamp(22px, 3vw, 34px);
+}
+
+.admin-section-head {
+  align-items: end;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.admin-section-head h2 {
+  color: var(--ink);
+  font-size: clamp(26px, 3.8vw, 44px);
+  line-height: 1.05;
+  margin: 0;
+}
+
+.admin-palette .palette-panel {
+  margin-top: 0;
+}
+
 .reservation-table-wrap {
   overflow-x: auto;
 }

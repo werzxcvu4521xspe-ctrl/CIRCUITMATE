@@ -30,6 +30,15 @@ const passLabels: Record<string, string> = {
   monthly: '월간',
 };
 
+const colorSystem = [
+  ['Pantone Black 6 C', 'Court Black', '#101820', '헤더, 푸터, 관리자 화면의 기본 배경'],
+  ['Pantone 2627 C', 'Deep Court Purple', '#3C1053', '섹션 배경과 카드의 깊은 보랏빛 면'],
+  ['Pantone 2685 C', 'Royal Violet', '#330072', '코트 그림자, 오버레이, 공간감'],
+  ['Pantone 806 C', 'Neon Magenta', '#FF0090', '바닥 반사광과 하이라이트 라인'],
+  ['Pantone 1788 C', 'Signal Red', '#EE2737', '예약 CTA, 조명 포인트, 핵심 강조'],
+  ['Pantone 663 C', 'Mist White', '#E5DCEA', '본문 텍스트와 밝은 섹션 바탕'],
+];
+
 export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [authorized, setAuthorized] = useState(false);
@@ -163,6 +172,25 @@ export default function AdminPage() {
               </article>
             ))}
           </div>
+
+          <section className="admin-palette" aria-labelledby="admin-palette-title">
+            <div className="admin-section-head">
+              <p className="eyebrow">Brand System</p>
+              <h2 id="admin-palette-title">서킷메이트 컬러 팔레트</h2>
+            </div>
+            <div className="palette-panel" aria-label="서킷메이트 Pantone 컬러 시스템">
+              {colorSystem.map(([pantone, name, hex, usage]) => (
+                <article key={pantone}>
+                  <span className="swatch" style={{ backgroundColor: hex }} />
+                  <div>
+                    <strong>{pantone}</strong>
+                    <p>{name}</p>
+                    <small>{usage}</small>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </section>
 
           <div className="reservation-table-wrap">
             {reservations.length === 0 ? (
