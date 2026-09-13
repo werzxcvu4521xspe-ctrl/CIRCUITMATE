@@ -428,11 +428,6 @@ button:hover {
   margin-bottom: 0;
 }
 
-.highlight-section {
-  background:
-    linear-gradient(180deg, #1d1d1f 0%, #120619 100%);
-}
-
 .metric-grid,
 .horizontal-cards,
 .social-grid,
@@ -495,6 +490,7 @@ button:hover {
 .preview-section,
 .program-section,
 .awards-section,
+.review-section,
 .selected-section,
 .figures-section {
   background:

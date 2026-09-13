@@ -25,10 +25,6 @@ declare global {
   }
 }
 
-const highlights = [
-  ['1인 참가 비율', '83%'],
-];
-
 const badgeLoop = [
   'Night Court',
   'Circuit Training',
@@ -543,21 +539,6 @@ export default function Home() {
             </div>
           </section>
 
-          <section className="section highlight-section" aria-label="세션 하이라이트">
-            <div className="section-heading compact">
-              <p className="eyebrow">1.2 Session Highlight</p>
-              <h2>안전하고 깨끗한 웰니스 스포츠 파티라는 약속</h2>
-            </div>
-            <div className="metric-grid">
-              {highlights.map(([value, label]) => (
-                <article key={label}>
-                  <strong>{label}</strong>
-                  <span>{value}</span>
-                </article>
-              ))}
-            </div>
-          </section>
-
           <section className="section figures-section">
             <div className="section-heading compact">
               <p className="eyebrow">Key Figures</p>
@@ -587,15 +568,6 @@ export default function Home() {
                 <article key={title}>
                   <span>{title}</span>
                   <h3>{desc}</h3>
-                </article>
-              ))}
-            </div>
-            <div className="social-grid" aria-label="참가자 현장 스케치와 포토 리뷰">
-              {socialProof.map(([name, text]) => (
-                <article key={name}>
-                  <div className="photo-tile" />
-                  <strong>{name}</strong>
-                  <p>{text}</p>
                 </article>
               ))}
             </div>
@@ -825,6 +797,25 @@ export default function Home() {
         </div>
       </section>
       )}
+
+      <section className="section review-section" aria-label="참가자 후기">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">Review</p>
+            <h2>안전하고 깨끗한 웰니스 스포츠 파티라는 약속</h2>
+          </div>
+          <p>혼자 와도 자연스럽고, 땀 흘린 뒤에도 건강한 에너지로 연결되는 경험을 후기 흐름으로 보여줍니다.</p>
+        </div>
+        <div className="social-grid" aria-label="참가자 현장 스케치와 포토 리뷰">
+          {socialProof.map(([name, text]) => (
+            <article key={name}>
+              <div className="photo-tile" />
+              <strong>{name}</strong>
+              <p>{text}</p>
+            </article>
+          ))}
+        </div>
+      </section>
 
       {isSectionVisible('booking') && (
       <section id="booking" className="section booking-section">
