@@ -161,7 +161,48 @@ const awards = [
   ['챔피언', '미니게임과 릴레이를 종합해 그날의 팀 퍼포먼스를 축하합니다.'],
 ];
 
-const sessions = ['9월 21일 토 19:00', '9월 28일 토 19:00', '10월 5일 토 19:00'];
+const ticketDates = [
+  {
+    id: '2026-09-19',
+    label: '9월 19일',
+    day: '토',
+    sessions: [
+      { id: '2026-09-19-1800', label: '세션 1', time: '18:00-19:30', booked: 8 },
+      { id: '2026-09-19-2000', label: '세션 2', time: '20:00-21:30', booked: 15 },
+    ],
+  },
+  {
+    id: '2026-09-26',
+    label: '9월 26일',
+    day: '토',
+    sessions: [
+      { id: '2026-09-26-1800', label: '세션 1', time: '18:00-19:30', booked: 6 },
+      { id: '2026-09-26-2000', label: '세션 2', time: '20:00-21:30', booked: 18 },
+    ],
+  },
+  {
+    id: '2026-10-03',
+    label: '10월 3일',
+    day: '토',
+    sessions: [
+      { id: '2026-10-03-1800', label: '세션 1', time: '18:00-19:30', booked: 4 },
+      { id: '2026-10-03-2000', label: '세션 2', time: '20:00-21:30', booked: 10 },
+    ],
+  },
+  {
+    id: '2026-10-10',
+    label: '10월 10일',
+    day: '토',
+    sessions: [
+      { id: '2026-10-10-1800', label: '세션 1', time: '18:00-19:30', booked: 5 },
+      { id: '2026-10-10-2000', label: '세션 2', time: '20:00-21:30', booked: 12 },
+    ],
+  },
+];
+
+const MIN_PARTICIPANTS = 10;
+const MAX_PARTICIPANTS = 20;
+const TICKET_PRICE = '23,000원';
 
 const faqs = [
   [
@@ -188,13 +229,71 @@ const faqs = [
 
 export default function Home() {
   const [selectedStation, setSelectedStation] = useState(stations[0]);
-  const [selectedSession, setSelectedSession] = useState(sessions[0]);
+  const [selectedDate, setSelectedDate] = useState(ticketDates[0].id);
+  const [selectedSessionId, setSelectedSessionId] = useState(ticketDates[0].sessions[0].id);
   const [bookingSent, setBookingSent] = useState(false);
   const [bookingError, setBookingError] = useState('');
   const [bookingSending, setBookingSending] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [spotlight, setSpotlight] = useState({ x: 50, y: 18 });
-  const nextSessionLabel = useMemo(() => selectedSession.split(' ')[0] + ' ' + selectedSession.split(' ')[1], [selectedSession]);
+  const selectedDateInfo = useMemo(
+    () => ticketDates.find((date) => date.id === selectedDate) ?? ticketDates[0],
+    [selectedDate],
+  );
+  const selectedTicketSession = useMemo(
+    () =>
+      selectedDateInfo.sessions.find((session) => session.id === selectedSessionId) ??
+      selectedDateInfo.sessions[0],
+    [selectedDateInfo, selectedSessionId],
+  );
+  const selectedSessionLabel = `${selectedDateInfo.label} ${selectedDateInfo.day} ${selectedTicketSession.label} ${selectedTicketSession.time}`;
+  const remainingSeats = MAX_PARTICIPANTS - selectedTicketSession.booked;
+
+  function getTicketStatus(booked: number) {
+    const remainingToConfirm = Math.max(MIN_PARTICIPANTS - booked, 0);
+    const seatsLeft = Math.max(MAX_PARTICIPANTS - booked, 0);
+    const progress = Math.min(Math.round((booked / MAX_PARTICIPANTS) * 100), 100);
+
+    if (seatsLeft === 0) {
+      return {
+        tone: 'soldout',
+        label: '마감',
+        message: '이번 세션은 마감되었습니다.',
+        progress,
+      };
+    }
+
+    if (seatsLeft <= 5) {
+      return {
+        tone: 'closing',
+        label: '마감 임박',
+        message: `마감까지 ${seatsLeft}자리 남았어요!`,
+        progress,
+      };
+    }
+
+    if (remainingToConfirm > 0 && remainingToConfirm <= 5) {
+      return {
+        tone: 'confirming',
+        label: '확정 임박',
+        message: `진행 확정까지 ${remainingToConfirm}자리 남았어요!`,
+        progress,
+      };
+    }
+
+    return {
+      tone: booked >= MIN_PARTICIPANTS ? 'confirmed' : 'open',
+      label: booked >= MIN_PARTICIPANTS ? '진행 확정' : '티케팅 가능',
+      message: booked >= MIN_PARTICIPANTS ? '진행 확정된 세션입니다.' : '토요일 세션 티케팅이 열려 있습니다.',
+      progress,
+    };
+  }
+
+  function handleDateSelect(dateId: string) {
+    const date = ticketDates.find((item) => item.id === dateId) ?? ticketDates[0];
+    setSelectedDate(date.id);
+    setSelectedSessionId(date.sessions[0].id);
+  }
 
   async function handleBooking(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -202,7 +301,7 @@ export default function Home() {
     const formData = new FormData(form);
     const isQuickBooking = formData.has('quickName');
     const payload = {
-      session: selectedSession,
+      session: selectedSessionLabel,
       name: String(formData.get(isQuickBooking ? 'quickName' : 'name') ?? ''),
       phone: String(formData.get(isQuickBooking ? 'quickPhone' : 'phone') ?? ''),
       level: String(formData.get(isQuickBooking ? 'quickLevel' : 'level') ?? ''),
@@ -592,23 +691,55 @@ export default function Home() {
         <div className="booking-layout">
           <aside className="slot-panel">
             <h3>6.1 일정 선택</h3>
-            <div className="slot-list" role="listbox" aria-label="세션 일정">
-              {sessions.map((session) => (
+            <div className="date-calendar" role="listbox" aria-label="토요일 티켓 날짜">
+              {ticketDates.map((date) => (
                 <button
-                  key={session}
+                  key={date.id}
                   type="button"
-                  className={selectedSession === session ? 'active' : ''}
-                  onClick={() => setSelectedSession(session)}
+                  className={selectedDate === date.id ? 'active' : ''}
+                  onClick={() => handleDateSelect(date.id)}
                 >
-                  <span>{session}</span>
-                  <strong>잔여 12석</strong>
+                  <span>{date.day}</span>
+                  <strong>{date.label.replace('월 ', '/').replace('일', '')}</strong>
                 </button>
               ))}
             </div>
+            <div className="session-list" aria-label="티케팅 가능한 세션">
+              {selectedDateInfo.sessions.map((session) => {
+                const status = getTicketStatus(session.booked);
+
+                return (
+                  <button
+                    key={session.id}
+                    type="button"
+                    className={selectedSessionId === session.id ? 'active' : ''}
+                    onClick={() => setSelectedSessionId(session.id)}
+                  >
+                    <span>
+                      <strong>{session.label}</strong>
+                      {session.time}
+                    </span>
+                    <em>{status.label}</em>
+                  </button>
+                );
+              })}
+            </div>
+            <div className={`ticket-gauge ${getTicketStatus(selectedTicketSession.booked).tone}`}>
+              <div className="gauge-copy">
+                <span>{getTicketStatus(selectedTicketSession.booked).label}</span>
+                <strong>{getTicketStatus(selectedTicketSession.booked).message}</strong>
+              </div>
+              <div className="gauge-track" aria-hidden="true">
+                <span style={{ width: `${getTicketStatus(selectedTicketSession.booked).progress}%` }} />
+              </div>
+              <p>
+                현재 {selectedTicketSession.booked}명 신청 · 최소 {MIN_PARTICIPANTS}명 시작 · 최대 {MAX_PARTICIPANTS}명
+              </p>
+            </div>
             <div className="ticket-box">
               <span>선택 일정</span>
-              <strong>{nextSessionLabel} 세션</strong>
-              <p>원데이 올패스 티켓 23,000원</p>
+              <strong>{selectedSessionLabel}</strong>
+              <p>원데이 올패스 티켓 {TICKET_PRICE} · 잔여 {remainingSeats}석</p>
             </div>
           </aside>
           <form onSubmit={handleBooking} className="form-card">
@@ -757,12 +888,26 @@ export default function Home() {
             <form onSubmit={handleBooking} className="sheet-form">
               <label>
                 일정 선택
-                <select value={selectedSession} onChange={(event) => setSelectedSession(event.target.value)}>
-                  {sessions.map((session) => (
-                    <option key={session} value={session}>
-                      {session} / 잔여 12석
+                <select value={selectedDate} onChange={(event) => handleDateSelect(event.target.value)}>
+                  {ticketDates.map((date) => (
+                    <option key={date.id} value={date.id}>
+                      {date.label} {date.day}
                     </option>
                   ))}
+                </select>
+              </label>
+              <label>
+                세션 선택
+                <select value={selectedSessionId} onChange={(event) => setSelectedSessionId(event.target.value)}>
+                  {selectedDateInfo.sessions.map((session) => {
+                    const seatsLeft = MAX_PARTICIPANTS - session.booked;
+
+                    return (
+                      <option key={session.id} value={session.id}>
+                        {session.label} / {session.time} / 잔여 {seatsLeft}석
+                      </option>
+                    );
+                  })}
                 </select>
               </label>
               <div className="form-row">
@@ -807,8 +952,8 @@ export default function Home() {
                 준비물과 환불 규정을 확인했습니다.
               </label>
               <div className="sheet-summary">
-                <span>{selectedSession}</span>
-                <strong>원데이 티켓 23,000원</strong>
+                <span>{selectedSessionLabel}</span>
+                <strong>원데이 티켓 {TICKET_PRICE}</strong>
               </div>
               <button type="submit" className="sheet-submit" disabled={bookingSending}>
                 {bookingSending ? '접수 중' : '티켓 구매 안내 받기'}
