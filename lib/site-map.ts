@@ -34,7 +34,7 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
     label: '03. Program',
     href: '#program',
     title: '19:00-21:30 상세 타임라인과 종목별 가이드',
-    description: '시간표는 세로형 스텝으로 읽히고, 종목은 탭으로 전환하며 동작 요약과 핵심 큐잉을 빠르게 확인합니다.',
+    description: '',
     visible: true,
     order: 3,
   },

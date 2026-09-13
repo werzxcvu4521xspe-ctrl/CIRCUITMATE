@@ -555,7 +555,6 @@ export default function Home() {
             <p className="eyebrow">{sectionCopy('program').label}</p>
             <h2>{sectionCopy('program').title}</h2>
           </div>
-          <p>{sectionCopy('program').description}</p>
         </div>
         <div className="program-layout">
           <div className="vertical-timeline">
