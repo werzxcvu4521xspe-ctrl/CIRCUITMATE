@@ -1922,6 +1922,107 @@ select:focus {
   gap: 0;
 }
 
+.sheet-picker {
+  border: 0;
+  margin: 0 0 16px;
+  min-width: 0;
+  padding: 0;
+}
+
+.sheet-picker legend {
+  color: #2f1838;
+  font-size: var(--text-sm);
+  font-weight: 820;
+  line-height: 1.35;
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.sheet-date-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.sheet-date-grid button {
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(60, 16, 83, 0.12);
+  box-shadow: none;
+  color: rgba(22, 6, 31, 0.62);
+  display: grid;
+  gap: 5px;
+  min-height: 72px;
+  padding: 12px 8px;
+}
+
+.sheet-date-grid button span {
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.1;
+}
+
+.sheet-date-grid button strong {
+  color: inherit;
+  font-size: clamp(15px, 1.5vw, 18px);
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.sheet-date-grid button.active {
+  background: linear-gradient(180deg, #2d7dff, #1974ff);
+  border-color: rgba(25, 116, 255, 0.62);
+  box-shadow: 0 12px 26px rgba(25, 116, 255, 0.24);
+  color: white;
+}
+
+.sheet-session-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sheet-session-grid button {
+  align-items: start;
+  background: rgba(255, 255, 255, 0.66);
+  border: 1px solid rgba(60, 16, 83, 0.12);
+  box-shadow: none;
+  color: var(--body-dark);
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+  min-height: 86px;
+  padding: 14px;
+  text-align: left;
+}
+
+.sheet-session-grid button span {
+  display: grid;
+  gap: 3px;
+  line-height: 1.28;
+}
+
+.sheet-session-grid button span strong {
+  color: var(--body-dark);
+  font-size: var(--text-base);
+  font-weight: 860;
+}
+
+.sheet-session-grid button em {
+  background: rgba(60, 16, 83, 0.08);
+  color: var(--pantone-7447-c);
+  font-size: var(--text-xs);
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 7px 9px;
+}
+
+.sheet-session-grid button.active {
+  background: rgba(255, 242, 251, 0.92);
+  border-color: rgba(255, 0, 144, 0.38);
+  box-shadow: inset 4px 0 0 var(--purple), 0 12px 26px rgba(255, 0, 144, 0.14);
+}
+
 .sheet-summary {
   align-items: center;
   background: var(--body-dark);
@@ -2065,6 +2166,8 @@ select:focus {
   .slot-list button,
   .date-calendar button,
   .session-list button,
+  .sheet-date-grid button,
+  .sheet-session-grid button,
   .header-cta,
   .primary-button,
   .secondary-button,
@@ -2098,6 +2201,11 @@ select:focus {
   }
 
   .date-calendar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sheet-date-grid,
+  .sheet-session-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

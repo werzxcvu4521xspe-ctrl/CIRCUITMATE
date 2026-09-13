@@ -886,30 +886,46 @@ export default function Home() {
               </button>
             </div>
             <form onSubmit={handleBooking} className="sheet-form">
-              <label>
-                일정 선택
-                <select value={selectedDate} onChange={(event) => handleDateSelect(event.target.value)}>
+              <fieldset className="sheet-picker">
+                <legend>일정 선택</legend>
+                <div className="sheet-date-grid" role="listbox" aria-label="티켓 구매 날짜">
                   {ticketDates.map((date) => (
-                    <option key={date.id} value={date.id}>
-                      {date.label} {date.day}
-                    </option>
+                    <button
+                      key={date.id}
+                      type="button"
+                      className={selectedDate === date.id ? 'active' : ''}
+                      onClick={() => handleDateSelect(date.id)}
+                    >
+                      <span>{date.day}</span>
+                      <strong>{date.label}</strong>
+                    </button>
                   ))}
-                </select>
-              </label>
-              <label>
-                세션 선택
-                <select value={selectedSessionId} onChange={(event) => setSelectedSessionId(event.target.value)}>
+                </div>
+              </fieldset>
+              <fieldset className="sheet-picker">
+                <legend>세션 선택</legend>
+                <div className="sheet-session-grid" role="listbox" aria-label="티켓 구매 세션">
                   {selectedDateInfo.sessions.map((session) => {
                     const seatsLeft = MAX_PARTICIPANTS - session.booked;
+                    const status = getTicketStatus(session.booked);
 
                     return (
-                      <option key={session.id} value={session.id}>
-                        {session.label} / {session.time} / 잔여 {seatsLeft}석
-                      </option>
+                      <button
+                        key={session.id}
+                        type="button"
+                        className={selectedSessionId === session.id ? 'active' : ''}
+                        onClick={() => setSelectedSessionId(session.id)}
+                      >
+                        <span>
+                          <strong>{session.label}</strong>
+                          {session.time}
+                        </span>
+                        <em>{seatsLeft}석 남음 · {status.label}</em>
+                      </button>
                     );
                   })}
-                </select>
-              </label>
+                </div>
+              </fieldset>
               <div className="form-row">
                 <label>
                   이름
