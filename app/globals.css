@@ -628,6 +628,66 @@ button {
     #120619;
 }
 
+.manifesto-panel {
+  background:
+    linear-gradient(135deg, rgba(255, 0, 144, 0.14), rgba(60, 16, 83, 0.62) 48%, rgba(16, 24, 32, 0.82)),
+    rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--line);
+  margin-top: 42px;
+  padding: clamp(26px, 4.8vw, 54px);
+  position: relative;
+}
+
+.manifesto-panel::before {
+  background: var(--red);
+  content: '';
+  height: 4px;
+  left: clamp(26px, 4.8vw, 54px);
+  position: absolute;
+  right: clamp(26px, 4.8vw, 54px);
+  top: 0;
+}
+
+.manifesto-panel > span {
+  color: var(--lime);
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  letter-spacing: 0;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+}
+
+.manifesto-panel h3 {
+  color: var(--ink);
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.18;
+  margin-bottom: 26px;
+  max-width: 780px;
+  text-wrap: balance;
+}
+
+.manifesto-panel div {
+  display: grid;
+  gap: 16px;
+  max-width: 980px;
+}
+
+.manifesto-panel p {
+  color: rgba(248, 243, 255, 0.76);
+  font-size: clamp(17px, 1.45vw, 21px);
+  font-weight: 520;
+  line-height: 1.86;
+  margin: 0;
+  word-break: keep-all;
+}
+
+.manifesto-panel p:first-child,
+.manifesto-panel p:last-child {
+  color: var(--ink);
+  font-weight: 760;
+}
+
 .story-panel {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 40px;
