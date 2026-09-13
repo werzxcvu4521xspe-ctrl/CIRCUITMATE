@@ -824,8 +824,14 @@ export default function Home() {
               환불 규정과 세션 운영 정책에 동의합니다.
             </label>
             <div className="payment-box">
-              <h3>6.4 결제 및 확인</h3>
-              <p>원데이 패스는 티켓 1매 23,000원 결제로 확정되며, 월간 패스는 잔여 횟수 이월과 일정 변경 옵션 안내 후 확정됩니다.</p>
+              <div>
+                <h3>6.4 결제 및 확인</h3>
+                <p>원데이 패스는 티켓 1매 23,000원 결제로 확정되며, 월간 패스는 잔여 횟수 이월과 일정 변경 옵션 안내 후 확정됩니다.</p>
+              </div>
+              <div className="payment-qr" aria-label="서킷메이트 티켓 결제 QR 코드">
+                <img src="/payment-qr.png" alt="서킷메이트 티켓 결제 QR 코드" />
+                <span>QR로 티켓 결제하기</span>
+              </div>
             </div>
             <button type="submit" disabled={bookingSending}>
               {bookingSending ? '접수 중' : '구매 안내 받기'}
@@ -1005,9 +1011,15 @@ export default function Home() {
                 <input type="checkbox" required />
                 준비물과 환불 규정을 확인했습니다.
               </label>
-              <div className="sheet-summary">
-                <span>{selectedSessionLabel}</span>
-                <strong>원데이 티켓 {TICKET_PRICE}</strong>
+              <div className="sheet-payment">
+                <div className="sheet-summary">
+                  <span>{selectedSessionLabel}</span>
+                  <strong>원데이 티켓 {TICKET_PRICE}</strong>
+                </div>
+                <div className="payment-qr compact" aria-label="서킷메이트 티켓 결제 QR 코드">
+                  <img src="/payment-qr.png" alt="서킷메이트 티켓 결제 QR 코드" />
+                  <span>QR 결제</span>
+                </div>
               </div>
               <button type="submit" className="sheet-submit" disabled={bookingSending}>
                 {bookingSending ? '접수 중' : '티켓 구매 안내 받기'}
