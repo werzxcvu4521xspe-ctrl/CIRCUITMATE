@@ -9,9 +9,11 @@ type RuntimeEnv = {
   NAVER_MAP_SEARCH_URL?: string;
 };
 
-const defaultPlaceName = '실내테니스팡';
-const defaultAddress = '상세 주소 확인 중';
+const defaultPlaceName = '플랩 스타디움 가산 벽산디지털밸리 6차';
+const defaultAddress = '서울시 금천구 가산디지털1로 219';
 const defaultSearchUrl = 'https://naver.me/xOxcjJkf';
+const defaultLat = 37.47936;
+const defaultLng = 126.8822;
 
 function toTrimmedText(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
@@ -26,8 +28,8 @@ function toCoordinate(value: unknown) {
 export async function GET() {
   const runtimeEnv = env as RuntimeEnv;
   const keyId = toTrimmedText(runtimeEnv.NAVER_MAPS_NCP_KEY_ID);
-  const lat = toCoordinate(runtimeEnv.NAVER_MAP_LAT);
-  const lng = toCoordinate(runtimeEnv.NAVER_MAP_LNG);
+  const lat = toCoordinate(runtimeEnv.NAVER_MAP_LAT) ?? defaultLat;
+  const lng = toCoordinate(runtimeEnv.NAVER_MAP_LNG) ?? defaultLng;
 
   return Response.json({
     configured: Boolean(keyId && lat !== null && lng !== null),

@@ -64,6 +64,8 @@ const selectedMoments = [
 ];
 
 const momentImages = ['/circuitmate-live.png', '/circuitmate-concept.png', '/circuitmate-live.png', '/circuitmate-concept.png'];
+const defaultMapPlaceName = '플랩 스타디움 가산 벽산디지털밸리 6차';
+const defaultMapAddress = '서울시 금천구 가산디지털1로 219';
 const defaultMapSearchUrl = 'https://naver.me/xOxcjJkf';
 
 type MapConfig = {
@@ -389,8 +391,8 @@ export default function Home() {
             keyId: '',
             lat: null,
             lng: null,
-            placeName: '실내테니스팡',
-            address: '상세 주소 확인 중',
+            placeName: defaultMapPlaceName,
+            address: defaultMapAddress,
             searchUrl: defaultMapSearchUrl,
           });
         }
@@ -1048,14 +1050,18 @@ export default function Home() {
               <div ref={mapContainerRef} className="naver-map-canvas" aria-label="네이버 지도" />
             ) : (
               <div className="map-fallback">
+                <div className="map-pin" aria-hidden="true" />
                 <span>NAVER MAP</span>
-                <p>네이버 지도 장소 링크로 위치와 길찾기를 확인할 수 있습니다.</p>
+                <p>API 키 연결 전에는 네이버 지도 장소 링크로 위치를 확인할 수 있습니다.</p>
+                <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
+                  네이버 지도에서 보기
+                </a>
               </div>
             )}
             <div className="map-actions">
               <p>
-                <strong>{mapConfig?.placeName ?? '실내테니스팡'}</strong>
-                <span>{mapConfig?.address ?? '상세 주소 확인 중'}</span>
+                <strong>{mapConfig?.placeName ?? defaultMapPlaceName}</strong>
+                <span>{mapConfig?.address ?? defaultMapAddress}</span>
               </p>
               <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
                 네이버 지도 열기

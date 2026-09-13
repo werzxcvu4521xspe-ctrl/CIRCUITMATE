@@ -1580,10 +1580,11 @@ textarea {
 
 .map-fallback {
   background:
-    linear-gradient(90deg, rgba(255, 255, 255, 0.48) 2px, transparent 2px),
-    linear-gradient(0deg, rgba(255, 255, 255, 0.48) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.32) 2px, transparent 2px),
+    linear-gradient(0deg, rgba(255, 255, 255, 0.32) 2px, transparent 2px),
+    radial-gradient(circle at 50% 48%, rgba(238, 39, 55, 0.2), transparent 12rem),
     var(--court);
-  background-size: 28% 34%;
+  background-size: 28% 34%, 28% 34%, auto, auto;
   color: white;
   display: flex;
   flex-direction: column;
@@ -1596,12 +1597,32 @@ textarea {
   text-align: center;
 }
 
+.map-pin {
+  background: var(--pantone-1788-c);
+  border: 5px solid rgba(255, 255, 255, 0.9);
+  border-radius: 999px 999px 999px 0;
+  box-shadow: 0 18px 42px rgba(238, 39, 55, 0.36);
+  height: 42px;
+  transform: rotate(-45deg);
+  width: 42px;
+}
+
 .map-fallback p {
   color: rgba(255, 255, 255, 0.76);
   font-size: var(--text-sm);
   font-weight: 650;
   line-height: 1.45;
   margin: 0;
+}
+
+.map-fallback a {
+  background: rgba(16, 24, 32, 0.88);
+  border-radius: 999px;
+  color: white;
+  font-size: var(--text-sm);
+  font-weight: 850;
+  margin-top: 8px;
+  padding: 11px 16px;
 }
 
 .map-actions {
