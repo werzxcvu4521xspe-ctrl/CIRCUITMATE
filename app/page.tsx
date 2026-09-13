@@ -59,24 +59,28 @@ const stations = [
   {
     key: 'lunge',
     title: '런지 트위스트',
+    video: '/station-lunge.m4v',
     cue: '무릎은 발끝 방향, 회전은 흉추에서 시작',
     effect: '하체 안정성과 회전 코어를 동시에 깨웁니다.',
   },
   {
     key: 'burpee',
     title: '버피 점프',
+    video: '/station-burpee.m4v',
     cue: '착지는 부드럽게, 점프 전 복부 긴장 유지',
     effect: '짧은 시간 심박과 전신 파워를 끌어올립니다.',
   },
   {
     key: 'press',
     title: '덤벨 푸쉬 프레스',
+    video: '/station-press.m4v',
     cue: '다리 반동을 어깨까지 연결하고 허리는 꺾지 않기',
     effect: '상체 추진력과 코어 연결성을 강화합니다.',
   },
   {
     key: 'plank',
     title: '플랭크 볼 탭',
+    video: '/station-plank.m4v',
     cue: '골반 흔들림을 줄이고 손끝은 가볍게 터치',
     effect: '밸런스와 코어 지구력을 선명하게 만듭니다.',
   },
@@ -585,10 +589,17 @@ export default function Home() {
               ))}
             </div>
             <article className="station-detail">
-              <div className="loop-gif" aria-hidden="true">
-                <span />
-                <span />
-                <span />
+              <div className="station-video-frame">
+                <video
+                  key={selectedStation.video}
+                  src={selectedStation.video}
+                  aria-label={`${selectedStation.title} 동작 영상`}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  preload="metadata"
+                />
               </div>
               <p>동작 요약</p>
               <h3>{selectedStation.title}</h3>
