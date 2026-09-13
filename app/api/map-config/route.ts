@@ -7,6 +7,8 @@ type RuntimeEnv = {
   NAVER_MAP_PLACE_NAME?: string;
   NAVER_MAP_ADDRESS?: string;
   NAVER_MAP_SEARCH_URL?: string;
+  NAVER_MAP_CUSTOM_STYLE_ID?: string;
+  NAVER_MAP_CUSTOM_STYLE_VERSION?: string;
 };
 
 const defaultPlaceName = '플랩 스타디움 가산 벽산디지털밸리 6차';
@@ -39,5 +41,7 @@ export async function GET() {
     placeName: toTrimmedText(runtimeEnv.NAVER_MAP_PLACE_NAME) || defaultPlaceName,
     address: toTrimmedText(runtimeEnv.NAVER_MAP_ADDRESS) || defaultAddress,
     searchUrl: toTrimmedText(runtimeEnv.NAVER_MAP_SEARCH_URL) || defaultSearchUrl,
+    customStyleId: toTrimmedText(runtimeEnv.NAVER_MAP_CUSTOM_STYLE_ID),
+    customStyleVersion: toTrimmedText(runtimeEnv.NAVER_MAP_CUSTOM_STYLE_VERSION),
   });
 }

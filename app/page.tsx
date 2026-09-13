@@ -16,6 +16,8 @@ declare global {
             zoomControl?: boolean;
             scaleControl?: boolean;
             mapDataControl?: boolean;
+            gl?: boolean;
+            customStyleId?: string;
           },
         ) => unknown;
         Marker: new (options: { position: unknown; map: unknown; title?: string }) => unknown;
@@ -76,6 +78,8 @@ type MapConfig = {
   placeName: string;
   address: string;
   searchUrl: string;
+  customStyleId: string;
+  customStyleVersion: string;
 };
 
 type FaqItem = {
@@ -394,6 +398,8 @@ export default function Home() {
             placeName: defaultMapPlaceName,
             address: defaultMapAddress,
             searchUrl: defaultMapSearchUrl,
+            customStyleId: '',
+            customStyleVersion: '',
           });
         }
       }
@@ -423,6 +429,12 @@ export default function Home() {
         zoomControl: true,
         scaleControl: false,
         mapDataControl: false,
+        ...(mapConfig.customStyleId
+          ? {
+              gl: true,
+              customStyleId: mapConfig.customStyleId,
+            }
+          : {}),
       });
 
       new window.naver.maps.Marker({
@@ -446,7 +458,16 @@ export default function Home() {
     const script = document.createElement('script');
     script.id = 'naver-map-sdk';
     script.async = true;
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(mapConfig.keyId)}&callback=initCircuitmateNaverMap`;
+    const scriptParams = new URLSearchParams({
+      ncpKeyId: mapConfig.keyId,
+      callback: 'initCircuitmateNaverMap',
+    });
+
+    if (mapConfig.customStyleId) {
+      scriptParams.set('submodules', 'gl');
+    }
+
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?${scriptParams.toString()}`;
     script.onerror = () => setMapError('네이버 지도를 불러오지 못했습니다.');
     document.head.appendChild(script);
   }, [mapConfig]);
