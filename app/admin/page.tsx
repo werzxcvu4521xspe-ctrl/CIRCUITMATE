@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useMemo, useState } from 'react';
+import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection } from '../../lib/site-map';
 
 type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
 
@@ -43,8 +44,10 @@ export default function AdminPage() {
   const [password, setPassword] = useState('');
   const [authorized, setAuthorized] = useState(false);
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [siteMap, setSiteMap] = useState<SiteSection[]>(DEFAULT_SITE_MAP);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+  const [siteMapMessage, setSiteMapMessage] = useState('');
 
   const stats = useMemo(
     () =>
@@ -59,22 +62,66 @@ export default function AdminPage() {
   async function loadReservations(nextPassword = password) {
     setLoading(true);
     setMessage('');
+    setSiteMapMessage('');
 
     try {
-      const response = await fetch('/api/reservations', {
-        headers: { 'x-admin-password': nextPassword },
-      });
-      const data = (await response.json()) as { reservations?: Reservation[]; error?: string };
+      const [reservationsResponse, siteMapResponse] = await Promise.all([
+        fetch('/api/reservations', {
+          headers: { 'x-admin-password': nextPassword },
+        }),
+        fetch('/api/site-map'),
+      ]);
+      const data = (await reservationsResponse.json()) as { reservations?: Reservation[]; error?: string };
+      const siteMapData = (await siteMapResponse.json()) as { sections?: SiteSection[]; error?: string };
 
-      if (!response.ok) {
+      if (!reservationsResponse.ok) {
         throw new Error(data.error ?? '예약자 목록을 불러오지 못했습니다.');
       }
 
+      if (!siteMapResponse.ok) {
+        throw new Error(siteMapData.error ?? '사이트맵 설정을 불러오지 못했습니다.');
+      }
+
       setReservations(data.reservations ?? []);
+      setSiteMap(normalizeSiteMap(siteMapData.sections));
       setAuthorized(true);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '예약자 목록을 불러오지 못했습니다.');
       setAuthorized(false);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function updateSiteSection(id: string, field: 'label' | 'title' | 'description' | 'visible', value: string | boolean) {
+    setSiteMap((current) =>
+      current.map((section) => (section.id === id ? { ...section, [field]: value } : section))
+    );
+  }
+
+  async function saveSiteMap() {
+    setLoading(true);
+    setSiteMapMessage('');
+
+    try {
+      const response = await fetch('/api/site-map', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': password,
+        },
+        body: JSON.stringify({ sections: siteMap }),
+      });
+      const data = (await response.json()) as { sections?: SiteSection[]; error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? '사이트맵 설정을 저장하지 못했습니다.');
+      }
+
+      setSiteMap(normalizeSiteMap(data.sections));
+      setSiteMapMessage('사이트맵 설정이 저장되었습니다.');
+    } catch (error) {
+      setSiteMapMessage(error instanceof Error ? error.message : '사이트맵 설정을 저장하지 못했습니다.');
     } finally {
       setLoading(false);
     }
@@ -172,6 +219,58 @@ export default function AdminPage() {
               </article>
             ))}
           </div>
+
+          <section className="admin-sitemap" aria-labelledby="admin-sitemap-title">
+            <div className="admin-section-head">
+              <div>
+                <p className="eyebrow">Sitemap Editor</p>
+                <h2 id="admin-sitemap-title">사이트맵 관리</h2>
+              </div>
+              <button type="button" onClick={saveSiteMap} disabled={loading}>
+                {loading ? '저장 중' : '변경 저장'}
+              </button>
+            </div>
+            <div className="sitemap-editor">
+              {siteMap.map((section) => (
+                <article key={section.id} className={section.visible ? 'is-visible' : 'is-hidden'}>
+                  <div className="sitemap-card-head">
+                    <strong>{section.href}</strong>
+                    <label className="switch-row">
+                      <input
+                        type="checkbox"
+                        checked={section.visible}
+                        onChange={(event) => updateSiteSection(section.id, 'visible', event.target.checked)}
+                      />
+                      <span>{section.visible ? '노출' : '숨김'}</span>
+                    </label>
+                  </div>
+                  <label>
+                    메뉴명
+                    <input
+                      value={section.label}
+                      onChange={(event) => updateSiteSection(section.id, 'label', event.target.value)}
+                    />
+                  </label>
+                  <label>
+                    섹션 제목
+                    <input
+                      value={section.title}
+                      onChange={(event) => updateSiteSection(section.id, 'title', event.target.value)}
+                    />
+                  </label>
+                  <label>
+                    섹션 설명
+                    <textarea
+                      value={section.description}
+                      onChange={(event) => updateSiteSection(section.id, 'description', event.target.value)}
+                      rows={3}
+                    />
+                  </label>
+                </article>
+              ))}
+            </div>
+            {siteMapMessage && <p className="success-message">{siteMapMessage}</p>}
+          </section>
 
           <section className="admin-palette" aria-labelledby="admin-palette-title">
             <div className="admin-section-head">

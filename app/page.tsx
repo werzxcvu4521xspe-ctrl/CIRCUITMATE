@@ -1,16 +1,7 @@
 'use client';
 
-import { CSSProperties, FormEvent, MouseEvent, useMemo, useState } from 'react';
-
-const navItems = [
-  ['01. Home', '#home'],
-  ['02. Brand', '#brand'],
-  ['03. Program', '#program'],
-  ['04. Recovery', '#recovery'],
-  ['05. Awards', '#awards'],
-  ['06. Booking', '#booking'],
-  ['07. Location & FAQ', '#location'],
-];
+import { CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
+import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection, type SiteSectionId } from '../lib/site-map';
 
 const highlights = [
   ['1인 참가 비율', '83%'],
@@ -217,6 +208,7 @@ const faqs = [
 ];
 
 export default function Home() {
+  const [siteMap, setSiteMap] = useState<SiteSection[]>(DEFAULT_SITE_MAP);
   const [selectedStation, setSelectedStation] = useState(stations[0]);
   const [selectedDate, setSelectedDate] = useState(ticketDates[0].id);
   const [selectedSessionId, setSelectedSessionId] = useState(ticketDates[0].sessions[0].id);
@@ -237,6 +229,45 @@ export default function Home() {
   );
   const selectedSessionLabel = `${selectedDateInfo.label} ${selectedDateInfo.day} ${selectedTicketSession.label} ${selectedTicketSession.time}`;
   const remainingSeats = MAX_PARTICIPANTS - selectedTicketSession.booked;
+  const visibleSections = useMemo(
+    () => new Set(siteMap.filter((section) => section.visible).map((section) => section.id)),
+    [siteMap],
+  );
+  const navItems = useMemo(
+    () => siteMap.filter((section) => section.visible).map((section) => [section.label, section.href] as const),
+    [siteMap],
+  );
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadSiteMap() {
+      try {
+        const response = await fetch('/api/site-map');
+        const data = (await response.json()) as { sections?: SiteSection[] };
+
+        if (mounted && response.ok) {
+          setSiteMap(normalizeSiteMap(data.sections));
+        }
+      } catch {
+        setSiteMap(DEFAULT_SITE_MAP);
+      }
+    }
+
+    void loadSiteMap();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  function isSectionVisible(id: SiteSectionId) {
+    return visibleSections.has(id);
+  }
+
+  function sectionCopy(id: SiteSectionId) {
+    return siteMap.find((section) => section.id === id) ?? DEFAULT_SITE_MAP.find((section) => section.id === id)!;
+  }
 
   function getTicketStatus(booked: number) {
     const remainingToConfirm = Math.max(MIN_PARTICIPANTS - booked, 0);
@@ -355,161 +386,176 @@ export default function Home() {
             </a>
           ))}
         </nav>
-        <button className="header-cta" type="button" onClick={() => setBookingOpen(true)}>
-          티켓 구매
-        </button>
+        {isSectionVisible('booking') && (
+          <button className="header-cta" type="button" onClick={() => setBookingOpen(true)}>
+            티켓 구매
+          </button>
+        )}
       </header>
 
-      <section className="hero section-block">
-        <img src="/circuitmate-live.png" alt="보랏빛 실내 코트에서 진행 중인 서킷메이트 현장" className="hero-image" />
-        <div className="hero-overlay" />
-        <div className="hero-content">
-          <p className="eyebrow">01. Home</p>
-          <h1>CIRCUITMATE</h1>
-          <p className="hero-copy">땀 흘린 뒤 찾아오는 가장 건강한 교류</p>
-          <div className="hero-actions">
-            <button className="primary-button" type="button" onClick={() => setBookingOpen(true)}>
-              티켓 구매하기
-            </button>
-            <a className="secondary-button" href="#program">
-              프로그램 미리보기
-            </a>
-          </div>
-        </div>
-      </section>
-
-      <section className="ticker-section" aria-label="서킷메이트 핵심 무드">
-        <div className="ticker-track">
-          {[...badgeLoop, ...badgeLoop].map((item, index) => (
-            <span key={`${item}-${index}`}>{item}</span>
-          ))}
-        </div>
-      </section>
-
-      <button className="floating-cta" type="button" onClick={() => setBookingOpen(true)}>
-        티켓 구매하기
-      </button>
-
-      <section className="section highlight-section" aria-label="세션 하이라이트">
-        <div className="section-heading compact">
-          <p className="eyebrow">1.2 Session Highlight</p>
-          <h2>안전하고 깨끗한 웰니스 스포츠 파티라는 약속</h2>
-        </div>
-        <div className="metric-grid">
-          {highlights.map(([value, label]) => (
-            <article key={label}>
-              <strong>{label}</strong>
-              <span>{value}</span>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section figures-section">
-        <div className="section-heading compact">
-          <p className="eyebrow">Key Figures</p>
-          <h2>한 번의 밤을 숫자로 읽으면, 운영 흐름이 더 선명해집니다.</h2>
-        </div>
-        <div className="figures-grid">
-          {keyFigures.map(([index, value, label]) => (
-            <article key={label}>
-              <span>{index}</span>
-              <strong>{value}</strong>
-              <p>{label}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section preview-section">
-        <div className="section-heading split">
-          <div>
-            <p className="eyebrow">1.3 Program Preview</p>
-            <h2>웜업부터 메인 서킷, 팀 릴레이까지 가로로 훑어보기</h2>
-          </div>
-          <p>각 단계는 운동 설명, 핵심 큐잉, 팀 인터랙션이 자연스럽게 이어지도록 구성했습니다.</p>
-        </div>
-        <div className="horizontal-cards">
-          {previewCards.map(([title, desc]) => (
-            <article key={title}>
-              <span>{title}</span>
-              <h3>{desc}</h3>
-            </article>
-          ))}
-        </div>
-        <div className="social-grid" aria-label="참가자 현장 스케치와 포토 리뷰">
-          {socialProof.map(([name, text]) => (
-            <article key={name}>
-              <div className="photo-tile" />
-              <strong>{name}</strong>
-              <p>{text}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="section selected-section">
-        <div className="section-heading split">
-          <div>
-            <p className="eyebrow">Selected Moments</p>
-            <h2>프레임 단위로 기억되는 네 개의 장면</h2>
-          </div>
-          <p>레퍼런스의 프로젝트 카드 흐름처럼, 세션을 하나의 스포츠 필름 시퀀스로 보여줍니다.</p>
-        </div>
-        <div className="moment-grid">
-          {selectedMoments.map(([title, desc], index) => (
-            <article key={title} className="moment-card">
-              <div className="moment-media">
-                <img src={momentImages[index]} alt="" />
-                <span>{String(index + 1).padStart(2, '0')}</span>
+      {isSectionVisible('home') && (
+        <>
+          <section className="hero section-block">
+            <img src="/circuitmate-live.png" alt="보랏빛 실내 코트에서 진행 중인 서킷메이트 현장" className="hero-image" />
+            <div className="hero-overlay" />
+            <div className="hero-content">
+              <p className="eyebrow">{sectionCopy('home').label}</p>
+              <h1>{sectionCopy('home').title}</h1>
+              <p className="hero-copy">{sectionCopy('home').description}</p>
+              <div className="hero-actions">
+                {isSectionVisible('booking') && (
+                  <button className="primary-button" type="button" onClick={() => setBookingOpen(true)}>
+                    티켓 구매하기
+                  </button>
+                )}
+                {isSectionVisible('program') && (
+                  <a className="secondary-button" href="#program">
+                    프로그램 미리보기
+                  </a>
+                )}
               </div>
-              <h3>{title}</h3>
-              <p>{desc}</p>
+            </div>
+          </section>
+
+          <section className="ticker-section" aria-label="서킷메이트 핵심 무드">
+            <div className="ticker-track">
+              {[...badgeLoop, ...badgeLoop].map((item, index) => (
+                <span key={`${item}-${index}`}>{item}</span>
+              ))}
+            </div>
+          </section>
+
+          <section className="section highlight-section" aria-label="세션 하이라이트">
+            <div className="section-heading compact">
+              <p className="eyebrow">1.2 Session Highlight</p>
+              <h2>안전하고 깨끗한 웰니스 스포츠 파티라는 약속</h2>
+            </div>
+            <div className="metric-grid">
+              {highlights.map(([value, label]) => (
+                <article key={label}>
+                  <strong>{label}</strong>
+                  <span>{value}</span>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="section figures-section">
+            <div className="section-heading compact">
+              <p className="eyebrow">Key Figures</p>
+              <h2>한 번의 밤을 숫자로 읽으면, 운영 흐름이 더 선명해집니다.</h2>
+            </div>
+            <div className="figures-grid">
+              {keyFigures.map(([index, value, label]) => (
+                <article key={label}>
+                  <span>{index}</span>
+                  <strong>{value}</strong>
+                  <p>{label}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="section preview-section">
+            <div className="section-heading split">
+              <div>
+                <p className="eyebrow">1.3 Program Preview</p>
+                <h2>웜업부터 메인 서킷, 팀 릴레이까지 가로로 훑어보기</h2>
+              </div>
+              <p>각 단계는 운동 설명, 핵심 큐잉, 팀 인터랙션이 자연스럽게 이어지도록 구성했습니다.</p>
+            </div>
+            <div className="horizontal-cards">
+              {previewCards.map(([title, desc]) => (
+                <article key={title}>
+                  <span>{title}</span>
+                  <h3>{desc}</h3>
+                </article>
+              ))}
+            </div>
+            <div className="social-grid" aria-label="참가자 현장 스케치와 포토 리뷰">
+              {socialProof.map(([name, text]) => (
+                <article key={name}>
+                  <div className="photo-tile" />
+                  <strong>{name}</strong>
+                  <p>{text}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className="section selected-section">
+            <div className="section-heading split">
+              <div>
+                <p className="eyebrow">Selected Moments</p>
+                <h2>프레임 단위로 기억되는 네 개의 장면</h2>
+              </div>
+              <p>레퍼런스의 프로젝트 카드 흐름처럼, 세션을 하나의 스포츠 필름 시퀀스로 보여줍니다.</p>
+            </div>
+            <div className="moment-grid">
+              {selectedMoments.map(([title, desc], index) => (
+                <article key={title} className="moment-card">
+                  <div className="moment-media">
+                    <img src={momentImages[index]} alt="" />
+                    <span>{String(index + 1).padStart(2, '0')}</span>
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{desc}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
+
+      {isSectionVisible('booking') && (
+        <button className="floating-cta" type="button" onClick={() => setBookingOpen(true)}>
+          티켓 구매하기
+        </button>
+      )}
+
+      {isSectionVisible('brand') && (
+        <section id="brand" className="section brand-section">
+          <div className="section-heading split">
+            <div>
+              <p className="eyebrow">{sectionCopy('brand').label}</p>
+              <h2>{sectionCopy('brand').title}</h2>
+            </div>
+            <p>{sectionCopy('brand').description}</p>
+          </div>
+          <article className="manifesto-panel" aria-label="서킷메이트 핵심 철학 및 브랜드 선언문">
+            <span>Brand Manifesto</span>
+            <h3>서킷메이트의 핵심 철학 및 브랜드 선언문</h3>
+            <div>
+              {brandManifesto.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+          </article>
+          <div className="story-panel">
+            <article>
+              <span>Mission</span>
+              <p>건강한 몰입, 절제된 분위기, 회복의 시간을 통해 일회성 파티보다 오래 남는 연결을 만듭니다.</p>
             </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="brand" className="section brand-section">
-        <div className="section-heading split">
-          <div>
-            <p className="eyebrow">02. Brand</p>
-            <h2>건강한 땀과 진정성 있는 교류를 만드는 나이트 웰니스 커뮤니티</h2>
+            <article>
+              <span>Community</span>
+              <p>개인의 기록보다 팀의 완주와 응원을 우선하는 웰니스 소셜링 규칙을 운영합니다.</p>
+            </article>
+            <article>
+              <span>Space</span>
+              <p>실내테니스팡의 보랏빛 코트와 조명은 야간 운동의 선명한 무드를 브랜드 자산으로 만듭니다.</p>
+            </article>
           </div>
-          <p>서킷메이트는 운동을 매개로 낯선 사람들이 서로의 에너지를 안전하게 나누는 새로운 스포츠 소셜 문화를 지향합니다.</p>
-        </div>
-        <article className="manifesto-panel" aria-label="서킷메이트 핵심 철학 및 브랜드 선언문">
-          <span>Brand Manifesto</span>
-          <h3>서킷메이트의 핵심 철학 및 브랜드 선언문</h3>
-          <div>
-            {brandManifesto.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </div>
-        </article>
-        <div className="story-panel">
-          <article>
-            <span>Mission</span>
-            <p>건강한 몰입, 절제된 분위기, 회복의 시간을 통해 일회성 파티보다 오래 남는 연결을 만듭니다.</p>
-          </article>
-          <article>
-            <span>Community</span>
-            <p>개인의 기록보다 팀의 완주와 응원을 우선하는 웰니스 소셜링 규칙을 운영합니다.</p>
-          </article>
-          <article>
-            <span>Space</span>
-            <p>실내테니스팡의 보랏빛 코트와 조명은 야간 운동의 선명한 무드를 브랜드 자산으로 만듭니다.</p>
-          </article>
-        </div>
-      </section>
+        </section>
+      )}
 
+      {isSectionVisible('program') && (
       <section id="program" className="section program-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">03. Program</p>
-            <h2>19:00-21:30 상세 타임라인과 종목별 가이드</h2>
+            <p className="eyebrow">{sectionCopy('program').label}</p>
+            <h2>{sectionCopy('program').title}</h2>
           </div>
-          <p>시간표는 세로형 스텝으로 읽히고, 종목은 탭으로 전환하며 동작 요약과 핵심 큐잉을 빠르게 확인합니다.</p>
+          <p>{sectionCopy('program').description}</p>
         </div>
         <div className="program-layout">
           <div className="vertical-timeline">
@@ -566,14 +612,16 @@ export default function Home() {
           <p>팀원 간 사인을 맞추며 코트 라인을 터치하고, 마지막 릴레이에서 자연스럽게 응원과 사진이 만들어집니다.</p>
         </div>
       </section>
+      )}
 
+      {isSectionVisible('recovery') && (
       <section id="recovery" className="section recovery-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">04. Recovery</p>
-            <h2>리커버리 테이블과 운동 후 회복 가이드</h2>
+            <p className="eyebrow">{sectionCopy('recovery').label}</p>
+            <h2>{sectionCopy('recovery').title}</h2>
           </div>
-          <p>카드형 메뉴 소개와 텍스트 기반 웰니스 가이드로 운동 뒤 필요한 선택을 명확하게 보여줍니다.</p>
+          <p>{sectionCopy('recovery').description}</p>
         </div>
         <div className="recovery-grid">
           {recoveryItems.map(([tag, title, desc]) => (
@@ -593,14 +641,16 @@ export default function Home() {
           ))}
         </div>
       </section>
+      )}
 
-      <section className="section value-section">
+      {isSectionVisible('pricing') && (
+      <section id="pricing" className="section value-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">Business Model</p>
-            <h2>필요한 날만 결제하거나, 루틴으로 투자하거나</h2>
+            <p className="eyebrow">{sectionCopy('pricing').label}</p>
+            <h2>{sectionCopy('pricing').title}</h2>
           </div>
-          <p>서킷메이트는 단발 참여의 부담 없는 진입과 꾸준한 참석을 위한 선택형 월간 패스를 함께 운영합니다.</p>
+          <p>{sectionCopy('pricing').description}</p>
         </div>
         <div className="value-card">
           <div className="pass-grid">
@@ -632,11 +682,13 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
+      {isSectionVisible('awards') && (
       <section id="awards" className="section awards-section">
         <div className="section-heading">
-          <p className="eyebrow">05. Awards</p>
-          <h2>시상식의 취지와 유쾌한 분위기를 전하는 네 가지 부문</h2>
+          <p className="eyebrow">{sectionCopy('awards').label}</p>
+          <h2>{sectionCopy('awards').title}</h2>
         </div>
         <div className="awards-slider" aria-label="서킷메이트 어워즈 부문">
           {awards.map(([title, desc]) => (
@@ -648,14 +700,16 @@ export default function Home() {
           ))}
         </div>
       </section>
+      )}
 
+      {isSectionVisible('booking') && (
       <section id="booking" className="section booking-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">06. Booking</p>
-            <h2>일정 선택부터 티켓 구매까지 한 번에</h2>
+            <p className="eyebrow">{sectionCopy('booking').label}</p>
+            <h2>{sectionCopy('booking').title}</h2>
           </div>
-          <p>날짜/시간 선택, 잔여 티켓 확인, 구매자 정보, 체크리스트 동의, 결제 안내를 단계별로 배치했습니다.</p>
+          <p>{sectionCopy('booking').description}</p>
         </div>
         <div className="booking-layout">
           <aside className="slot-panel">
@@ -771,14 +825,16 @@ export default function Home() {
           </form>
         </div>
       </section>
+      )}
 
+      {isSectionVisible('location') && (
       <section id="location" className="section location-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">07. Location & FAQ</p>
-            <h2>공간 아이덴티티, 오시는 길, 자주 묻는 질문</h2>
+            <p className="eyebrow">{sectionCopy('location').label}</p>
+            <h2>{sectionCopy('location').title}</h2>
           </div>
-          <p>실내테니스팡의 보랏빛 코트 무드와 시설 안내, 네이버 지도 연동을 고려한 길찾기 구성을 담았습니다.</p>
+          <p>{sectionCopy('location').description}</p>
         </div>
         <div className="location-layout">
           <article className="space-gallery">
@@ -821,6 +877,7 @@ export default function Home() {
           ))}
         </div>
       </section>
+      )}
 
       <footer className="footer-section">
         <div>
@@ -830,12 +887,14 @@ export default function Home() {
             관리자
           </a>
         </div>
-        <button type="button" onClick={() => setBookingOpen(true)}>
-          티켓 구매하기
-        </button>
+        {isSectionVisible('booking') && (
+          <button type="button" onClick={() => setBookingOpen(true)}>
+            티켓 구매하기
+          </button>
+        )}
       </footer>
 
-      {bookingOpen && (
+      {bookingOpen && isSectionVisible('booking') && (
         <div className="booking-modal" role="dialog" aria-modal="true" aria-labelledby="quick-booking-title">
           <button
             type="button"

@@ -1,0 +1,10 @@
+CREATE TABLE IF NOT EXISTS site_sections (
+  id TEXT PRIMARY KEY,
+  label TEXT NOT NULL,
+  href TEXT NOT NULL,
+  title TEXT NOT NULL,
+  description TEXT NOT NULL,
+  visible INTEGER NOT NULL DEFAULT 1,
+  sort_order INTEGER NOT NULL,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
