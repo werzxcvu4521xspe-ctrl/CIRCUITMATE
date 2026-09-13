@@ -875,6 +875,8 @@ button:hover {
   border: 1px solid rgba(229, 220, 234, 0.18);
   border-radius: 8px;
   box-shadow: inset 0 0 0 1px rgba(238, 39, 55, 0.08);
+  display: grid;
+  place-items: center;
   margin-bottom: 24px;
   max-height: 560px;
   overflow: hidden;
@@ -884,7 +886,7 @@ button:hover {
 .station-video-frame video {
   display: block;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   width: 100%;
 }
 
