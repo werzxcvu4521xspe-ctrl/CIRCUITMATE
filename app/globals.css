@@ -404,35 +404,6 @@ button:hover {
   margin-top: 32px;
 }
 
-.trust-bar {
-  background: rgba(255, 255, 255, 0.065);
-  backdrop-filter: blur(22px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 8px;
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 36px;
-  max-width: 880px;
-  padding: 18px;
-}
-
-.trust-bar span {
-  color: rgba(248, 247, 255, 0.72);
-  display: grid;
-  font-size: var(--text-sm);
-  font-weight: 680;
-  gap: 6px;
-  line-height: 1.42;
-}
-
-.trust-bar strong {
-  color: var(--lime);
-  font-size: clamp(19px, 1.8vw, 27px);
-  font-weight: 850;
-  line-height: 1.1;
-}
-
 .section-heading {
   max-width: 1060px;
 }
@@ -2086,7 +2057,6 @@ select:focus {
     border-right: 0;
   }
 
-  .trust-bar,
   .value-card {
     grid-template-columns: 1fr;
   }

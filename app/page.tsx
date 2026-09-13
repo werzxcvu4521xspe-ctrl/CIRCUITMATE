@@ -14,8 +14,6 @@ const navItems = [
 
 const highlights = [
   ['1인 참가 비율', '83%'],
-  ['부상 방지 전문 코치', 'On-Site'],
-  ['클린 바', '100% Non-Alcohol'],
 ];
 
 const badgeLoop = [
@@ -385,14 +383,6 @@ export default function Home() {
             <a className="secondary-button" href="#program">
               프로그램 미리보기
             </a>
-          </div>
-          <div className="trust-bar" aria-label="서킷메이트 신뢰 지표">
-            {highlights.map(([label, value]) => (
-              <span key={label}>
-                <strong>{value}</strong>
-                {label}
-              </span>
-            ))}
           </div>
         </div>
       </section>
