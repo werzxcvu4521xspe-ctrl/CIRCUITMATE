@@ -1,7 +1,29 @@
 'use client';
 
-import { CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
+import { CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection, type SiteSectionId } from '../lib/site-map';
+
+declare global {
+  interface Window {
+    naver?: {
+      maps: {
+        LatLng: new (lat: number, lng: number) => unknown;
+        Map: new (
+          target: HTMLElement,
+          options: {
+            center: unknown;
+            zoom: number;
+            zoomControl?: boolean;
+            scaleControl?: boolean;
+            mapDataControl?: boolean;
+          },
+        ) => unknown;
+        Marker: new (options: { position: unknown; map: unknown; title?: string }) => unknown;
+      };
+    };
+    initCircuitmateNaverMap?: () => void;
+  }
+}
 
 const highlights = [
   ['1인 참가 비율', '83%'],
@@ -46,6 +68,17 @@ const selectedMoments = [
 ];
 
 const momentImages = ['/circuitmate-live.png', '/circuitmate-concept.png', '/circuitmate-live.png', '/circuitmate-concept.png'];
+const defaultMapSearchUrl = 'https://map.naver.com/p/search/%EC%8B%A4%EB%82%B4%ED%85%8C%EB%8B%88%EC%8A%A4%ED%8C%A1';
+
+type MapConfig = {
+  configured: boolean;
+  keyId: string;
+  lat: number | null;
+  lng: number | null;
+  placeName: string;
+  address: string;
+  searchUrl: string;
+};
 
 const timeline = [
   ['19:00', '입장 & 체크인', '컨디션 확인, 팀 배정, 웰컴 드링크'],
@@ -221,6 +254,9 @@ export default function Home() {
   const [bookingSending, setBookingSending] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
   const [spotlight, setSpotlight] = useState({ x: 50, y: 18 });
+  const [mapConfig, setMapConfig] = useState<MapConfig | null>(null);
+  const [mapError, setMapError] = useState('');
+  const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const selectedDateInfo = useMemo(
     () => ticketDates.find((date) => date.id === selectedDate) ?? ticketDates[0],
     [selectedDate],
@@ -264,6 +300,84 @@ export default function Home() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadMapConfig() {
+      try {
+        const response = await fetch('/api/map-config');
+        const data = (await response.json()) as MapConfig;
+
+        if (mounted) {
+          setMapConfig(data);
+        }
+      } catch {
+        if (mounted) {
+          setMapConfig({
+            configured: false,
+            keyId: '',
+            lat: null,
+            lng: null,
+            placeName: '실내테니스팡',
+            address: '상세 주소 확인 중',
+            searchUrl: defaultMapSearchUrl,
+          });
+        }
+      }
+    }
+
+    void loadMapConfig();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mapConfig?.configured || !mapConfig.keyId || mapConfig.lat === null || mapConfig.lng === null) {
+      return;
+    }
+
+    const renderMap = () => {
+      if (!mapContainerRef.current || !window.naver?.maps) {
+        return;
+      }
+
+      const center = new window.naver.maps.LatLng(mapConfig.lat as number, mapConfig.lng as number);
+      const map = new window.naver.maps.Map(mapContainerRef.current, {
+        center,
+        zoom: 16,
+        zoomControl: true,
+        scaleControl: false,
+        mapDataControl: false,
+      });
+
+      new window.naver.maps.Marker({
+        position: center,
+        map,
+        title: mapConfig.placeName,
+      });
+    };
+
+    if (window.naver?.maps) {
+      renderMap();
+      return;
+    }
+
+    window.initCircuitmateNaverMap = renderMap;
+
+    if (document.getElementById('naver-map-sdk')) {
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = 'naver-map-sdk';
+    script.async = true;
+    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${encodeURIComponent(mapConfig.keyId)}&callback=initCircuitmateNaverMap`;
+    script.onerror = () => setMapError('네이버 지도를 불러오지 못했습니다.');
+    document.head.appendChild(script);
+  }, [mapConfig]);
 
   function isSectionVisible(id: SiteSectionId) {
     return visibleSections.has(id);
@@ -864,10 +978,24 @@ export default function Home() {
           </article>
           <article className="map-panel">
             <h3>7.2 오시는 길</h3>
-            <div className="map-mock" aria-label="네이버 지도 영역 목업">
-              <span>NAVER MAP</span>
+            {mapConfig?.configured && !mapError ? (
+              <div ref={mapContainerRef} className="naver-map-canvas" aria-label="네이버 지도" />
+            ) : (
+              <div className="map-fallback">
+                <span>NAVER MAP</span>
+                <p>네이버 지도에서 위치를 확인하고 길찾기를 열 수 있습니다.</p>
+              </div>
+            )}
+            <div className="map-actions">
+              <p>
+                <strong>{mapConfig?.placeName ?? '실내테니스팡'}</strong>
+                <span>{mapConfig?.address ?? '상세 주소 확인 중'}</span>
+              </p>
+              <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
+                네이버 지도 열기
+              </a>
             </div>
-            <p>상세 주소, 길찾기 링크, 대중교통 및 주차 지원 가이드를 배치할 수 있습니다.</p>
+            {mapError && <p className="map-error">{mapError}</p>}
           </article>
         </div>
         <div className="operation-manual">
