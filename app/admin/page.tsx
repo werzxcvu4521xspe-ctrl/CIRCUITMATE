@@ -165,7 +165,6 @@ export default function AdminPage() {
     <main className="admin-page">
       <header className="admin-header">
         <a className="brand-mark" href="/" aria-label="Circuitmate home">
-          <span>CM</span>
           CIRCUITMATE
         </a>
         <a className="secondary-button" href="/">
