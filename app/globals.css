@@ -798,8 +798,8 @@ button:hover {
 .vertical-timeline article {
   display: grid;
   gap: 20px;
-  grid-template-columns: 84px 1fr;
-  padding: 0 0 30px 26px;
+  grid-template-columns: 150px 1fr;
+  padding: 0 0 26px 26px;
   position: relative;
 }
 
@@ -817,6 +817,15 @@ button:hover {
   color: var(--lime);
   font-weight: 850;
   line-height: 1.25;
+}
+
+.vertical-timeline span {
+  color: var(--pantone-1788-c);
+  display: block;
+  font-size: var(--text-xs);
+  font-weight: 850;
+  line-height: 1.25;
+  margin-bottom: 8px;
 }
 
 .vertical-timeline p {
@@ -2307,7 +2316,8 @@ textarea {
   }
 
   .vertical-timeline article {
-    grid-template-columns: 70px 1fr;
+    gap: 8px;
+    grid-template-columns: 1fr;
   }
 
   .gallery-strip {
