@@ -134,9 +134,9 @@ const passOptions = [
     value: 'single',
     eyebrow: 'Single Pass',
     title: '원데이 온디맨드 패스',
-    price: '39,000원',
-    note: '회차별 결제',
-    desc: '최소 인원이 모이면 호스트가 세션을 오픈하는 1회성 패스입니다. 가능한 날만 신청하고, 못 나오는 주에는 결제 부담이 없습니다.',
+    price: '23,000원',
+    note: '티켓 1매',
+    desc: '최소 인원이 모이면 호스트가 세션을 오픈하는 1회성 티켓입니다. 가능한 날만 구매하고, 못 나오는 주에는 결제 부담이 없습니다.',
   },
   {
     value: 'monthly',
@@ -182,7 +182,7 @@ const faqs = [
   ],
   [
     '참가비 대비 프로그램 구성이 아깝지 않을까요?',
-    '원데이 온디맨드 패스는 가능한 회차만 결제하는 구조라 못 나오는 주의 손해가 없습니다. 꾸준히 루틴을 만들고 싶다면 회당 단가를 낮춘 선택형 월간 패스로 전환할 수 있습니다.',
+    '원데이 온디맨드 패스는 23,000원 티켓 1매로 가능한 회차만 구매하는 구조라 못 나오는 주의 손해가 없습니다. 꾸준히 루틴을 만들고 싶다면 회당 단가를 낮춘 선택형 월간 패스로 전환할 수 있습니다.',
   ],
 ];
 
@@ -268,7 +268,7 @@ export default function Home() {
           ))}
         </nav>
         <button className="header-cta" type="button" onClick={() => setBookingOpen(true)}>
-          세션 예약
+          티켓 구매
         </button>
       </header>
 
@@ -281,7 +281,7 @@ export default function Home() {
           <p className="hero-copy">땀 흘린 뒤 찾아오는 가장 건강한 교류</p>
           <div className="hero-actions">
             <button className="primary-button" type="button" onClick={() => setBookingOpen(true)}>
-              세션 예약하기
+              티켓 구매하기
             </button>
             <a className="secondary-button" href="#program">
               프로그램 미리보기
@@ -307,7 +307,7 @@ export default function Home() {
       </section>
 
       <button className="floating-cta" type="button" onClick={() => setBookingOpen(true)}>
-        예약하기
+        티켓 구매하기
       </button>
 
       <section className="section highlight-section" aria-label="세션 하이라이트">
@@ -549,7 +549,7 @@ export default function Home() {
           <div className="earlybird-box">
             <span>Pricing Logic</span>
             <strong>0% 손해 구조</strong>
-            <p>원데이는 신청한 회차만 결제하고, 월간 패스는 꾸준한 참가자에게 더 낮은 회당 단가와 유연한 일정 변경을 제공합니다.</p>
+            <p>원데이는 원하는 회차의 23,000원 티켓만 구매하고, 월간 패스는 꾸준한 참가자에게 더 낮은 회당 단가와 유연한 일정 변경을 제공합니다.</p>
             <div className="value-list compact">
               {valueStack.map(([item, desc]) => (
                 <div key={item}>
@@ -559,7 +559,7 @@ export default function Home() {
               ))}
             </div>
             <button type="button" onClick={() => setBookingOpen(true)}>
-              패스 선택하고 예약
+              티켓 구매하기
             </button>
           </div>
         </div>
@@ -585,9 +585,9 @@ export default function Home() {
         <div className="section-heading split">
           <div>
             <p className="eyebrow">06. Booking</p>
-            <h2>일정 선택부터 결제 확인까지 한 번에</h2>
+            <h2>일정 선택부터 티켓 구매까지 한 번에</h2>
           </div>
-          <p>날짜/시간 선택, 잔여 티켓 확인, 신청 폼, 체크리스트 동의, 결제 안내를 단계별로 배치했습니다.</p>
+          <p>날짜/시간 선택, 잔여 티켓 확인, 구매자 정보, 체크리스트 동의, 결제 안내를 단계별로 배치했습니다.</p>
         </div>
         <div className="booking-layout">
           <aside className="slot-panel">
@@ -608,11 +608,11 @@ export default function Home() {
             <div className="ticket-box">
               <span>선택 일정</span>
               <strong>{nextSessionLabel} 세션</strong>
-              <p>원데이 올패스 티켓 39,000원</p>
+              <p>원데이 올패스 티켓 23,000원</p>
             </div>
           </aside>
           <form onSubmit={handleBooking} className="form-card">
-            <h3>6.2 신청 폼 작성</h3>
+            <h3>6.2 티켓 구매자 정보</h3>
             <div className="form-row">
               <label>
                 성함
@@ -661,12 +661,12 @@ export default function Home() {
             </label>
             <div className="payment-box">
               <h3>6.4 결제 및 확인</h3>
-              <p>원데이 패스는 회차별 결제로, 월간 패스는 잔여 횟수 이월과 일정 변경 옵션 안내 후 확정됩니다.</p>
+              <p>원데이 패스는 티켓 1매 23,000원 결제로 확정되며, 월간 패스는 잔여 횟수 이월과 일정 변경 옵션 안내 후 확정됩니다.</p>
             </div>
             <button type="submit" disabled={bookingSending}>
-              {bookingSending ? '접수 중' : '결제 안내 받기'}
+              {bookingSending ? '접수 중' : '구매 안내 받기'}
             </button>
-            {bookingSent && <p className="success-message">예약 신청이 접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
+            {bookingSent && <p className="success-message">티켓 구매 신청이 접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
             {bookingError && <p className="error-message">{bookingError}</p>}
           </form>
         </div>
@@ -731,7 +731,7 @@ export default function Home() {
           </a>
         </div>
         <button type="button" onClick={() => setBookingOpen(true)}>
-          다음 세션 예약
+          티켓 구매하기
         </button>
       </footer>
 
@@ -740,15 +740,15 @@ export default function Home() {
           <button
             type="button"
             className="modal-backdrop"
-            aria-label="예약 패널 닫기"
+            aria-label="티켓 구매 패널 닫기"
             onClick={() => setBookingOpen(false)}
           />
           <section className="bottom-sheet">
             <div className="sheet-handle" aria-hidden="true" />
             <div className="sheet-header">
               <div>
-                <p className="eyebrow">Quick Booking</p>
-                <h2 id="quick-booking-title">바로 예약하기</h2>
+                <p className="eyebrow">Ticket Checkout</p>
+                <h2 id="quick-booking-title">티켓 구매하기</h2>
               </div>
               <button type="button" className="close-button" onClick={() => setBookingOpen(false)} aria-label="닫기">
                 닫기
@@ -808,10 +808,10 @@ export default function Home() {
               </label>
               <div className="sheet-summary">
                 <span>{selectedSession}</span>
-                <strong>원데이 39,000원</strong>
+                <strong>원데이 티켓 23,000원</strong>
               </div>
               <button type="submit" className="sheet-submit" disabled={bookingSending}>
-                {bookingSending ? '접수 중' : '예약 및 결제 안내 받기'}
+                {bookingSending ? '접수 중' : '티켓 구매 안내 받기'}
               </button>
               {bookingSent && <p className="success-message">접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
               {bookingError && <p className="error-message">{bookingError}</p>}
