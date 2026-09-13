@@ -1693,10 +1693,79 @@ textarea {
   text-wrap: pretty;
 }
 
+.faq-list details[open] {
+  background:
+    linear-gradient(135deg, rgba(229, 220, 234, 0.98), rgba(255, 255, 255, 0.96)),
+    white;
+  border-color: rgba(93, 71, 119, 0.24);
+}
+
+.faq-list details[open] summary {
+  color: var(--body-dark);
+}
+
 .faq-list p {
   font-size: clamp(16px, 1.2vw, 18px);
   line-height: 1.82;
   margin: 14px 0 0;
+}
+
+.faq-answer {
+  display: grid;
+  gap: 18px;
+  margin-top: 16px;
+}
+
+.faq-answer p {
+  color: rgba(16, 13, 24, 0.72) !important;
+  margin: 0;
+}
+
+.faq-answer ul {
+  color: rgba(16, 13, 24, 0.72);
+  display: grid;
+  gap: 10px;
+  font-size: clamp(15px, 1.1vw, 17px);
+  font-weight: 560;
+  line-height: 1.72;
+  margin: 0;
+  padding-left: 22px;
+}
+
+.faq-policy-table {
+  border-top: 1px solid rgba(16, 13, 24, 0.18);
+  display: grid;
+}
+
+.faq-policy-table div {
+  border-bottom: 1px solid rgba(16, 13, 24, 0.12);
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(120px, 0.6fr);
+  padding: 14px 0;
+}
+
+.faq-policy-table strong,
+.faq-policy-table b {
+  color: var(--body-dark);
+  font-size: var(--text-base);
+  font-weight: 850;
+  line-height: 1.45;
+}
+
+.faq-policy-table span {
+  color: rgba(16, 13, 24, 0.72);
+  font-size: var(--text-base);
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.faq-note {
+  border-left: 3px solid var(--pantone-1788-c);
+  color: rgba(16, 13, 24, 0.68) !important;
+  font-size: var(--text-sm) !important;
+  font-weight: 700 !important;
+  padding-left: 14px;
 }
 
 .footer-section {
