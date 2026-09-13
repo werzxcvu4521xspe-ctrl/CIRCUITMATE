@@ -10,6 +10,14 @@
   --pantone-1788-c: #ee2737;
   --pantone-663-c: #e5dcea;
   --pantone-7447-c: #5d4777;
+  --apple-bg: #1d1d1f;
+  --apple-surface: #f5f5f7;
+  --glass: rgba(255, 255, 255, 0.075);
+  --glass-strong: rgba(255, 255, 255, 0.12);
+  --glass-light: rgba(255, 255, 255, 0.78);
+  --apple-line: rgba(255, 255, 255, 0.18);
+  --shadow-soft: 0 22px 80px rgba(0, 0, 0, 0.28);
+  --ease-apple: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ink: #f8f3ff;
   --muted: #c8b8dd;
   --black: var(--pantone-black-6-c);
@@ -25,7 +33,7 @@
   --button-ink: #fff7fb;
   --line: rgba(255, 255, 255, 0.14);
   --dark-line: rgba(60, 16, 83, 0.18);
-  --font-sans: 'Pretendard', 'SUIT', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Arial, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Pretendard', 'SUIT', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Arial, sans-serif;
   --text-xs: 0.8125rem;
   --text-sm: 0.9375rem;
   --text-base: 1rem;
@@ -47,7 +55,9 @@ html {
 
 body {
   margin: 0;
-  background: var(--black);
+  background:
+    radial-gradient(circle at 78% 8%, rgba(255, 0, 144, 0.18), transparent 24rem),
+    linear-gradient(180deg, #1d1d1f 0%, #101820 34%, #120619 100%);
   color: var(--ink);
   font-family: var(--font-sans);
   font-size: var(--text-base);
@@ -65,7 +75,9 @@ main {
 }
 
 main::before {
-  background: radial-gradient(circle at var(--spotlight-x, 50%) var(--spotlight-y, 16%), rgba(255, 0, 144, 0.22), transparent 22rem);
+  background:
+    radial-gradient(circle at var(--spotlight-x, 50%) var(--spotlight-y, 16%), rgba(255, 0, 144, 0.18), transparent 23rem),
+    linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.035), transparent);
   content: '';
   inset: 0;
   pointer-events: none;
@@ -89,6 +101,34 @@ textarea {
 button,
 a {
   -webkit-tap-highlight-color: transparent;
+}
+
+button,
+a,
+input,
+select {
+  transition:
+    background-color 220ms var(--ease-apple),
+    border-color 220ms var(--ease-apple),
+    box-shadow 220ms var(--ease-apple),
+    color 220ms var(--ease-apple),
+    opacity 220ms var(--ease-apple),
+    transform 220ms var(--ease-apple);
+}
+
+button:not(:disabled):active,
+.primary-button:active,
+.secondary-button:active,
+.floating-cta:active {
+  transform: scale(0.985);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.72);
+  outline-offset: 3px;
 }
 
 button:disabled {
@@ -144,9 +184,9 @@ summary {
 
 .site-header {
   align-items: center;
-  background: rgba(16, 24, 32, 0.82);
-  backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--line);
+  background: rgba(18, 18, 20, 0.58);
+  backdrop-filter: blur(28px) saturate(160%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
   display: grid;
   gap: 18px;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -170,7 +210,8 @@ summary {
 
 .brand-mark span {
   align-items: center;
-  background: var(--lime);
+  background: rgba(238, 39, 55, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   color: var(--button-ink);
   display: inline-flex;
   font-size: var(--text-xs);
@@ -209,24 +250,43 @@ button {
   line-height: 1.2;
   min-height: 46px;
   padding: 0 18px;
+  border-radius: 8px;
   text-align: center;
 }
 
 .header-cta,
 .primary-button,
 button {
-  background: var(--lime);
+  background: linear-gradient(180deg, #ff405d, var(--lime));
+  box-shadow: 0 12px 34px rgba(238, 39, 55, 0.24);
   color: var(--button-ink);
 }
 
+.header-cta:hover,
+.primary-button:hover,
+button:hover {
+  box-shadow: 0 18px 42px rgba(238, 39, 55, 0.32);
+  transform: translateY(-1px);
+}
+
 .secondary-button {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(229, 220, 234, 0.34);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(229, 220, 234, 0.28);
   color: var(--ink);
 }
 
+.secondary-button:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.42);
+  transform: translateY(-1px);
+}
+
 .floating-cta {
-  background: var(--purple);
+  background: rgba(255, 0, 144, 0.86);
+  backdrop-filter: blur(22px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 18px 48px rgba(255, 0, 144, 0.36);
   bottom: 24px;
   color: white;
   position: fixed;
@@ -243,6 +303,7 @@ button {
 }
 
 .hero {
+  background: var(--apple-bg);
   min-height: 94vh;
   overflow: hidden;
   position: relative;
@@ -258,18 +319,19 @@ button {
 
 .hero-image {
   object-fit: cover;
-  transform: scale(1.03);
-  transition: transform 900ms ease;
+  transform: scale(1.02);
+  transition: filter 900ms var(--ease-apple), transform 1200ms var(--ease-apple);
 }
 
 .hero:hover .hero-image {
-  transform: scale(1.08);
+  filter: saturate(1.1) contrast(1.06);
+  transform: scale(1.055);
 }
 
 .hero-overlay {
   background:
-    linear-gradient(90deg, rgba(16, 24, 32, 0.96) 0%, rgba(60, 16, 83, 0.72) 42%, rgba(238, 39, 55, 0.16) 82%),
-    linear-gradient(0deg, var(--black) 0%, rgba(16, 24, 32, 0) 38%);
+    linear-gradient(90deg, rgba(16, 16, 18, 0.98) 0%, rgba(60, 16, 83, 0.64) 44%, rgba(238, 39, 55, 0.12) 82%),
+    linear-gradient(0deg, #1d1d1f 0%, rgba(16, 24, 32, 0) 42%);
 }
 
 .hero-content {
@@ -343,13 +405,16 @@ button {
 }
 
 .trust-bar {
-  border-top: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.065);
+  backdrop-filter: blur(22px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 8px;
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 36px;
   max-width: 880px;
-  padding-top: 20px;
+  padding: 18px;
 }
 
 .trust-bar span {
@@ -393,7 +458,8 @@ button {
 }
 
 .highlight-section {
-  background: #120619;
+  background:
+    linear-gradient(180deg, #1d1d1f 0%, #120619 100%);
 }
 
 .metric-grid,
@@ -428,8 +494,10 @@ button {
 .map-panel,
 .faq-list details {
   background: rgba(255, 255, 255, 0.065);
-  border: 1px solid var(--line);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 8px;
+  box-shadow: var(--shadow-soft);
 }
 
 .metric-grid article {
@@ -459,19 +527,20 @@ button {
 .selected-section,
 .figures-section {
   background:
-    linear-gradient(180deg, #1a0826, #101820),
+    radial-gradient(circle at 76% 18%, rgba(255, 0, 144, 0.11), transparent 30rem),
+    linear-gradient(180deg, #1d1d1f 0%, #121214 48%, #101820 100%),
     var(--black);
 }
 
 .figures-grid {
-  border-top: 1px solid var(--line);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   margin-top: 40px;
 }
 
 .figures-grid article {
-  border-right: 1px solid var(--line);
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
   min-height: 210px;
   padding: 22px 18px;
 }
@@ -595,7 +664,7 @@ button {
   height: 100%;
   object-fit: cover;
   transform: scale(1.12);
-  transition: filter 420ms ease, transform 520ms ease;
+  transition: filter 520ms var(--ease-apple), transform 640ms var(--ease-apple);
   width: 100%;
 }
 
@@ -624,22 +693,25 @@ button {
 
 .brand-section {
   background:
-    linear-gradient(135deg, rgba(255, 0, 144, 0.16), transparent 42%),
-    #120619;
+    radial-gradient(circle at 80% 8%, rgba(238, 39, 55, 0.18), transparent 28rem),
+    linear-gradient(180deg, #121214 0%, #170720 100%);
 }
 
 .manifesto-panel {
   background:
-    linear-gradient(135deg, rgba(255, 0, 144, 0.14), rgba(60, 16, 83, 0.62) 48%, rgba(16, 24, 32, 0.82)),
-    rgba(255, 255, 255, 0.055);
-  border: 1px solid var(--line);
+    linear-gradient(135deg, rgba(255, 255, 255, 0.13), rgba(255, 0, 144, 0.07) 44%, rgba(255, 255, 255, 0.045)),
+    rgba(255, 255, 255, 0.06);
+  backdrop-filter: blur(24px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  box-shadow: var(--shadow-soft);
   margin-top: 42px;
   padding: clamp(26px, 4.8vw, 54px);
   position: relative;
 }
 
 .manifesto-panel::before {
-  background: var(--red);
+  background: linear-gradient(90deg, var(--lime), var(--purple));
   content: '';
   height: 4px;
   left: clamp(26px, 4.8vw, 54px);
@@ -792,7 +864,9 @@ button {
 }
 
 .cue-banner {
-  background: var(--lime);
+  background: linear-gradient(135deg, rgba(238, 39, 55, 0.94), rgba(255, 0, 144, 0.88));
+  border-radius: 8px;
+  box-shadow: 0 18px 52px rgba(238, 39, 55, 0.22);
   color: var(--button-ink);
   font-size: clamp(19px, 2.1vw, 30px);
   font-weight: 850;
@@ -896,12 +970,14 @@ button {
 
 .recovery-section {
   background:
-    radial-gradient(circle at 18% 16%, rgba(238, 39, 55, 0.28), transparent 32%),
-    #16061f;
+    radial-gradient(circle at 18% 16%, rgba(238, 39, 55, 0.2), transparent 32rem),
+    linear-gradient(180deg, #170720 0%, #1d1d1f 100%);
 }
 
 .value-section {
-  background: var(--surface-light);
+  background:
+    radial-gradient(circle at 88% 8%, rgba(255, 0, 144, 0.12), transparent 24rem),
+    var(--apple-surface);
   color: var(--body-dark);
 }
 
@@ -914,8 +990,11 @@ button {
 }
 
 .value-card {
-  background: white;
-  border: 1px solid var(--dark-line);
+  background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(20px) saturate(150%);
+  border: 1px solid rgba(60, 16, 83, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 22px 70px rgba(60, 16, 83, 0.12);
   display: grid;
   gap: 0;
   grid-template-columns: minmax(0, 1fr) minmax(310px, 0.42fr);
@@ -937,8 +1016,8 @@ button {
 
 .pass-card.featured {
   background:
-    linear-gradient(135deg, rgba(238, 39, 55, 0.12), transparent 48%),
-    #fff;
+    linear-gradient(135deg, rgba(238, 39, 55, 0.12), rgba(255, 255, 255, 0.76) 48%),
+    rgba(255, 255, 255, 0.9);
 }
 
 .pass-card span {
@@ -1045,7 +1124,9 @@ button {
 
 .earlybird-box {
   align-content: center;
-  background: var(--body-dark);
+  background:
+    linear-gradient(135deg, rgba(255, 0, 144, 0.16), transparent 48%),
+    var(--body-dark);
   color: white;
   display: grid;
   gap: 12px;
@@ -1108,7 +1189,9 @@ button {
 
 .booking-section,
 .location-section {
-  background: var(--surface-light);
+  background:
+    radial-gradient(circle at 12% 10%, rgba(238, 39, 55, 0.1), transparent 24rem),
+    var(--apple-surface);
   color: var(--body-dark);
 }
 
@@ -1134,8 +1217,10 @@ button {
 .space-gallery,
 .map-panel,
 .faq-list details {
-  background: white;
-  border-color: var(--dark-line);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(18px) saturate(140%);
+  border-color: rgba(60, 16, 83, 0.12);
+  box-shadow: 0 20px 58px rgba(60, 16, 83, 0.1);
   color: var(--body-dark);
   padding: 26px;
 }
@@ -1154,7 +1239,7 @@ button {
 }
 
 .date-calendar button {
-  background: #241c28;
+  background: #2a252e;
   border: 1px solid transparent;
   color: rgba(255, 255, 255, 0.62);
   display: grid;
@@ -1165,7 +1250,7 @@ button {
 }
 
 .date-calendar button.active {
-  background: #1974ff;
+  background: linear-gradient(180deg, #2d7dff, #1974ff);
   border-color: rgba(255, 255, 255, 0.18);
   color: white;
 }
@@ -1205,7 +1290,12 @@ button {
 .session-list button.active {
   background: #fff2fb;
   border-color: rgba(255, 0, 144, 0.45);
-  box-shadow: inset 4px 0 0 var(--pink);
+  box-shadow: inset 4px 0 0 var(--purple), 0 12px 28px rgba(255, 0, 144, 0.12);
+}
+
+.session-list button:hover {
+  border-color: rgba(255, 0, 144, 0.34);
+  transform: translateY(-1px);
 }
 
 .session-list button span {
@@ -1245,14 +1335,21 @@ button {
 }
 
 .ticket-gauge {
-  background: #092557;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.13), transparent 38%),
+    #092557;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  box-shadow: 0 16px 42px rgba(9, 37, 87, 0.22);
   color: white;
   margin-bottom: 14px;
   padding: 18px;
 }
 
 .ticket-gauge.closing {
-  background: #5a1009;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 38%),
+    #5a1009;
 }
 
 .ticket-gauge.soldout {
@@ -1315,8 +1412,9 @@ button {
 
 .ticket-box,
 .payment-box {
-  background: var(--surface-tint);
-  border: 1px solid var(--dark-line);
+  background: rgba(244, 236, 251, 0.72);
+  border: 1px solid rgba(60, 16, 83, 0.12);
+  border-radius: 8px;
   padding: 18px;
 }
 
@@ -1353,8 +1451,9 @@ label {
 
 input,
 select {
-  background: #f8f2fb;
-  border: 1px solid var(--dark-line);
+  background: rgba(255, 255, 255, 0.74);
+  border: 1px solid rgba(60, 16, 83, 0.14);
+  border-radius: 8px;
   color: var(--body-dark);
   font-size: 1rem;
   font-weight: 550;
@@ -1362,6 +1461,13 @@ select {
   min-height: 48px;
   padding: 12px 14px;
   width: 100%;
+}
+
+input:focus,
+select:focus {
+  background: white;
+  border-color: rgba(255, 0, 144, 0.42);
+  box-shadow: 0 0 0 4px rgba(255, 0, 144, 0.09);
 }
 
 .checkbox-row {
@@ -1504,8 +1610,10 @@ select {
 
 .footer-section {
   align-items: center;
-  background: var(--black);
-  border-top: 1px solid var(--line);
+  background:
+    radial-gradient(circle at 80% 0%, rgba(255, 0, 144, 0.12), transparent 24rem),
+    #121214;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
   display: flex;
   flex-wrap: wrap;
   gap: 20px;
@@ -1535,7 +1643,9 @@ select {
 }
 
 .footer-section a {
-  background: var(--lime);
+  background: linear-gradient(180deg, #ff405d, var(--lime));
+  border-radius: 8px;
+  box-shadow: 0 12px 34px rgba(238, 39, 55, 0.24);
   color: var(--button-ink);
   font-weight: 850;
   line-height: 1.2;
@@ -1749,7 +1859,8 @@ select {
 }
 
 .modal-backdrop {
-  background: rgba(0, 0, 0, 0.72);
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(8px);
   inset: 0;
   min-height: 0;
   padding: 0;
@@ -1758,10 +1869,12 @@ select {
 }
 
 .bottom-sheet {
-  background: #fff8fd;
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 248, 253, 0.86);
+  backdrop-filter: blur(28px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 8px;
   bottom: 18px;
-  box-shadow: 0 24px 90px rgba(0, 0, 0, 0.46);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.42);
   color: var(--body-dark);
   left: 50%;
   max-height: min(88vh, 760px);
@@ -2034,5 +2147,16 @@ select {
   .admin-auth-card h1,
   .admin-dashboard h1 {
     font-size: clamp(42px, 14vw, 68px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
   }
 }
