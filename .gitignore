@@ -36,3 +36,12 @@ next-env.d.ts
 /.wrangler/
 /outputs/
 /work/
+
+# secrets
+.dev.vars
+
+# build artifacts
+tsconfig.tsbuildinfo
+
+# misc local notes
+/Claude outputs/

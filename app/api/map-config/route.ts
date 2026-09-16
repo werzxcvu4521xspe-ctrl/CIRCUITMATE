@@ -11,9 +11,11 @@ type RuntimeEnv = {
   NAVER_MAP_CUSTOM_STYLE_VERSION?: string;
 };
 
-const defaultPlaceName = '플랩 스타디움 가산 벽산디지털밸리 6차';
-const defaultAddress = '서울시 금천구 가산디지털1로 219';
-const defaultSearchUrl = 'https://naver.me/xOxcjJkf';
+const defaultPlaceName = '충남대학교 정문 앞 서브웨이 건물 8층';
+const defaultAddress = '대전 유성구 궁동 482-3';
+const defaultSearchUrl = `https://map.naver.com/p/search/${encodeURIComponent(defaultAddress)}`;
+// TODO: 네이버 지도 API 키 연결 시 NAVER_MAP_LAT / NAVER_MAP_LNG 환경변수로
+// 정확한 좌표를 지정해주세요 (현재 값은 이전 장소인 가산디지털밸리 좌표입니다).
 const defaultLat = 37.47936;
 const defaultLng = 126.8822;
 

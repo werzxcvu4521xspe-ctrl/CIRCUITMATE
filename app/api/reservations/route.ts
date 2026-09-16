@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     const db = getReservationsDb();
     const { results } = await db
       .prepare(
-        `SELECT id, name, phone, session, level, party, pass_type, status, source, created_at
+        `SELECT id, name, phone, instagram, gender, session, level, party, companion_name, pass_type, status, source, created_at
          FROM reservations
          ORDER BY datetime(created_at) DESC, id DESC
          LIMIT 200`
@@ -60,9 +60,12 @@ export async function POST(request: Request) {
     const payload = (await request.json()) as Record<string, unknown>;
     const name = asText(payload.name);
     const phone = asText(payload.phone);
+    const instagram = asText(payload.instagram);
+    const gender = asText(payload.gender);
     const session = asText(payload.session);
     const level = asText(payload.level) || '입문자';
     const party = asText(payload.party) || '개인 신청';
+    const companionName = asText(payload.companionName);
     const passType = normalizePassType(payload.passType);
     const source = asText(payload.source) || 'main';
 
@@ -73,10 +76,10 @@ export async function POST(request: Request) {
     const db = getReservationsDb();
     await db
       .prepare(
-        `INSERT INTO reservations (name, phone, session, level, party, pass_type, status, source)
-         VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`
+        `INSERT INTO reservations (name, phone, instagram, gender, session, level, party, companion_name, pass_type, status, source)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', ?)`
       )
-      .bind(name, phone, session, level, party, passType, source)
+      .bind(name, phone, instagram, gender, session, level, party, companionName, passType, source)
       .run();
 
     return Response.json({ ok: true }, { status: 201 });

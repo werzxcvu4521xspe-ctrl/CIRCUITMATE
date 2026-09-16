@@ -2,6 +2,15 @@
 
 import { CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection, type SiteSectionId } from '../lib/site-map';
+import {
+  MIN_PARTICIPANTS,
+  MAX_PARTICIPANTS,
+  TICKET_PRICE,
+  ticketDates,
+  buildSessionLabel,
+  type TicketDate,
+  type TicketSession,
+} from '../lib/schedule';
 
 declare global {
   interface Window {
@@ -66,9 +75,9 @@ const selectedMoments = [
 ];
 
 const momentImages = ['/circuitmate-live.png', '/circuitmate-concept.png', '/circuitmate-live.png', '/circuitmate-concept.png'];
-const defaultMapPlaceName = '플랩 스타디움 가산 벽산디지털밸리 6차';
-const defaultMapAddress = '서울시 금천구 가산디지털1로 219';
-const defaultMapSearchUrl = 'https://naver.me/xOxcjJkf';
+const defaultMapPlaceName = '충남대학교 정문 앞 서브웨이 건물 8층';
+const defaultMapAddress = '대전 유성구 궁동 482-3';
+const defaultMapSearchUrl = `https://map.naver.com/p/search/${encodeURIComponent(defaultMapAddress)}`;
 
 type MapConfig = {
   configured: boolean;
@@ -91,18 +100,19 @@ type FaqItem = {
 };
 
 const timeline = [
-  ['준비 운동', '18:00 - 18:05', '입장 및 출석 확인', '참가자 확인 및 팀 배정, 짐 정리'],
-  ['준비 운동', '18:05 - 18:15', '몸풀기 스트레칭', '전신 관절 및 다이내믹 스트레칭'],
-  ['준비 운동', '18:15 - 18:30', '순발력 미니게임', '반응속도 콘 터치 게임 & 팀 단합'],
-  ['준비 운동', '18:30 - 18:33', '1차 수분 보충', '전해질 음료 섭취 및 호흡 정리'],
-  ['메인 서킷', '18:33 - 18:35', '서킷 종목 설명', '5개 구역 동작 시범 및 핵심 큐잉 브리핑'],
-  ['메인 서킷', '18:35 - 18:42', '메인 서킷 1라운드', '5개 종목 순환 (종목당 1분 운동 + 30초 휴식/이동)'],
-  ['메인 서킷', '18:42 - 18:45', '라운드 간 휴식', '팀별 호흡 조절 및 수분 보충'],
-  ['메인 서킷', '18:45 - 18:52', '메인 서킷 2라운드', '5개 종목 2차 순환 (동일 루틴 진행)'],
-  ['마무리 운동', '18:52 - 18:55', '2차 수분 보충', '호흡 정리 및 이어달리기 순서 결정'],
-  ['마무리 운동', '18:55 - 19:10', '팀 이어달리기', '코트를 활용한 팀 대항 이어달리기'],
-  ['리커버리', '19:10 - 19:20', '과일 케이터링 바', '스탠딩 생과일 뷔페 바 & 전해질 드링크 섭취'],
-  ['시상 & 마감', '19:20 - 19:30', '서킷 어워즈 & 마무리', '4대 부문 시상식 및 단체 사진 촬영'],
+  ['준비 운동', '18:00 - 18:05 (5분)', '입장 및 출석 확인', '참가자 확인 및 팀 배정, 짐 정리'],
+  ['준비 운동', '18:05 - 18:15 (10분)', '몸풀기 스트레칭', '전신 관절 및 다이내믹 스트레칭'],
+  ['준비 운동', '18:15 - 18:30 (15분)', '순발력 미니게임', '반응속도 콘 터치 게임 & 팀 단합'],
+  ['준비 운동', '18:30 - 18:33 (3분)', '1차 수분 보충', '전해질 음료 섭취 및 호흡 정리'],
+  ['메인 서킷', '18:33 - 18:35 (2분)', '서킷 종목 설명', '5개 구역 동작 시범 및 핵심 큐잉 브리핑'],
+  ['메인 서킷', '18:35 - 18:42 (7분)', '메인 서킷 1라운드', '5개 종목 순환 (종목당 1분 운동 + 30초 휴식/이동)'],
+  ['메인 서킷', '18:42 - 18:45 (3분)', '라운드 간 휴식', '팀별 호흡 조절 및 수분 보충'],
+  ['메인 서킷', '18:45 - 18:52 (7분)', '메인 서킷 2라운드', '5개 종목 2차 순환 (동일 루틴 진행)'],
+  ['마무리 운동', '18:52 - 18:55 (3분)', '2차 수분 보충', '호흡 정리 및 이어달리기 순서 결정'],
+  ['마무리 운동', '18:55 - 19:10 (15분)', '팀 이어달리기', '코트를 활용한 팀 대항 이어달리기'],
+  ['마무리 운동', '19:10 - 19:15 (5분)', '마무리 스트레칭', '이어달리기 후 전신 이완 및 호흡 정리'],
+  ['리커버리', '19:15 - 19:20 (5분)', '과일 케이터링 바', '스탠딩 생과일 뷔페 바 & 전해질 드링크 섭취'],
+  ['시상 & 마감', '19:20 - 19:30 (10분)', '서킷 어워즈 & 마무리', '4대 부문 시상식 및 단체 사진 촬영'],
 ];
 
 const stations = [
@@ -178,13 +188,65 @@ const passOptions = [
     title: '핏 인베스트먼트 먼슬리 패스',
     price: '월 정기 패스',
     note: '가격 별도 안내',
-    desc: '매주 꾸준히 참석해 갓생 루틴을 고정하고 싶은 참가자를 위한 선택형 구독 패스입니다. 원데이보다 합리적인 회당 단가와 이월/일정 변경 옵션을 제공합니다.',
+    desc: '매주 꾸준히 참석해 루틴을 만들고 싶은 회원을 위한 선택형 구독 패스입니다. 원데이보다 회당 단가 -15%와 이월/일정 변경 옵션을 제공합니다.',
   },
 ];
+
+const GENDER_OPTIONS = [
+  { value: 'male', label: '남' },
+  { value: 'female', label: '여' },
+];
+
+const LEVEL_OPTIONS = [
+  { value: 'beginner', label: '초급', description: '처음이라 내 페이스대로 가볍게 시작하고 싶어요' },
+  { value: 'intermediate', label: '중급', description: '기본 체력은 있고, 적당히 땀 흘리며 도전하고 싶어요' },
+  { value: 'advanced', label: '고급', description: '체력에 자신 있고, 강도 높게 끝까지 밀어붙이고 싶어요' },
+];
+
+const PARTY_OPTIONS = [
+  { value: 'solo', label: '개인 신청' },
+  { value: 'with-friend', label: '동반인 있음' },
+  { value: 'team', label: '팀 단위 신청' },
+];
+
+type BuyerStepKey = 'name' | 'phone' | 'instagram' | 'gender' | 'level' | 'party' | 'passType';
+
+type BuyerFormState = {
+  name: string;
+  phone: string;
+  instagram: string;
+  gender: string;
+  level: string;
+  party: string;
+  companionName: string;
+  passType: string;
+};
+
+const INITIAL_BUYER_FORM: BuyerFormState = {
+  name: '',
+  phone: '010',
+  instagram: '@',
+  gender: GENDER_OPTIONS[0].value,
+  level: LEVEL_OPTIONS[0].value,
+  party: PARTY_OPTIONS[0].value,
+  companionName: '',
+  passType: 'single',
+};
+
+const BUYER_STEP_LABELS: Record<BuyerStepKey, string> = {
+  name: '성함',
+  phone: '연락처',
+  instagram: '인스타그램 아이디',
+  gender: '성별',
+  level: '운동 수준',
+  party: '동반인 및 팀 배정',
+  passType: '패스 선택',
+};
 
 const operationDetails = [
   ['입장 데스크', '참가자 전원에게 팀 컬러 손목 밴드를 배부하고, 혼자 온 참가자도 자연스럽게 해당 컬러 구역으로 이동합니다.'],
   ['서킷 스테이션', '각 스테이션마다 초급 / 중급 / 고급 3단계 난이도 픽토그램 보드를 거치합니다.'],
+  ['리커버리 전환', '쿨다운 BGM과 함께 과일 바를 오픈합니다.'],
 ];
 
 const awards = [
@@ -193,49 +255,6 @@ const awards = [
   ['베스트 드레서', '코트 조명 아래 가장 선명한 에슬레저 룩을 선정합니다.'],
   ['챔피언', '미니게임과 릴레이를 종합해 그날의 팀 퍼포먼스를 축하합니다.'],
 ];
-
-const ticketDates = [
-  {
-    id: '2026-09-19',
-    label: '9월 19일',
-    day: '토',
-    sessions: [
-      { id: '2026-09-19-1800', label: '세션 1', time: '18:00-19:30', booked: 8 },
-      { id: '2026-09-19-2000', label: '세션 2', time: '20:00-21:30', booked: 15 },
-    ],
-  },
-  {
-    id: '2026-09-26',
-    label: '9월 26일',
-    day: '토',
-    sessions: [
-      { id: '2026-09-26-1800', label: '세션 1', time: '18:00-19:30', booked: 6 },
-      { id: '2026-09-26-2000', label: '세션 2', time: '20:00-21:30', booked: 18 },
-    ],
-  },
-  {
-    id: '2026-10-03',
-    label: '10월 3일',
-    day: '토',
-    sessions: [
-      { id: '2026-10-03-1800', label: '세션 1', time: '18:00-19:30', booked: 4 },
-      { id: '2026-10-03-2000', label: '세션 2', time: '20:00-21:30', booked: 10 },
-    ],
-  },
-  {
-    id: '2026-10-10',
-    label: '10월 10일',
-    day: '토',
-    sessions: [
-      { id: '2026-10-10-1800', label: '세션 1', time: '18:00-19:30', booked: 5 },
-      { id: '2026-10-10-2000', label: '세션 2', time: '20:00-21:30', booked: 12 },
-    ],
-  },
-];
-
-const MIN_PARTICIPANTS = 10;
-const MAX_PARTICIPANTS = 20;
-const TICKET_PRICE = '23,000원';
 
 const faqs: FaqItem[] = [
   {
@@ -325,13 +344,23 @@ export default function Home() {
   const [selectedStation, setSelectedStation] = useState(stations[0]);
   const [selectedDate, setSelectedDate] = useState(ticketDates[0].id);
   const [selectedSessionId, setSelectedSessionId] = useState(ticketDates[0].sessions[0].id);
-  const [bookingSent, setBookingSent] = useState(false);
   const [bookingError, setBookingError] = useState('');
   const [bookingSending, setBookingSending] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
+  const [mainStepStarted, setMainStepStarted] = useState(false);
+  const [quickStepStarted, setQuickStepStarted] = useState(false);
+  const [buyerForm, setBuyerForm] = useState<BuyerFormState>(INITIAL_BUYER_FORM);
+  const [buyerStepIndex, setBuyerStepIndex] = useState(0);
+  const [editingStepIndex, setEditingStepIndex] = useState<number | null>(null);
+  const [agreements, setAgreements] = useState({ gear: false, policy: false });
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [spotlight, setSpotlight] = useState({ x: 50, y: 18 });
   const [mapConfig, setMapConfig] = useState<MapConfig | null>(null);
+  const [sessionCounts, setSessionCounts] = useState<Record<string, number> | null>(null);
   const [mapError, setMapError] = useState('');
+  const [addressCopied, setAddressCopied] = useState(false);
+  const [openFaqQuestion, setOpenFaqQuestion] = useState<string | null>(null);
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const selectedDateInfo = useMemo(
     () => ticketDates.find((date) => date.id === selectedDate) ?? ticketDates[0],
@@ -343,8 +372,9 @@ export default function Home() {
       selectedDateInfo.sessions[0],
     [selectedDateInfo, selectedSessionId],
   );
-  const selectedSessionLabel = `${selectedDateInfo.label} ${selectedDateInfo.day} ${selectedTicketSession.label} ${selectedTicketSession.time}`;
-  const remainingSeats = MAX_PARTICIPANTS - selectedTicketSession.booked;
+  const selectedSessionLabel = buildSessionLabel(selectedDateInfo, selectedTicketSession);
+  const selectedSessionBooked = getSessionBooked(selectedDateInfo, selectedTicketSession);
+  const remainingSeats = MAX_PARTICIPANTS - selectedSessionBooked;
   const visibleSections = useMemo(
     () => new Set(siteMap.filter((section) => section.visible).map((section) => section.id)),
     [siteMap],
@@ -371,6 +401,31 @@ export default function Home() {
     }
 
     void loadSiteMap();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadSessionCounts() {
+      try {
+        const response = await fetch('/api/session-counts');
+        const data = (await response.json()) as { counts?: Record<string, number> };
+
+        if (mounted) {
+          setSessionCounts(data.counts ?? {});
+        }
+      } catch {
+        if (mounted) {
+          setSessionCounts({});
+        }
+      }
+    }
+
+    void loadSessionCounts();
 
     return () => {
       mounted = false;
@@ -480,6 +535,26 @@ export default function Home() {
     return siteMap.find((section) => section.id === id) ?? DEFAULT_SITE_MAP.find((section) => section.id === id)!;
   }
 
+  async function handleCopyAddress() {
+    const address = mapConfig?.address ?? defaultMapAddress;
+
+    try {
+      await navigator.clipboard.writeText(address);
+      setAddressCopied(true);
+      window.setTimeout(() => setAddressCopied(false), 1800);
+    } catch {
+      setAddressCopied(false);
+    }
+  }
+
+  function getSessionBooked(date: TicketDate, session: TicketSession) {
+    if (sessionCounts) {
+      return sessionCounts[buildSessionLabel(date, session)] ?? 0;
+    }
+
+    return session.booked;
+  }
+
   function getTicketStatus(booked: number) {
     const remainingToConfirm = Math.max(MIN_PARTICIPANTS - booked, 0);
     const seatsLeft = Math.max(MAX_PARTICIPANTS - booked, 0);
@@ -494,28 +569,28 @@ export default function Home() {
       };
     }
 
-    if (seatsLeft <= 5) {
+    if (booked >= MIN_PARTICIPANTS) {
       return {
         tone: 'closing',
         label: '마감 임박',
-        message: `마감까지 ${seatsLeft}자리 남았어요!`,
+        message: `마감까지 ${seatsLeft}명 남았어요!`,
         progress,
       };
     }
 
-    if (remainingToConfirm > 0 && remainingToConfirm <= 5) {
+    if (booked >= 3) {
       return {
         tone: 'confirming',
         label: '확정 임박',
-        message: `진행 확정까지 ${remainingToConfirm}자리 남았어요!`,
+        message: `진행 확정까지 ${remainingToConfirm}명 남았어요!`,
         progress,
       };
     }
 
     return {
-      tone: booked >= MIN_PARTICIPANTS ? 'confirmed' : 'open',
-      label: booked >= MIN_PARTICIPANTS ? '진행 확정' : '티케팅 가능',
-      message: booked >= MIN_PARTICIPANTS ? '진행 확정된 세션입니다.' : '토요일 세션 티케팅이 열려 있습니다.',
+      tone: 'open',
+      label: '티케팅 가능',
+      message: '토요일 세션 티케팅이 열려 있습니다.',
       progress,
     };
   }
@@ -526,24 +601,315 @@ export default function Home() {
     setSelectedSessionId(date.sessions[0].id);
   }
 
-  async function handleBooking(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const form = event.currentTarget;
-    const formData = new FormData(form);
-    const isQuickBooking = formData.has('quickName');
-    const payload = {
-      session: selectedSessionLabel,
-      name: String(formData.get(isQuickBooking ? 'quickName' : 'name') ?? ''),
-      phone: String(formData.get(isQuickBooking ? 'quickPhone' : 'phone') ?? ''),
-      level: String(formData.get(isQuickBooking ? 'quickLevel' : 'level') ?? ''),
-      party: String(formData.get(isQuickBooking ? 'quickParty' : 'party') ?? ''),
-      passType: String(formData.get(isQuickBooking ? 'quickPassType' : 'passType') ?? 'single'),
-      source: isQuickBooking ? 'quick' : 'booking',
-    };
+  const buyerSteps: BuyerStepKey[] = [
+    'name',
+    'phone',
+    'instagram',
+    'gender',
+    'level',
+    'party',
+    'passType',
+  ];
 
+  const buyerFormComplete = buyerStepIndex >= buyerSteps.length;
+
+  function isBuyerStepValid(key: BuyerStepKey) {
+    switch (key) {
+      case 'name':
+        return buyerForm.name.trim().length > 0;
+      case 'phone':
+        return buyerForm.phone.trim().length >= 9;
+      case 'party':
+        return buyerForm.party === 'solo' || buyerForm.companionName.trim().length > 0;
+      default:
+        return true;
+    }
+  }
+
+  function updateBuyerField<K extends keyof BuyerFormState>(key: K, value: BuyerFormState[K]) {
+    setBuyerForm((prev) => ({ ...prev, [key]: value }));
+  }
+
+  function confirmBuyerStep(key: BuyerStepKey) {
+    if (!isBuyerStepValid(key)) {
+      return;
+    }
+
+    const index = buyerSteps.indexOf(key);
+
+    if (editingStepIndex !== null && editingStepIndex === index) {
+      setEditingStepIndex(null);
+      return;
+    }
+
+    setBuyerStepIndex((prev) => Math.min(prev + 1, buyerSteps.length));
+  }
+
+  function editBuyerStep(index: number) {
+    setEditingStepIndex(index);
+  }
+
+  function resetBuyerForm() {
+    setBuyerForm(INITIAL_BUYER_FORM);
+    setBuyerStepIndex(0);
+    setEditingStepIndex(null);
+    setAgreements({ gear: false, policy: false });
+    setMainStepStarted(false);
+    setQuickStepStarted(false);
+  }
+
+  function buyerStepSummary(key: BuyerStepKey) {
+    switch (key) {
+      case 'name':
+        return buyerForm.name;
+      case 'phone':
+        return buyerForm.phone;
+      case 'instagram':
+        return buyerForm.instagram || '입력 안 함';
+      case 'gender':
+        return GENDER_OPTIONS.find((option) => option.value === buyerForm.gender)?.label ?? '';
+      case 'level':
+        return LEVEL_OPTIONS.find((option) => option.value === buyerForm.level)?.label ?? '';
+      case 'party': {
+        const partyLabel = PARTY_OPTIONS.find((option) => option.value === buyerForm.party)?.label ?? '';
+        return buyerForm.party === 'solo'
+          ? partyLabel
+          : `${partyLabel} (${buyerForm.companionName})`;
+      }
+      case 'passType':
+        return passOptions.find((pass) => pass.value === buyerForm.passType)?.title ?? '';
+      default:
+        return '';
+    }
+  }
+
+  function renderBuyerStepBody(key: BuyerStepKey) {
+    switch (key) {
+      case 'name':
+        return (
+          <input
+            name="name"
+            value={buyerForm.name}
+            onChange={(event) => updateBuyerField('name', event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+                event.preventDefault();
+                confirmBuyerStep('name');
+              }
+            }}
+            placeholder="홍길동"
+            autoFocus
+          />
+        );
+      case 'phone':
+        return (
+          <input
+            name="phone"
+            inputMode="tel"
+            value={buyerForm.phone}
+            onChange={(event) => updateBuyerField('phone', event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+                event.preventDefault();
+                confirmBuyerStep('phone');
+              }
+            }}
+            onFocus={(event) => {
+              const { value } = event.target;
+              event.target.setSelectionRange(value.length, value.length);
+            }}
+            placeholder="010-0000-0000"
+            autoFocus
+          />
+        );
+      case 'instagram':
+        return (
+          <input
+            name="instagram"
+            value={buyerForm.instagram}
+            onChange={(event) => updateBuyerField('instagram', event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+                event.preventDefault();
+                confirmBuyerStep('instagram');
+              }
+            }}
+            onFocus={(event) => {
+              const { value } = event.target;
+              event.target.setSelectionRange(value.length, value.length);
+            }}
+            placeholder="instagram_id (선택)"
+            autoFocus
+          />
+        );
+      case 'gender':
+        return (
+          <div className="pill-options" role="radiogroup" aria-label="성별">
+            {GENDER_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={buyerForm.gender === option.value ? 'active' : ''}
+                onClick={() => updateBuyerField('gender', option.value)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        );
+      case 'level':
+        return (
+          <div className="pill-options pill-options-detailed" role="radiogroup" aria-label="운동 수준">
+            {LEVEL_OPTIONS.map((option) => (
+              <button
+                key={option.value}
+                type="button"
+                className={buyerForm.level === option.value ? 'active' : ''}
+                onClick={() => updateBuyerField('level', option.value)}
+              >
+                <strong>{option.label}</strong>
+                <span>{option.description}</span>
+              </button>
+            ))}
+          </div>
+        );
+      case 'party':
+        return (
+          <div className="party-step-body">
+            <div className="pill-options" role="radiogroup" aria-label="동반인 및 팀 배정">
+              {PARTY_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  className={buyerForm.party === option.value ? 'active' : ''}
+                  onClick={() => updateBuyerField('party', option.value)}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+            {buyerForm.party !== 'solo' && (
+              <input
+                name="companionName"
+                className="party-companion-input"
+                value={buyerForm.companionName}
+                onChange={(event) => updateBuyerField('companionName', event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' && !event.nativeEvent.isComposing) {
+                    event.preventDefault();
+                    confirmBuyerStep('party');
+                  }
+                }}
+                placeholder="동반인 성함"
+                autoFocus
+              />
+            )}
+          </div>
+        );
+      case 'passType':
+        return (
+          <div className="pill-options pill-options-detailed" role="radiogroup" aria-label="패스 선택">
+            {passOptions.map((pass) => {
+              const isAvailable = pass.value === 'single';
+
+              return (
+                <button
+                  key={pass.value}
+                  type="button"
+                  className={buyerForm.passType === pass.value ? 'active' : ''}
+                  disabled={!isAvailable}
+                  onClick={() => isAvailable && updateBuyerField('passType', pass.value)}
+                >
+                  <strong>{pass.eyebrow}{isAvailable ? '' : ' · 오픈 예정'}</strong>
+                  <span>{pass.price}</span>
+                </button>
+              );
+            })}
+          </div>
+        );
+      default:
+        return null;
+    }
+  }
+
+  function renderBuyerStepsForm() {
+    return (
+      <>
+        <div className="buyer-steps">
+          {buyerSteps.map((key, index) => {
+            if (index > buyerStepIndex) {
+              return null;
+            }
+
+            const isEditing = editingStepIndex === index;
+            const isActive = isEditing || (editingStepIndex === null && index === buyerStepIndex);
+            const isDone = index < buyerStepIndex && !isEditing;
+
+            return (
+              <div
+                key={key}
+                className={`buyer-step${isDone ? ' done' : ''}${isActive ? ' active' : ''}`}
+                onClick={isDone ? () => editBuyerStep(index) : undefined}
+              >
+                <div className="buyer-step-head">
+                  <span className="buyer-step-label">{BUYER_STEP_LABELS[key]}</span>
+                  {isDone && <span className="buyer-step-edit">수정</span>}
+                </div>
+                {isActive ? (
+                  <>
+                    {renderBuyerStepBody(key)}
+                    <button
+                      type="button"
+                      className="step-next-button"
+                      disabled={!isBuyerStepValid(key)}
+                      onClick={() => confirmBuyerStep(key)}
+                    >
+                      {isEditing ? '저장' : '다음'}
+                    </button>
+                  </>
+                ) : (
+                  <p className="buyer-step-value">{buyerStepSummary(key)}</p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+        {buyerFormComplete && (
+          <>
+            <label className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={agreements.gear}
+                onChange={(event) =>
+                  setAgreements((prev) => ({ ...prev, gear: event.target.checked }))
+                }
+              />
+              실내 운동화, 운동복, 텀블러 준비를 확인했습니다.
+            </label>
+            <label className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={agreements.policy}
+                onChange={(event) =>
+                  setAgreements((prev) => ({ ...prev, policy: event.target.checked }))
+                }
+              />
+              환불 규정과 세션 운영 정책에 동의합니다.
+            </label>
+            <p className="payment-hint">결제는 신청 접수 후 팝업으로 안내됩니다.</p>
+            <button type="submit" disabled={bookingSending || !agreements.gear || !agreements.policy}>
+              {bookingSending ? '접수 중' : '구매 안내 받기'}
+            </button>
+            {bookingError && <p className="error-message">{bookingError}</p>}
+          </>
+        )}
+      </>
+    );
+  }
+
+  async function submitReservation(payload: Record<string, unknown>) {
     setBookingSending(true);
     setBookingError('');
-    setBookingSent(false);
 
     try {
       const response = await fetch('/api/reservations', {
@@ -557,12 +923,34 @@ export default function Home() {
         throw new Error(data.error ?? '예약 접수에 실패했습니다.');
       }
 
-      form.reset();
-      setBookingSent(true);
+      return true;
     } catch (error) {
       setBookingError(error instanceof Error ? error.message : '예약 접수에 실패했습니다.');
+      return false;
     } finally {
       setBookingSending(false);
+    }
+  }
+
+  async function handleMainBooking(event: FormEvent<HTMLFormElement>, source: 'booking' | 'quick' = 'booking') {
+    event.preventDefault();
+
+    const ok = await submitReservation({
+      session: selectedSessionLabel,
+      name: buyerForm.name,
+      phone: buyerForm.phone,
+      instagram: buyerForm.instagram,
+      gender: GENDER_OPTIONS.find((option) => option.value === buyerForm.gender)?.label ?? buyerForm.gender,
+      level: LEVEL_OPTIONS.find((option) => option.value === buyerForm.level)?.label ?? buyerForm.level,
+      party: PARTY_OPTIONS.find((option) => option.value === buyerForm.party)?.label ?? buyerForm.party,
+      companionName: buyerForm.companionName,
+      passType: buyerForm.passType,
+      source,
+    });
+
+    if (ok) {
+      setShowPaymentModal(true);
+      setBookingOpen(false);
     }
   }
 
@@ -587,22 +975,51 @@ export default function Home() {
     >
       <header className="site-header">
         <a className="brand-mark" href="#home" aria-label="Circuitmate home">
-          <span>CM</span>
-          CIRCUITMATE
+          CIRCUIT<span>MATE</span>
         </a>
-        <nav aria-label="Primary navigation">
-          {navItems.map(([label, href]) => (
-            <a key={label} href={href}>
-              {label}
-            </a>
-          ))}
+        <nav aria-label="Primary navigation" className={mobileNavOpen ? 'mobile-open' : undefined}>
+          <span className="nav-menu-label eyebrow">Menu</span>
+          {navItems.map(([label, href]) => {
+            const match = /^(\d+\.)\s*(.+)$/.exec(label);
+            return (
+              <a key={label} href={href} onClick={() => setMobileNavOpen(false)}>
+                {match ? (
+                  <>
+                    <span className="nav-index">{match[1]}</span>
+                    <span className="nav-label">{match[2]}</span>
+                  </>
+                ) : (
+                  <span className="nav-label">{label}</span>
+                )}
+              </a>
+            );
+          })}
         </nav>
         {isSectionVisible('booking') && (
           <button className="header-cta" type="button" onClick={() => setBookingOpen(true)}>
             티켓 구매
           </button>
         )}
+        <button
+          type="button"
+          className="mobile-nav-toggle"
+          onClick={() => setMobileNavOpen((prev) => !prev)}
+          aria-label={mobileNavOpen ? '메뉴 닫기' : '메뉴 열기'}
+          aria-expanded={mobileNavOpen}
+        >
+          {mobileNavOpen ? '✕' : '☰'}
+        </button>
       </header>
+
+      {isSectionVisible('home') && (
+        <section className="ticker-section" aria-label="서킷메이트 핵심 무드">
+          <div className="ticker-track">
+            {[...badgeLoop, ...badgeLoop].map((item, index) => (
+              <span key={`${item}-${index}`}>{item}</span>
+            ))}
+          </div>
+        </section>
+      )}
 
       {isSectionVisible('home') && (
         <>
@@ -625,14 +1042,6 @@ export default function Home() {
                   </a>
                 )}
               </div>
-            </div>
-          </section>
-
-          <section className="ticker-section" aria-label="서킷메이트 핵심 무드">
-            <div className="ticker-track">
-              {[...badgeLoop, ...badgeLoop].map((item, index) => (
-                <span key={`${item}-${index}`}>{item}</span>
-              ))}
             </div>
           </section>
 
@@ -745,21 +1154,31 @@ export default function Home() {
         </div>
         <div className="program-layout">
           <div className="vertical-timeline">
-            {timeline.map(([phase, time, title, desc]) => (
-              <article key={time}>
-                <time>{time}</time>
-                <div>
-                  <span>{phase}</span>
-                  <h3>{title}</h3>
-                  <p>{desc}</p>
-                </div>
-              </article>
-            ))}
+            {timeline.map(([phase, time, title, desc]) => {
+              const match = /^(.*)\s(\([^)]+\))$/.exec(time);
+
+              return (
+                <article key={time}>
+                  <time>
+                    {match ? (
+                      <>
+                        {match[1]}
+                        <span>{match[2]}</span>
+                      </>
+                    ) : (
+                      time
+                    )}
+                  </time>
+                  <div>
+                    <span>{phase}</span>
+                    <h3>{title}</h3>
+                    <p>{desc}</p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
           <div className="station-guide">
-            <div className="cue-banner">
-              남과 비교하지 마세요. 1분 동안 내 숨소리에 집중하는 것이 유일한 룰입니다.
-            </div>
             <div className="tab-list" role="tablist" aria-label="서킷 종목 가이드">
               {stations.map((station) => (
                 <button
@@ -837,47 +1256,6 @@ export default function Home() {
       </section>
       )}
 
-      {isSectionVisible('pricing') && (
-      <section id="pricing" className="section value-section">
-        <div className="section-heading split">
-          <div>
-            <p className="eyebrow">{sectionCopy('pricing').label}</p>
-            <h2>{sectionCopy('pricing').title}</h2>
-          </div>
-          <p>{sectionCopy('pricing').description}</p>
-        </div>
-        <div className="value-card">
-          <div className="pass-grid">
-            {passOptions.map((pass) => (
-              <article key={pass.value} className={pass.value === 'single' ? 'pass-card featured' : 'pass-card'}>
-                <span>{pass.eyebrow}</span>
-                <h3>{pass.title}</h3>
-                <strong>{pass.price}</strong>
-                <small>{pass.note}</small>
-                <p>{pass.desc}</p>
-              </article>
-            ))}
-          </div>
-          <div className="earlybird-box">
-            <span>Pricing Logic</span>
-            <strong>0% 손해 구조</strong>
-            <p>원데이는 원하는 회차의 23,000원 티켓만 구매하고, 월간 패스는 꾸준한 참가자에게 더 낮은 회당 단가와 유연한 일정 변경을 제공합니다.</p>
-            <div className="value-list compact">
-              {valueStack.map(([item, desc]) => (
-                <div key={item}>
-                  <span>{item}</span>
-                  <strong>{desc}</strong>
-                </div>
-              ))}
-            </div>
-            <button type="button" onClick={() => setBookingOpen(true)}>
-              티켓 구매하기
-            </button>
-          </div>
-        </div>
-      </section>
-      )}
-
       {isSectionVisible('awards') && (
       <section id="awards" className="section awards-section">
         <div className="section-heading">
@@ -896,13 +1274,55 @@ export default function Home() {
       </section>
       )}
 
-      <section className="section review-section" aria-label="참가자 후기">
+      {isSectionVisible('pricing') && (
+      <section id="pricing" className="section value-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">Review</p>
-            <h2>안전하고 깨끗한 웰니스 스포츠 파티라는 약속</h2>
+            <p className="eyebrow">{sectionCopy('pricing').label}</p>
+            <h2>{sectionCopy('pricing').title}</h2>
           </div>
-          <p>혼자 와도 자연스럽고, 땀 흘린 뒤에도 건강한 에너지로 연결되는 경험을 후기 흐름으로 보여줍니다.</p>
+          <p>{sectionCopy('pricing').description}</p>
+        </div>
+        <div className="value-card">
+          <div className="pass-grid">
+            {passOptions.map((pass) => (
+              <article key={pass.value} className={pass.value === 'single' ? 'pass-card featured' : 'pass-card monthly'}>
+                <span>{pass.eyebrow}</span>
+                <h3>{pass.title}</h3>
+                <strong>{pass.price}</strong>
+                <small>{pass.note}</small>
+                <p>{pass.desc}</p>
+              </article>
+            ))}
+          </div>
+          <div className="earlybird-box">
+            <span>Pricing Logic</span>
+            <strong>혜택</strong>
+            <p>원데이는 원하는 회차의 23,000원 티켓만 구매하고, 월간 패스는 꾸준한 참가자에게 더 낮은 회당 단가와 유연한 일정 변경을 제공합니다.</p>
+            <div className="value-list compact">
+              {valueStack.map(([item, desc]) => (
+                <div key={item}>
+                  <span>{item}</span>
+                  <strong>{desc}</strong>
+                </div>
+              ))}
+            </div>
+            <button type="button" onClick={() => setBookingOpen(true)}>
+              티켓 구매하기
+            </button>
+          </div>
+        </div>
+      </section>
+      )}
+
+      {isSectionVisible('review') && (
+      <section id="review" className="section review-section" aria-label="참가자 후기">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">{sectionCopy('review').label}</p>
+            <h2>{sectionCopy('review').title}</h2>
+          </div>
+          <p>{sectionCopy('review').description}</p>
         </div>
         <div className="social-grid" aria-label="참가자 현장 스케치와 포토 리뷰">
           {socialProof.map(([name, text]) => (
@@ -914,6 +1334,7 @@ export default function Home() {
           ))}
         </div>
       </section>
+      )}
 
       {isSectionVisible('booking') && (
       <section id="booking" className="section booking-section">
@@ -935,14 +1356,15 @@ export default function Home() {
                   className={selectedDate === date.id ? 'active' : ''}
                   onClick={() => handleDateSelect(date.id)}
                 >
-                  <span>{date.day}</span>
-                  <strong>{date.label.replace('월 ', '/').replace('일', '')}</strong>
+                  <strong>
+                    {date.label} ({date.day})
+                  </strong>
                 </button>
               ))}
             </div>
             <div className="session-list" aria-label="티케팅 가능한 세션">
               {selectedDateInfo.sessions.map((session) => {
-                const status = getTicketStatus(session.booked);
+                const status = getTicketStatus(getSessionBooked(selectedDateInfo, session));
 
                 return (
                   <button
@@ -960,16 +1382,16 @@ export default function Home() {
                 );
               })}
             </div>
-            <div className={`ticket-gauge ${getTicketStatus(selectedTicketSession.booked).tone}`}>
+            <div className={`ticket-gauge ${getTicketStatus(selectedSessionBooked).tone}`}>
               <div className="gauge-copy">
-                <span>{getTicketStatus(selectedTicketSession.booked).label}</span>
-                <strong>{getTicketStatus(selectedTicketSession.booked).message}</strong>
+                <span>{getTicketStatus(selectedSessionBooked).label}</span>
+                <strong>{getTicketStatus(selectedSessionBooked).message}</strong>
               </div>
               <div className="gauge-track" aria-hidden="true">
-                <span style={{ width: `${getTicketStatus(selectedTicketSession.booked).progress}%` }} />
+                <span style={{ width: `${getTicketStatus(selectedSessionBooked).progress}%` }} />
               </div>
               <p>
-                현재 {selectedTicketSession.booked}명 신청 · 최소 {MIN_PARTICIPANTS}명 시작 · 최대 {MAX_PARTICIPANTS}명
+                현재 {selectedSessionBooked}명 신청 · 최소 {MIN_PARTICIPANTS}명 시작 · 최대 {MAX_PARTICIPANTS}명
               </p>
             </div>
             <div className="ticket-box">
@@ -978,136 +1400,42 @@ export default function Home() {
               <p>원데이 올패스 티켓 {TICKET_PRICE} · 잔여 {remainingSeats}석</p>
             </div>
           </aside>
-          <form onSubmit={handleBooking} className="form-card">
+          <form onSubmit={handleMainBooking} className="form-card">
             <h3>6.2 티켓 구매자 정보</h3>
-            <div className="form-row">
-              <label>
-                성함
-                <input name="name" placeholder="홍길동" required />
-              </label>
-              <label>
-                연락처
-                <input name="phone" placeholder="010-0000-0000" required />
-              </label>
-            </div>
-            <div className="form-row">
-              <label>
-                운동 수준
-                <select name="level" defaultValue="intro">
-                  <option value="intro">입문자</option>
-                  <option value="experienced">경험자</option>
-                </select>
-              </label>
-              <label>
-                동반인 및 팀 배정
-                <select name="party" defaultValue="solo">
-                  <option value="solo">개인 신청</option>
-                  <option value="with-friend">동반인 있음</option>
-                  <option value="team">팀 단위 신청</option>
-                </select>
-              </label>
-            </div>
-            <label>
-              패스 선택
-              <select name="passType" defaultValue="single">
-                {passOptions.map((pass) => (
-                  <option key={pass.value} value={pass.value}>
-                    {pass.title}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <h3>6.3 체크리스트 동의</h3>
-            <label className="checkbox-row">
-              <input type="checkbox" required />
-              실내 운동화, 운동복, 텀블러 준비를 확인했습니다.
-            </label>
-            <label className="checkbox-row">
-              <input type="checkbox" required />
-              환불 규정과 세션 운영 정책에 동의합니다.
-            </label>
-            <div className="payment-box">
-              <div>
-                <h3>6.4 결제 및 확인</h3>
-                <p>원데이 패스는 티켓 1매 23,000원 결제로 확정되며, 월간 패스는 잔여 횟수 이월과 일정 변경 옵션 안내 후 확정됩니다.</p>
-              </div>
-              <div className="payment-qr" aria-label="서킷메이트 티켓 결제 QR 코드">
-                <img src="/payment-qr.png" alt="서킷메이트 티켓 결제 QR 코드" />
-                <span>QR로 티켓 결제하기</span>
-              </div>
-            </div>
-            <button type="submit" disabled={bookingSending}>
-              {bookingSending ? '접수 중' : '구매 안내 받기'}
-            </button>
-            {bookingSent && <p className="success-message">티켓 구매 신청이 접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
-            {bookingError && <p className="error-message">{bookingError}</p>}
+            {mainStepStarted ? (
+              renderBuyerStepsForm()
+            ) : (
+              <button
+                type="button"
+                className="buyer-form-cta"
+                onClick={() => setMainStepStarted(true)}
+              >
+                티켓 구매하기
+              </button>
+            )}
           </form>
         </div>
       </section>
       )}
 
-      {isSectionVisible('location') && (
-      <section id="location" className="section location-section">
+      {isSectionVisible('faq') && (
+      <section id="faq" className="section faq-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow">{sectionCopy('location').label}</p>
-            <h2>{sectionCopy('location').title}</h2>
+            <p className="eyebrow">{sectionCopy('faq').label}</p>
+            <h2>{sectionCopy('faq').title}</h2>
           </div>
-          <p>{sectionCopy('location').description}</p>
-        </div>
-        <div className="location-layout">
-          <article className="space-gallery">
-            <h3>7.1 공간 아이덴티티</h3>
-            <p>코트 조명, 탄성 바닥, 탈의실과 정수기 등 편의시설을 사전 안내해 첫 방문의 불안을 줄입니다.</p>
-            <div className="gallery-strip">
-              <span>COURT</span>
-              <span>LIGHT</span>
-              <span>RECOVERY</span>
-            </div>
-          </article>
-          <article className="map-panel">
-            <h3>7.2 오시는 길</h3>
-            {mapConfig?.configured && !mapError ? (
-              <div ref={mapContainerRef} className="naver-map-canvas" aria-label="네이버 지도" />
-            ) : (
-              <div className="map-fallback">
-                <div className="map-pin" aria-hidden="true" />
-                <span>NAVER MAP</span>
-                <p>API 키 연결 전에는 네이버 지도 장소 링크로 위치를 확인할 수 있습니다.</p>
-                <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
-                  네이버 지도에서 보기
-                </a>
-              </div>
-            )}
-            <div className="map-actions">
-              <p>
-                <strong>{mapConfig?.placeName ?? defaultMapPlaceName}</strong>
-                <span>{mapConfig?.address ?? defaultMapAddress}</span>
-              </p>
-              <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
-                네이버 지도 열기
-              </a>
-            </div>
-            {mapError && <p className="map-error">{mapError}</p>}
-          </article>
-        </div>
-        <div className="operation-manual">
-          <div className="section-heading compact">
-            <p className="eyebrow">Operation Detail</p>
-            <h2>혼자 와도 자연스럽고, 초보도 안전하게 움직이는 현장 운영</h2>
-          </div>
-          <div className="operation-grid">
-            {operationDetails.map(([title, desc]) => (
-              <article key={title}>
-                <strong>{title}</strong>
-                <p>{desc}</p>
-              </article>
-            ))}
-          </div>
+          <p>{sectionCopy('faq').description}</p>
         </div>
         <div className="faq-list">
           {faqs.map((item) => (
-            <details key={item.question}>
+            <details
+              key={item.question}
+              open={openFaqQuestion === item.question}
+              onToggle={(event) => {
+                setOpenFaqQuestion(event.currentTarget.open ? item.question : null);
+              }}
+            >
               <summary>{item.question}</summary>
               <div className="faq-answer">
                 {item.answer?.map((paragraph) => (
@@ -1142,6 +1470,81 @@ export default function Home() {
       </section>
       )}
 
+      {isSectionVisible('location') && (
+      <section id="location" className="section location-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">{sectionCopy('location').label}</p>
+            <h2>{sectionCopy('location').title}</h2>
+          </div>
+          <p>{sectionCopy('location').description}</p>
+        </div>
+        <article className="map-panel">
+          {mapConfig?.configured && !mapError ? (
+            <div ref={mapContainerRef} className="naver-map-canvas" aria-label="네이버 지도" />
+          ) : (
+            <div className="map-fallback">
+              <div className="map-pin" aria-hidden="true" />
+              <span>NAVER MAP</span>
+              <p>API 키 연결 전에는 네이버 지도 장소 링크로 위치를 확인할 수 있습니다.</p>
+              <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
+                네이버 지도에서 보기
+              </a>
+            </div>
+          )}
+          <div className="map-actions">
+            <p>
+              <strong>{mapConfig?.placeName ?? defaultMapPlaceName}</strong>
+              <span className="map-address-row">
+                <span>{mapConfig?.address ?? defaultMapAddress}</span>
+                <button type="button" className="map-copy-button" onClick={handleCopyAddress}>
+                  {addressCopied ? '복사됨' : '주소 복사'}
+                </button>
+              </span>
+            </p>
+            <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
+              네이버 지도 열기
+            </a>
+          </div>
+          {mapError && <p className="map-error">{mapError}</p>}
+        </article>
+        <div className="operation-manual">
+          <div className="section-heading compact">
+            <p className="eyebrow">Operation Detail</p>
+            <h2>혼자 와도 자연스럽고, 초보도 안전하게 움직이는 현장 운영</h2>
+          </div>
+          <div className="operation-grid">
+            {operationDetails.map(([title, desc]) => (
+              <article key={title}>
+                <strong>{title}</strong>
+                <p>{desc}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+      )}
+
+      {isSectionVisible('identity') && (
+      <section id="identity" className="section location-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow">{sectionCopy('identity').label}</p>
+            <h2>{sectionCopy('identity').title}</h2>
+          </div>
+          <p>{sectionCopy('identity').description}</p>
+        </div>
+        <article className="space-gallery">
+          <p>코트 조명, 탄성 바닥, 탈의실과 정수기 등 편의시설을 사전 안내해 첫 방문의 불안을 줄입니다.</p>
+          <div className="gallery-strip">
+            <span>COURT</span>
+            <span>LIGHT</span>
+            <span>RECOVERY</span>
+          </div>
+        </article>
+      </section>
+      )}
+
       <footer className="footer-section">
         <div>
           <strong>CIRCUITMATE</strong>
@@ -1163,20 +1566,31 @@ export default function Home() {
             type="button"
             className="modal-backdrop"
             aria-label="티켓 구매 패널 닫기"
-            onClick={() => setBookingOpen(false)}
+            onClick={() => {
+              setBookingOpen(false);
+              setQuickStepStarted(false);
+            }}
           />
-          <section className="bottom-sheet">
+          <section className="bottom-sheet booking-sheet">
             <div className="sheet-handle" aria-hidden="true" />
             <div className="sheet-header">
               <div>
                 <p className="eyebrow">Ticket Checkout</p>
                 <h2 id="quick-booking-title">티켓 구매하기</h2>
               </div>
-              <button type="button" className="close-button" onClick={() => setBookingOpen(false)} aria-label="닫기">
+              <button
+                type="button"
+                className="close-button"
+                onClick={() => {
+                  setBookingOpen(false);
+                  setQuickStepStarted(false);
+                }}
+                aria-label="닫기"
+              >
                 닫기
               </button>
             </div>
-            <form onSubmit={handleBooking} className="sheet-form">
+            <form onSubmit={(event) => handleMainBooking(event, 'quick')} className="sheet-form">
               <fieldset className="sheet-picker">
                 <legend>일정 선택</legend>
                 <div className="sheet-date-grid" role="listbox" aria-label="티켓 구매 날짜">
@@ -1187,8 +1601,9 @@ export default function Home() {
                       className={selectedDate === date.id ? 'active' : ''}
                       onClick={() => handleDateSelect(date.id)}
                     >
-                      <span>{date.day}</span>
-                      <strong>{date.label}</strong>
+                      <strong>
+                        {date.label} ({date.day})
+                      </strong>
                     </button>
                   ))}
                 </div>
@@ -1197,8 +1612,8 @@ export default function Home() {
                 <legend>세션 선택</legend>
                 <div className="sheet-session-grid" role="listbox" aria-label="티켓 구매 세션">
                   {selectedDateInfo.sessions.map((session) => {
-                    const seatsLeft = MAX_PARTICIPANTS - session.booked;
-                    const status = getTicketStatus(session.booked);
+                    const sessionBooked = getSessionBooked(selectedDateInfo, session);
+                    const status = getTicketStatus(sessionBooked);
 
                     return (
                       <button
@@ -1211,69 +1626,73 @@ export default function Home() {
                           <strong>{session.label}</strong>
                           {session.time}
                         </span>
-                        <em>{seatsLeft}석 남음 · {status.label}</em>
+                        <em>{status.label}</em>
                       </button>
                     );
                   })}
                 </div>
               </fieldset>
-              <div className="form-row">
-                <label>
-                  이름
-                  <input name="quickName" placeholder="홍길동" required />
-                </label>
-                <label>
-                  연락처
-                  <input name="quickPhone" inputMode="tel" placeholder="010-0000-0000" required />
-                </label>
-              </div>
-              <div className="form-row">
-                <label>
-                  운동 수준
-                  <select name="quickLevel" defaultValue="intro">
-                    <option value="intro">입문자</option>
-                    <option value="experienced">경험자</option>
-                  </select>
-                </label>
-                <label>
-                  신청 유형
-                  <select name="quickParty" defaultValue="solo">
-                    <option value="solo">개인 신청</option>
-                    <option value="with-friend">동반인 있음</option>
-                    <option value="team">팀 단위 신청</option>
-                  </select>
-                </label>
-              </div>
-              <label>
-                패스 선택
-                <select name="quickPassType" defaultValue="single">
-                  {passOptions.map((pass) => (
-                    <option key={pass.value} value={pass.value}>
-                      {pass.title}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="checkbox-row">
-                <input type="checkbox" required />
-                준비물과 환불 규정을 확인했습니다.
-              </label>
-              <div className="sheet-payment">
-                <div className="sheet-summary">
-                  <span>{selectedSessionLabel}</span>
-                  <strong>원데이 티켓 {TICKET_PRICE}</strong>
-                </div>
-                <div className="payment-qr compact" aria-label="서킷메이트 티켓 결제 QR 코드">
-                  <img src="/payment-qr.png" alt="서킷메이트 티켓 결제 QR 코드" />
-                  <span>QR 결제</span>
-                </div>
-              </div>
-              <button type="submit" className="sheet-submit" disabled={bookingSending}>
-                {bookingSending ? '접수 중' : '티켓 구매 안내 받기'}
-              </button>
-              {bookingSent && <p className="success-message">접수되었습니다. 결제 안내와 확정 알림을 보내드릴게요.</p>}
-              {bookingError && <p className="error-message">{bookingError}</p>}
+              {quickStepStarted ? (
+                renderBuyerStepsForm()
+              ) : (
+                <button
+                  type="button"
+                  className="buyer-form-cta"
+                  onClick={() => setQuickStepStarted(true)}
+                >
+                  티켓 구매하기
+                </button>
+              )}
             </form>
+          </section>
+        </div>
+      )}
+
+      {showPaymentModal && (
+        <div className="booking-modal" role="dialog" aria-modal="true" aria-labelledby="payment-popup-title">
+          <button
+            type="button"
+            className="modal-backdrop"
+            aria-label="결제 안내 닫기"
+            onClick={() => {
+              setShowPaymentModal(false);
+              resetBuyerForm();
+            }}
+          />
+          <section className="bottom-sheet payment-popup-sheet">
+            <div className="sheet-handle" aria-hidden="true" />
+            <div className="sheet-header">
+              <div>
+                <p className="eyebrow">Payment</p>
+                <h2 id="payment-popup-title">결제 QR</h2>
+              </div>
+              <button
+                type="button"
+                className="close-button"
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  resetBuyerForm();
+                }}
+                aria-label="닫기"
+              >
+                닫기
+              </button>
+            </div>
+            <p className="payment-popup-copy">
+              신청이 접수됐어요. 아래 QR로 결제하시면 예약이 확정됩니다.
+            </p>
+            <div className="ticket-box">
+              <span>선택 일정</span>
+              <strong>{selectedSessionLabel}</strong>
+              <p>
+                {passOptions.find((pass) => pass.value === buyerForm.passType)?.title} ·{' '}
+                {passOptions.find((pass) => pass.value === buyerForm.passType)?.price}
+              </p>
+            </div>
+            <div className="payment-qr" aria-label="서킷메이트 티켓 결제 QR 코드">
+              <img src="/payment-qr.png" alt="서킷메이트 티켓 결제 QR 코드" />
+              <span>QR로 티켓 결제하기</span>
+            </div>
           </section>
         </div>
       )}

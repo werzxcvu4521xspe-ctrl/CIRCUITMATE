@@ -1,0 +1,8 @@
+ALTER TABLE reservations
+ADD COLUMN instagram TEXT NOT NULL DEFAULT '';
+
+ALTER TABLE reservations
+ADD COLUMN gender TEXT NOT NULL DEFAULT '';
+
+ALTER TABLE reservations
+ADD COLUMN companion_name TEXT NOT NULL DEFAULT '';

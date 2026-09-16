@@ -1,7 +1,9 @@
 'use client';
 
-import { FormEvent, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection } from '../../lib/site-map';
+import { ticketDates, buildSessionLabel, type TicketDate, type TicketSession } from '../../lib/schedule';
+import { getHolidayName } from '../../lib/holidays';
 
 type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
 type AdminTab = 'reservations' | 'sitemap' | 'reports';
@@ -10,9 +12,12 @@ type Reservation = {
   id: number;
   name: string;
   phone: string;
+  instagram: string;
+  gender: string;
   session: string;
   level: string;
   party: string;
+  companion_name: string;
   pass_type: string;
   status: ReservationStatus;
   source: string;
@@ -71,6 +76,132 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [siteMapMessage, setSiteMapMessage] = useState('');
+  const [calendarMonth, setCalendarMonth] = useState(() => (ticketDates[0]?.id ?? '2026-09-01').slice(0, 7));
+  const [selectedDateId, setSelectedDateId] = useState<string | null>(null);
+  const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
+  const [nowTimestamp, setNowTimestamp] = useState(0);
+
+  useEffect(() => {
+    const updateNow = () => setNowTimestamp(Date.now());
+    const initialTick = window.setTimeout(updateNow, 0);
+    const timer = window.setInterval(updateNow, 60_000);
+
+    return () => {
+      window.clearTimeout(initialTick);
+      window.clearInterval(timer);
+    };
+  }, []);
+
+  type CalendarCell = { iso: string; day: number };
+
+  const calendarWeeks = useMemo<CalendarCell[][]>(() => {
+    const [yearStr, monthStr] = calendarMonth.split('-');
+    const year = Number(yearStr);
+    const month = Number(monthStr);
+    const firstOfMonth = new Date(year, month - 1, 1);
+    const daysInMonth = new Date(year, month, 0).getDate();
+    const startWeekday = firstOfMonth.getDay();
+
+    const cells: CalendarCell[] = [];
+
+    for (let i = 0; i < startWeekday; i += 1) {
+      cells.push({ iso: '', day: 0 });
+    }
+
+    for (let day = 1; day <= daysInMonth; day += 1) {
+      const iso = `${yearStr}-${monthStr}-${String(day).padStart(2, '0')}`;
+      cells.push({ iso, day });
+    }
+
+    while (cells.length % 7 !== 0) {
+      cells.push({ iso: '', day: 0 });
+    }
+
+    const weeks: CalendarCell[][] = [];
+
+    for (let i = 0; i < cells.length; i += 7) {
+      weeks.push(cells.slice(i, i + 7));
+    }
+
+    return weeks;
+  }, [calendarMonth]);
+
+  const selectedDate = useMemo<TicketDate | null>(
+    () => ticketDates.find((date) => date.id === selectedDateId) ?? null,
+    [selectedDateId]
+  );
+
+  const selectedSession = useMemo<TicketSession | null>(
+    () => selectedDate?.sessions.find((session) => session.id === selectedSessionId) ?? null,
+    [selectedDate, selectedSessionId]
+  );
+
+  const selectedScheduleLabel = useMemo(
+    () => (selectedDate && selectedSession ? buildSessionLabel(selectedDate, selectedSession) : null),
+    [selectedDate, selectedSession]
+  );
+
+  const scheduleReservations = useMemo(
+    () =>
+      selectedScheduleLabel
+        ? reservations.filter((reservation) => reservation.session === selectedScheduleLabel)
+        : [],
+    [reservations, selectedScheduleLabel]
+  );
+
+  const sessionReservationCounts = useMemo(() => {
+    const counts = new Map<string, number>();
+
+    for (const reservation of reservations) {
+      if (reservation.status === 'cancelled') continue;
+      counts.set(reservation.session, (counts.get(reservation.session) ?? 0) + 1);
+    }
+
+    return counts;
+  }, [reservations]);
+
+  function getSessionParticipantCount(date: TicketDate, session: TicketSession) {
+    return sessionReservationCounts.get(buildSessionLabel(date, session)) ?? 0;
+  }
+
+  function getSessionEndTime(date: TicketDate, session: TicketSession) {
+    const endPart = session.time.split('-')[1]?.trim() ?? '';
+    const [hourStr, minuteStr] = endPart.split(':');
+    const hour = Number(hourStr);
+    const minute = Number(minuteStr);
+    const end = new Date(`${date.id}T00:00:00`);
+
+    if (Number.isFinite(hour) && Number.isFinite(minute)) {
+      end.setHours(hour, minute, 0, 0);
+    }
+
+    return end;
+  }
+
+  function isSessionPast(date: TicketDate, session: TicketSession) {
+    return nowTimestamp > 0 && getSessionEndTime(date, session).getTime() < nowTimestamp;
+  }
+
+  function shiftCalendarMonth(delta: number) {
+    const [yearStr, monthStr] = calendarMonth.split('-');
+    const next = new Date(Number(yearStr), Number(monthStr) - 1 + delta, 1);
+    setCalendarMonth(`${next.getFullYear()}-${String(next.getMonth() + 1).padStart(2, '0')}`);
+  }
+
+  function handleSelectCalendarDate(iso: string) {
+    if (selectedDateId === iso) {
+      setSelectedDateId(null);
+      setSelectedSessionId(null);
+      return;
+    }
+
+    setSelectedDateId(iso);
+    setSelectedSessionId(null);
+  }
+
+  function handleSelectCalendarSession(sessionId: string) {
+    setSelectedSessionId((current) => (current === sessionId ? null : sessionId));
+  }
 
   const stats = useMemo(
     () =>
@@ -305,62 +436,215 @@ export default function AdminPage() {
                 ))}
               </div>
 
-              <div className="reservation-table-wrap">
-                {reservations.length === 0 ? (
-                  <div className="admin-empty">
-                    <h2>아직 접수된 예약이 없습니다.</h2>
-                    <p>홈페이지 예약 폼으로 신청이 들어오면 이곳에 최신순으로 표시됩니다.</p>
+              <div className="admin-calendar">
+                <div className="admin-calendar-head">
+                  <button type="button" onClick={() => shiftCalendarMonth(-1)} aria-label="이전 달">
+                    ‹
+                  </button>
+                  <strong>
+                    {calendarMonth.slice(0, 4)}년 {Number(calendarMonth.slice(5, 7))}월
+                  </strong>
+                  <button type="button" onClick={() => shiftCalendarMonth(1)} aria-label="다음 달">
+                    ›
+                  </button>
+                </div>
+
+                <div className="admin-calendar-weekdays">
+                  {['일', '월', '화', '수', '목', '금', '토'].map((weekday) => (
+                    <span key={weekday}>{weekday}</span>
+                  ))}
+                </div>
+
+                <div className="admin-calendar-grid">
+                  {calendarWeeks.map((week, weekIndex) => (
+                    <div className="admin-calendar-row" key={weekIndex}>
+                      {week.map((cell, cellIndex) => {
+                        if (!cell.iso) {
+                          return <div className="admin-calendar-cell is-empty" key={`empty-${weekIndex}-${cellIndex}`} />;
+                        }
+
+                        const ticketDate = ticketDates.find((date) => date.id === cell.iso);
+                        const holidayName = getHolidayName(cell.iso);
+                        const totalBooked = ticketDate
+                          ? ticketDate.sessions.reduce(
+                              (sum, session) => sum + getSessionParticipantCount(ticketDate, session),
+                              0
+                            )
+                          : 0;
+                        const allSessionsClosed = ticketDate
+                          ? ticketDate.sessions.every((session) => isSessionPast(ticketDate, session))
+                          : false;
+                        const isSelected = selectedDateId === cell.iso;
+                        const cellClassNames = ['admin-calendar-cell'];
+                        if (ticketDate) cellClassNames.push('has-session');
+                        if (holidayName) cellClassNames.push('is-holiday');
+                        if (isSelected) cellClassNames.push('is-selected');
+                        if (allSessionsClosed) cellClassNames.push('is-past');
+
+                        return (
+                          <button
+                            type="button"
+                            key={cell.iso}
+                            className={cellClassNames.join(' ')}
+                            onClick={() => ticketDate && handleSelectCalendarDate(cell.iso)}
+                            disabled={!ticketDate}
+                          >
+                            <span className="admin-calendar-day">{cell.day}</span>
+                            {holidayName && <span className="admin-calendar-holiday">{holidayName}</span>}
+                            {ticketDate && (
+                              <span className="admin-calendar-session-badge">
+                                {allSessionsClosed
+                                  ? '마감'
+                                  : `세션 ${ticketDate.sessions.length}개 · ${totalBooked}명`}
+                              </span>
+                            )}
+                            {ticketDate && holidayName && (
+                              <span className="admin-calendar-conflict">⚠ 공휴일 겹침</span>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  ))}
+                </div>
+
+                <p className="admin-calendar-legend">
+                  <span className="legend-dot has-session" /> 세션 있음
+                  <span className="legend-dot is-holiday" /> 공휴일
+                  <span className="legend-dot is-empty" /> 세션 없음
+                </p>
+              </div>
+
+              {selectedDate && (
+                <div className="admin-calendar-sessions">
+                  <div className="admin-calendar-sessions-head">
+                    <strong>
+                      {selectedDate.label} {selectedDate.day}
+                    </strong>
+                    <button
+                      type="button"
+                      className="admin-calendar-clear"
+                      onClick={() => handleSelectCalendarDate(selectedDate.id)}
+                    >
+                      선택 해제
+                    </button>
                   </div>
-                ) : (
-                  <table className="reservation-table">
-                    <thead>
-                      <tr>
-                        <th>상태</th>
-                        <th>예약자</th>
-                        <th>연락처</th>
-                        <th>일정</th>
-                        <th>패스</th>
-                        <th>수준/유형</th>
-                        <th>접수일</th>
-                        <th>관리</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {reservations.map((reservation) => (
-                        <tr key={reservation.id}>
-                          <td>
-                            <span className={`status-pill ${reservation.status}`}>
-                              {statusLabels[reservation.status]}
-                            </span>
-                          </td>
-                          <td>{reservation.name}</td>
-                          <td>{reservation.phone}</td>
-                          <td>{reservation.session}</td>
-                          <td>{passLabels[reservation.pass_type] ?? reservation.pass_type}</td>
-                          <td>
-                            {reservation.level} / {reservation.party}
-                          </td>
-                          <td>{new Date(reservation.created_at).toLocaleString('ko-KR')}</td>
-                          <td>
-                            <div className="status-actions">
-                              {statusOrder.map((status) => (
-                                <button
-                                  key={status}
-                                  type="button"
-                                  className={reservation.status === status ? 'active' : ''}
-                                  onClick={() => updateStatus(reservation.id, status)}
-                                  disabled={loading || reservation.status === status}
-                                >
-                                  {statusLabels[status]}
-                                </button>
-                              ))}
-                            </div>
-                          </td>
+                  {getHolidayName(selectedDate.id) && (
+                    <p className="admin-calendar-conflict-note">
+                      ⚠ {getHolidayName(selectedDate.id)}과 겹치는 일정입니다. 기존 참가자 확인 후 일정 조정 여부를 결정해주세요.
+                    </p>
+                  )}
+                  <div className="admin-calendar-session-list">
+                    {selectedDate.sessions.map((session) => {
+                      const closed = isSessionPast(selectedDate, session);
+                      const participantCount = getSessionParticipantCount(selectedDate, session);
+                      const buttonClassNames = [selectedSessionId === session.id ? 'active' : ''];
+                      if (closed) buttonClassNames.push('is-past');
+
+                      return (
+                        <button
+                          type="button"
+                          key={session.id}
+                          className={buttonClassNames.filter(Boolean).join(' ')}
+                          onClick={() => handleSelectCalendarSession(session.id)}
+                        >
+                          <span>
+                            {session.label} · {session.time}
+                          </span>
+                          <small>{closed ? '마감' : `${participantCount}명 신청`}</small>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <div className="reservation-table-wrap">
+                <div className="reservation-table-head">
+                  <h3>
+                    {selectedScheduleLabel
+                      ? `${selectedScheduleLabel} 참가자 (${scheduleReservations.length}명)`
+                      : `전체 예약 (${reservations.length}건)`}
+                  </h3>
+                </div>
+                {(() => {
+                  const rows = selectedScheduleLabel ? scheduleReservations : reservations;
+
+                  if (rows.length === 0) {
+                    return (
+                      <div className="admin-empty">
+                        <h2>
+                          {selectedScheduleLabel
+                            ? '이 일정에 접수된 참가자가 없습니다.'
+                            : '아직 접수된 예약이 없습니다.'}
+                        </h2>
+                        <p>
+                          {selectedScheduleLabel
+                            ? '다른 일정을 선택하거나 캘린더에서 다시 확인해보세요.'
+                            : '홈페이지 예약 폼으로 신청이 들어오면 이곳에 최신순으로 표시됩니다.'}
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <table className="reservation-table">
+                      <thead>
+                        <tr>
+                          <th>상태</th>
+                          <th>예약자</th>
+                          <th>연락처</th>
+                          <th>인스타</th>
+                          <th>성별</th>
+                          {!selectedScheduleLabel && <th>일정</th>}
+                          <th>패스</th>
+                          <th>수준</th>
+                          <th>유형</th>
+                          <th>접수일</th>
+                          <th>관리</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                )}
+                      </thead>
+                      <tbody>
+                        {rows.map((reservation) => (
+                          <tr key={reservation.id}>
+                            <td>
+                              <span className={`status-pill ${reservation.status}`}>
+                                {statusLabels[reservation.status]}
+                              </span>
+                            </td>
+                            <td>{reservation.name}</td>
+                            <td>{reservation.phone}</td>
+                            <td>{reservation.instagram || '-'}</td>
+                            <td>{reservation.gender || '-'}</td>
+                            {!selectedScheduleLabel && <td>{reservation.session}</td>}
+                            <td>{passLabels[reservation.pass_type] ?? reservation.pass_type}</td>
+                            <td>{reservation.level || '-'}</td>
+                            <td>
+                              {reservation.party || '-'}
+                              {reservation.companion_name ? ` (${reservation.companion_name})` : ''}
+                            </td>
+                            <td>{new Date(reservation.created_at).toLocaleString('ko-KR')}</td>
+                            <td>
+                              <div className="status-actions">
+                                {statusOrder.map((status) => (
+                                  <button
+                                    key={status}
+                                    type="button"
+                                    className={reservation.status === status ? 'active' : ''}
+                                    onClick={() => updateStatus(reservation.id, status)}
+                                    disabled={loading || reservation.status === status}
+                                  >
+                                    {statusLabels[status]}
+                                  </button>
+                                ))}
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  );
+                })()}
               </div>
             </section>
           )}

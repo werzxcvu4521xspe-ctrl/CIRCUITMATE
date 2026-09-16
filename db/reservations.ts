@@ -6,9 +6,12 @@ export type Reservation = {
   id: number;
   name: string;
   phone: string;
+  instagram: string;
+  gender: string;
   session: string;
   level: string;
   party: string;
+  companion_name: string;
   pass_type: string;
   status: ReservationStatus;
   source: string;
