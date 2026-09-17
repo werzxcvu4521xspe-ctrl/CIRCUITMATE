@@ -1261,14 +1261,7 @@ export default function Home() {
                       return (
                         <article key={time}>
                           <time>
-                            {match ? (
-                              <>
-                                <span className="timeline-time-range">{match[1]}</span>
-                                <span className="timeline-duration">{match[2]}</span>
-                              </>
-                            ) : (
-                              <span className="timeline-time-range">{time}</span>
-                            )}
+                            <span className="timeline-duration">{match ? match[2] : time}</span>
                           </time>
                           <div>
                             <h4>{title}</h4>
