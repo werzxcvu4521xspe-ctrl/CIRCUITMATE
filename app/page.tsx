@@ -286,11 +286,17 @@ export default function Home() {
   const selectedSessionBooked = getSessionBooked(selectedDateInfo, selectedTicketSession);
   const remainingSeats = MAX_PARTICIPANTS - selectedSessionBooked;
   const visibleSections = useMemo(
-    () => new Set(siteMap.filter((section) => section.visible).map((section) => section.id)),
+    () =>
+      new Set(
+        siteMap.filter((section) => section.visible && section.id !== 'identity').map((section) => section.id)
+      ),
     [siteMap],
   );
   const navItems = useMemo(
-    () => siteMap.filter((section) => section.visible).map((section) => [section.label, section.href] as const),
+    () =>
+      siteMap
+        .filter((section) => section.visible && section.id !== 'identity')
+        .map((section) => [section.label, section.href] as const),
     [siteMap],
   );
 
