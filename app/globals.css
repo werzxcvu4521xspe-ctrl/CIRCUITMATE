@@ -3833,6 +3833,86 @@ textarea {
   }
 }
 
+/* Scroll-triggered reveal (subtle fade + rise) */
+.reveal {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.7s var(--ease-apple), transform 0.7s var(--ease-apple);
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Card hover micro-interactions */
+.metric-grid article,
+.horizontal-cards article,
+.social-grid article,
+.story-panel article,
+.recovery-grid article,
+.guide-grid article,
+.awards-slider article,
+.operation-grid article,
+.moment-card {
+  transition: transform 0.35s var(--ease-apple), box-shadow 0.35s var(--ease-apple), border-color 0.35s var(--ease-apple);
+}
+
+.metric-grid article:hover,
+.horizontal-cards article:hover,
+.social-grid article:hover,
+.story-panel article:hover,
+.recovery-grid article:hover,
+.guide-grid article:hover,
+.awards-slider article:hover,
+.operation-grid article:hover,
+.moment-card:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
+  transform: translateY(-6px);
+}
+
+.figures-grid article,
+.pass-card {
+  transition: background-color 0.35s var(--ease-apple), filter 0.35s var(--ease-apple);
+}
+
+.figures-grid article:hover {
+  background-color: rgba(255, 255, 255, 0.035);
+}
+
+.pass-card:hover {
+  filter: brightness(1.08);
+}
+
+/* FAQ accordion transitions */
+.faq-list details {
+  transition: background-color 0.3s var(--ease-apple), border-color 0.3s var(--ease-apple), box-shadow 0.3s var(--ease-apple);
+}
+
+.faq-list summary {
+  transition: color 0.2s var(--ease-apple), opacity 0.2s var(--ease-apple);
+}
+
+.faq-list summary:hover {
+  opacity: 0.72;
+}
+
+@keyframes faqAnswerIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.faq-list details[open] .faq-answer {
+  animation: faqAnswerIn 0.35s var(--ease-apple);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

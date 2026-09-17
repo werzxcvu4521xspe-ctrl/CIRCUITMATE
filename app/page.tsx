@@ -359,6 +359,35 @@ export default function Home() {
   }, [navItems]);
 
   useEffect(() => {
+    const elements = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
+
+    if (elements.length === 0) {
+      return;
+    }
+
+    if (typeof window.IntersectionObserver !== 'function') {
+      elements.forEach((el) => el.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    );
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [visibleSections]);
+
+  useEffect(() => {
     let mounted = true;
 
     async function loadSiteMap() {
@@ -1139,7 +1168,7 @@ export default function Home() {
               <p className="eyebrow">Key Figures</p>
               <h2>한 번의 밤을 숫자로 읽으면, 운영 흐름이 더 선명해집니다.</h2>
             </div>
-            <div className="figures-grid">
+            <div className="figures-grid reveal">
               {keyFigures.map(([index, value, label]) => (
                 <article key={label}>
                   <span>{index}</span>
@@ -1158,7 +1187,7 @@ export default function Home() {
               </div>
               <p>각 단계는 운동 설명, 핵심 큐잉, 팀 인터랙션이 자연스럽게 이어지도록 구성했습니다.</p>
             </div>
-            <div className="horizontal-cards">
+            <div className="horizontal-cards reveal">
               {previewCards.map(([title, desc]) => (
                 <article key={title}>
                   <span>{title}</span>
@@ -1175,7 +1204,7 @@ export default function Home() {
                 <h2>프레임 단위로 기억되는 네 개의 장면</h2>
               </div>
             </div>
-            <div className="moment-grid">
+            <div className="moment-grid reveal">
               {selectedMoments.map(([title, desc], index) => (
                 <article key={title} className="moment-card">
                   <div className="moment-media">
@@ -1205,7 +1234,7 @@ export default function Home() {
               <h2>{sectionCopy('brand').title}</h2>
             </div>
           </div>
-          <article className="manifesto-panel" aria-label="서킷메이트 핵심 철학 및 브랜드 선언문">
+          <article className="manifesto-panel reveal" aria-label="서킷메이트 핵심 철학 및 브랜드 선언문">
             <span>Brand Manifesto</span>
             <h3>서킷메이트의 핵심 철학 및 브랜드 선언문</h3>
             <div>
@@ -1214,7 +1243,7 @@ export default function Home() {
               ))}
             </div>
           </article>
-          <div className="story-panel">
+          <div className="story-panel reveal">
             <article>
               <span>Mission</span>
               <p>건강한 몰입, 절제된 분위기, 회복의 시간을 통해 일회성 파티보다 오래 남는 연결을 만듭니다.</p>
@@ -1324,7 +1353,7 @@ export default function Home() {
             <h2>{sectionCopy('recovery').title}</h2>
           </div>
         </div>
-        <div className="recovery-grid">
+        <div className="recovery-grid reveal">
           {recoveryItems.map(([tag, title, desc]) => (
             <article key={title}>
               <span>{tag}</span>
@@ -1333,7 +1362,7 @@ export default function Home() {
             </article>
           ))}
         </div>
-        <div className="guide-grid">
+        <div className="guide-grid reveal">
           {wellnessGuide.map(([title, desc]) => (
             <article key={title}>
               <strong>{title}</strong>
@@ -1350,7 +1379,7 @@ export default function Home() {
           <p className="eyebrow">{sectionCopy('awards').label}</p>
           <h2>{sectionCopy('awards').title}</h2>
         </div>
-        <div className="awards-slider" aria-label="서킷메이트 어워즈 부문">
+        <div className="awards-slider reveal" aria-label="서킷메이트 어워즈 부문">
           {awards.map(([title, desc]) => (
             <article key={title}>
               <div className="award-icon" aria-hidden="true">{title.slice(0, 1)}</div>
@@ -1372,7 +1401,7 @@ export default function Home() {
           <p>{sectionCopy('pricing').description}</p>
         </div>
         <div className="value-card">
-          <div className="pass-grid">
+          <div className="pass-grid reveal">
             {passOptions.map((pass) => (
               <article key={pass.value} className={pass.value === 'single' ? 'pass-card featured' : 'pass-card monthly'}>
                 <span>{pass.eyebrow}</span>
@@ -1412,7 +1441,7 @@ export default function Home() {
           </div>
           <p>{sectionCopy('review').description}</p>
         </div>
-        <div className="social-grid" aria-label="참가자 현장 스케치와 포토 리뷰">
+        <div className="social-grid reveal" aria-label="참가자 현장 스케치와 포토 리뷰">
           {socialProof.map(([name, text]) => (
             <article key={name}>
               <div className="photo-tile" />
@@ -1432,7 +1461,7 @@ export default function Home() {
             <h2>{sectionCopy('booking').title}</h2>
           </div>
         </div>
-        <div className="booking-layout">
+        <div className="booking-layout reveal">
           <aside className="slot-panel">
             <h3>6.1 일정 선택</h3>
             <div className="date-calendar" role="listbox" aria-label="토요일 티켓 날짜">
@@ -1512,7 +1541,7 @@ export default function Home() {
             <h2>{sectionCopy('faq').title}</h2>
           </div>
         </div>
-        <div className="faq-list">
+        <div className="faq-list reveal">
           {faqItems
             .filter((item) => item.visible)
             .map((item) => (
@@ -1619,7 +1648,7 @@ export default function Home() {
             <p className="eyebrow">Operation Detail</p>
             <h2>혼자 와도 자연스럽고, 초보도 안전하게 움직이는 현장 운영</h2>
           </div>
-          <div className="operation-grid">
+          <div className="operation-grid reveal">
             {operationDetails.map(([title, desc]) => (
               <article key={title}>
                 <strong>{title}</strong>
