@@ -3307,12 +3307,12 @@ textarea {
 
   nav.mobile-open a:hover,
   nav.mobile-open a:focus-visible {
-    color: var(--pantone-806-c);
+    color: var(--pantone-1788-c);
   }
 
   nav.mobile-open a:hover .nav-index,
   nav.mobile-open a:focus-visible .nav-index {
-    color: var(--pantone-806-c);
+    color: var(--pantone-1788-c);
   }
 
   nav.mobile-open a:active {
@@ -3321,11 +3321,11 @@ textarea {
   }
 
   nav.mobile-open a.active {
-    color: var(--pantone-806-c);
+    color: var(--pantone-1788-c);
   }
 
   nav.mobile-open a.active .nav-index {
-    color: var(--pantone-806-c);
+    color: var(--pantone-1788-c);
   }
 
   nav.mobile-open .nav-divider {
@@ -3358,14 +3358,6 @@ textarea {
     letter-spacing: -0.01em;
     line-height: 1.04;
     text-transform: uppercase;
-  }
-
-  nav.mobile-open a.nav-accent {
-    color: var(--pantone-1788-c);
-  }
-
-  nav.mobile-open a.nav-accent .nav-index {
-    color: rgba(238, 39, 55, 0.55);
   }
 
   nav.mobile-open .nav-badge {
