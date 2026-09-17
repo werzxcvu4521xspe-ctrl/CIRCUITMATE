@@ -101,7 +101,6 @@ const timeline = [
   ['메인 서킷', '18:33 - 18:35 (2분)', '서킷 종목 설명', '5개 구역 동작 시범 및 핵심 큐잉 브리핑'],
   ['메인 서킷', '18:35 - 18:42 (7분)', '메인 서킷 1라운드', '5개 종목 순환 (종목당 1분 운동 + 30초 휴식/이동)'],
   ['메인 서킷', '18:42 - 18:45 (3분)', '라운드 간 휴식', '팀별 호흡 조절 및 수분 보충'],
-  ['메인 서킷', '18:45 - 18:52 (7분)', '메인 서킷 2라운드', '5개 종목 2차 순환 (동일 루틴 진행)'],
   ['마무리 운동', '18:52 - 18:55 (3분)', '2차 수분 보충', '호흡 정리 및 이어달리기 순서 결정'],
   ['마무리 운동', '18:55 - 19:10 (15분)', '팀 이어달리기', '코트를 활용한 팀 대항 이어달리기'],
   ['마무리 운동', '19:10 - 19:15 (5분)', '마무리 스트레칭', '이어달리기 후 전신 이완 및 호흡 정리'],
@@ -269,7 +268,7 @@ export default function Home() {
   const [buyerForm, setBuyerForm] = useState<BuyerFormState>(INITIAL_BUYER_FORM);
   const [buyerStepIndex, setBuyerStepIndex] = useState(0);
   const [editingStepIndex, setEditingStepIndex] = useState<number | null>(null);
-  const [agreements, setAgreements] = useState({ gear: false, policy: false });
+  const [agreements, setAgreements] = useState({ gear: false, policy: false, recording: false });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [spotlight, setSpotlight] = useState({ x: 50, y: 18 });
   const [mapConfig, setMapConfig] = useState<MapConfig | null>(null);
@@ -706,7 +705,7 @@ export default function Home() {
     setBuyerForm(INITIAL_BUYER_FORM);
     setBuyerStepIndex(0);
     setEditingStepIndex(null);
-    setAgreements({ gear: false, policy: false });
+    setAgreements({ gear: false, policy: false, recording: false });
     setMainStepStarted(false);
     setQuickStepStarted(false);
   }
@@ -949,8 +948,21 @@ export default function Home() {
               />
               환불 규정과 세션 운영 정책에 동의합니다.
             </label>
+            <label className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={agreements.recording}
+                onChange={(event) =>
+                  setAgreements((prev) => ({ ...prev, recording: event.target.checked }))
+                }
+              />
+              세션 중 촬영된 사진/영상이 기록 및 홍보 목적으로 활용될 수 있음에 동의합니다.
+            </label>
             <p className="payment-hint">결제는 신청 접수 후 팝업으로 안내됩니다.</p>
-            <button type="submit" disabled={bookingSending || !agreements.gear || !agreements.policy}>
+            <button
+              type="submit"
+              disabled={bookingSending || !agreements.gear || !agreements.policy || !agreements.recording}
+            >
               {bookingSending ? '접수 중' : '구매 안내 받기'}
             </button>
             {bookingError && <p className="error-message">{bookingError}</p>}
