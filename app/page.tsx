@@ -470,8 +470,18 @@ export default function Home() {
       return;
     }
 
+    let cancelled = false;
+    let rendered = false;
+
     const renderMap = () => {
+      if (cancelled || rendered) {
+        return;
+      }
       if (!mapContainerRef.current || !window.naver?.maps) {
+        return;
+      }
+      if (mapContainerRef.current.childElementCount > 0) {
+        rendered = true;
         return;
       }
 
@@ -495,11 +505,15 @@ export default function Home() {
         map,
         title: mapConfig.placeName,
       });
+
+      rendered = true;
     };
 
     if (window.naver?.maps) {
       renderMap();
-      return;
+      return () => {
+        cancelled = true;
+      };
     }
 
     window.initCircuitmateNaverMap = renderMap;
@@ -507,25 +521,42 @@ export default function Home() {
       setMapError('네이버 지도 인증에 실패했습니다. Naver Cloud Platform 콘솔에서 Maps API 키의 Web 서비스 URL에 이 사이트 도메인이 등록되어 있는지 확인해주세요.');
     };
 
-    if (document.getElementById('naver-map-sdk')) {
-      return;
+    // Naver SDK's own ready callback occasionally never fires (observed in production even
+    // when the API key/domain are correctly configured), leaving the canvas blank. Poll as a
+    // safety net so the map still renders once window.naver.maps becomes available.
+    const pollId = window.setInterval(() => {
+      renderMap();
+      if (rendered || cancelled) {
+        window.clearInterval(pollId);
+      }
+    }, 300);
+    const timeoutId = window.setTimeout(() => {
+      window.clearInterval(pollId);
+    }, 8000);
+
+    if (!document.getElementById('naver-map-sdk')) {
+      const script = document.createElement('script');
+      script.id = 'naver-map-sdk';
+      script.async = true;
+      const scriptParams = new URLSearchParams({
+        ncpKeyId: mapConfig.keyId,
+        callback: 'initCircuitmateNaverMap',
+      });
+
+      if (mapConfig.customStyleId) {
+        scriptParams.set('submodules', 'gl');
+      }
+
+      script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?${scriptParams.toString()}`;
+      script.onerror = () => setMapError('네이버 지도를 불러오지 못했습니다.');
+      document.head.appendChild(script);
     }
 
-    const script = document.createElement('script');
-    script.id = 'naver-map-sdk';
-    script.async = true;
-    const scriptParams = new URLSearchParams({
-      ncpKeyId: mapConfig.keyId,
-      callback: 'initCircuitmateNaverMap',
-    });
-
-    if (mapConfig.customStyleId) {
-      scriptParams.set('submodules', 'gl');
-    }
-
-    script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?${scriptParams.toString()}`;
-    script.onerror = () => setMapError('네이버 지도를 불러오지 못했습니다.');
-    document.head.appendChild(script);
+    return () => {
+      cancelled = true;
+      window.clearInterval(pollId);
+      window.clearTimeout(timeoutId);
+    };
   }, [mapConfig]);
 
   function isSectionVisible(id: SiteSectionId) {
