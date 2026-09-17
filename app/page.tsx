@@ -485,46 +485,71 @@ export default function Home() {
         return;
       }
 
-      const center = new window.naver.maps.LatLng(mapConfig.lat as number, mapConfig.lng as number);
-      const map = new window.naver.maps.Map(mapContainerRef.current, {
-        center,
-        zoom: 16,
-        zoomControl: true,
-        scaleControl: false,
-        mapDataControl: false,
-        ...(mapConfig.customStyleId
-          ? {
-              gl: true,
-              customStyleId: mapConfig.customStyleId,
-            }
-          : {}),
-      });
+      try {
+        const center = new window.naver.maps.LatLng(mapConfig.lat as number, mapConfig.lng as number);
+        const map = new window.naver.maps.Map(mapContainerRef.current, {
+          center,
+          zoom: 16,
+          zoomControl: true,
+          scaleControl: false,
+          mapDataControl: false,
+          ...(mapConfig.customStyleId
+            ? {
+                gl: true,
+                customStyleId: mapConfig.customStyleId,
+              }
+            : {}),
+        });
 
-      new window.naver.maps.Marker({
-        position: center,
-        map,
-        title: mapConfig.placeName,
-      });
+        new window.naver.maps.Marker({
+          position: center,
+          map,
+          title: mapConfig.placeName,
+        });
 
-      rendered = true;
+        rendered = true;
+      } catch {
+        // 커스텀 스타일(GL) 모듈이 아직 로드되지 않았을 수 있음 — 폴링에서 재시도.
+      }
+    };
+
+    // 커스텀 스타일(Style Editor)을 쓰려면 기본 maps.js 외에 별도의 GL 모듈 스크립트가 필요함.
+    // (submodules=gl 파라미터가 아니라 maps-gl.js를 따로 로드해야 동작함.)
+    const ensureGlModule = () => {
+      if (!mapConfig.customStyleId || document.getElementById('naver-map-gl-sdk')) {
+        return;
+      }
+
+      const glScript = document.createElement('script');
+      glScript.id = 'naver-map-gl-sdk';
+      glScript.async = true;
+      glScript.src = 'https://oapi.map.naver.com/openapi/v3/maps-gl.js';
+      glScript.onload = renderMap;
+      document.head.appendChild(glScript);
     };
 
     if (window.naver?.maps) {
+      ensureGlModule();
       renderMap();
       return () => {
         cancelled = true;
       };
     }
 
-    window.initCircuitmateNaverMap = renderMap;
+    window.initCircuitmateNaverMap = () => {
+      ensureGlModule();
+      renderMap();
+    };
     window.navermap_authFailure = () => {
       setMapError('네이버 지도 인증에 실패했습니다. Naver Cloud Platform 콘솔에서 Maps API 키의 Web 서비스 URL에 이 사이트 도메인이 등록되어 있는지 확인해주세요.');
     };
 
     // Naver SDK's own ready callback occasionally never fires (observed in production even
     // when the API key/domain are correctly configured), leaving the canvas blank. Poll as a
-    // safety net so the map still renders once window.naver.maps becomes available.
+    // safety net so the map still renders once window.naver.maps (and, for custom styles, the
+    // GL module) becomes available.
     const pollId = window.setInterval(() => {
+      ensureGlModule();
       renderMap();
       if (rendered || cancelled) {
         window.clearInterval(pollId);
@@ -542,10 +567,6 @@ export default function Home() {
         ncpKeyId: mapConfig.keyId,
         callback: 'initCircuitmateNaverMap',
       });
-
-      if (mapConfig.customStyleId) {
-        scriptParams.set('submodules', 'gl');
-      }
 
       script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?${scriptParams.toString()}`;
       script.onerror = () => setMapError('네이버 지도를 불러오지 못했습니다.');
