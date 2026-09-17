@@ -1242,11 +1242,6 @@ export default function Home() {
             </article>
           </div>
         </div>
-        <div className="mini-game-card">
-          <span>3.3 Mini Game & Relay</span>
-          <h3>순발력 코트 터치 게임과 코트 대형 이어달리기</h3>
-          <p>팀원 간 사인을 맞추며 코트 라인을 터치하고, 마지막 릴레이에서 자연스럽게 응원과 사진이 만들어집니다.</p>
-        </div>
       </section>
       )}
 
