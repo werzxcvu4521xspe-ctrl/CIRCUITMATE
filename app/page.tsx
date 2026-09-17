@@ -1574,6 +1574,7 @@ export default function Home() {
                   {addressCopied ? '복사됨' : '주소 복사'}
                 </button>
               </span>
+              <span className="map-note">건물 자체 주차장이 없습니다.</span>
             </p>
             <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
               네이버 지도 열기

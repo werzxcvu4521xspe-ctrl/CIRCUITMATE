@@ -1990,6 +1990,13 @@ textarea {
   gap: 10px;
 }
 
+.map-note {
+  color: rgba(60, 16, 83, 0.5);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
 .map-copy-button {
   background: rgba(238, 39, 55, 0.08);
   border: 1px solid rgba(238, 39, 55, 0.35);
