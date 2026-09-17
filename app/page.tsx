@@ -1699,6 +1699,7 @@ export default function Home() {
             <div className="payment-qr" aria-label="서킷메이트 티켓 결제 QR 코드">
               <img src="/payment-qr.png" alt="서킷메이트 티켓 결제 QR 코드" />
               <span>QR로 티켓 결제하기</span>
+              <p className="payment-qr-hint">모바일에서는 QR 이미지를 꾹 눌러 저장한 뒤, 결제 앱에서 스캔하면 바로 결제할 수 있어요.</p>
             </div>
           </section>
         </div>

@@ -1823,6 +1823,16 @@ textarea {
   line-height: 1.25;
 }
 
+.payment-qr-hint {
+  color: rgba(15, 15, 26, 0.6);
+  display: none;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  margin: 0;
+  text-align: center;
+}
+
 .success-message {
   color: #0f6b55;
   font-weight: 800;
@@ -3554,6 +3564,10 @@ textarea {
 
   .payment-qr img {
     max-width: 240px;
+  }
+
+  .payment-qr-hint {
+    display: block;
   }
 
   .palette-panel article,
