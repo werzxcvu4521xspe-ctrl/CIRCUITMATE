@@ -386,30 +386,53 @@ export default function Home() {
   );
 
   useEffect(() => {
-    const elements = navItems
-      .map(([, href]) => document.getElementById(href.replace('#', '')))
+    const ids = navItems.map(([, href]) => href.replace('#', ''));
+    const elements = ids
+      .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => Boolean(el));
 
     if (elements.length === 0) {
       return;
     }
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((entry) => entry.isIntersecting)
-          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+    let ticking = false;
 
-        if (visible[0]) {
-          setActiveSection(visible[0].target.id);
+    // The "home" section id lives on the outer <main> element, which wraps
+    // every other section, so it can't be compared by intersection ratio
+    // (it would always look "smaller" than any single section). Instead,
+    // walk the sections in document order and keep the last one whose top
+    // has scrolled above a fixed line near the top of the viewport.
+    function updateActiveSection() {
+      const line = window.innerHeight * 0.35;
+      let current = elements[0].id;
+
+      for (const el of elements) {
+        if (el.getBoundingClientRect().top <= line) {
+          current = el.id;
+        } else {
+          break;
         }
-      },
-      { rootMargin: '-45% 0px -50% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] },
-    );
+      }
 
-    elements.forEach((el) => observer.observe(el));
+      setActiveSection(current);
+      ticking = false;
+    }
 
-    return () => observer.disconnect();
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateActiveSection);
+      }
+    }
+
+    updateActiveSection();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
   }, [navItems]);
 
   useEffect(() => {
