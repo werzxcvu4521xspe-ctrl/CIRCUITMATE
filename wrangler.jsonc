@@ -6,6 +6,11 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
+  "vars": {
+    "NAVER_MAPS_NCP_KEY_ID": "vsu9v9r4iq",
+    "NAVER_MAP_LAT": "36.3614186",
+    "NAVER_MAP_LNG": "127.3450682"
+  },
   "d1_databases": [
     {
       "binding": "DB",
