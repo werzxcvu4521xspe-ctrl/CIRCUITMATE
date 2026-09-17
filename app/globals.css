@@ -643,6 +643,10 @@ button:hover {
   line-height: var(--leading-body);
 }
 
+.story-panel article p + p {
+  margin-top: 10px;
+}
+
 .moment-grid {
   display: grid;
   gap: 18px;

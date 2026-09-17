@@ -1225,7 +1225,9 @@ export default function Home() {
             </article>
             <article>
               <span>Space</span>
-              <p>실내테니스팡의 보랏빛 코트와 조명은 야간 운동의 선명한 무드를 브랜드 자산으로 만듭니다.</p>
+              <p>미래적 낙관을 표현한 1960년대 디자인 컨셉 &apos;스페이스 에이지(Space Age)&apos;를 반영했습니다.</p>
+              <p>일상에서 완전히 분리된 이 비일상의 90분은,</p>
+              <p>평소의 나를 잠시 내려놓고 온전히 움직임과 에너지에만 몰입하게 만들기 위함입니다.</p>
             </article>
           </div>
         </section>
