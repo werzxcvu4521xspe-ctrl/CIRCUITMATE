@@ -1029,9 +1029,6 @@ export default function Home() {
         <a className="brand-mark" href="#home" aria-label="Circuitmate home">
           CIRCUIT<span>MATE</span>
         </a>
-        <a className="header-admin-link" href="/admin">
-          관리자
-        </a>
         <nav aria-label="Primary navigation" className={mobileNavOpen ? 'mobile-open' : undefined}>
           <span className="nav-menu-label eyebrow">Menu</span>
           {navItems.flatMap(([label, href], index) => {
@@ -1066,6 +1063,14 @@ export default function Home() {
               ? [<span key={`${label}-divider`} className="nav-divider" aria-hidden="true" />, item]
               : [item];
           })}
+          <a
+            href="/admin"
+            className="nav-admin-link"
+            onClick={() => setMobileNavOpen(false)}
+          >
+            <span className="nav-index">{String(navItems.length + 1).padStart(2, '0')}</span>
+            <span className="nav-label">관리자</span>
+          </a>
         </nav>
         {isSectionVisible('booking') && (
           <button className="header-cta" type="button" onClick={() => setBookingOpen(true)}>
@@ -1621,6 +1626,9 @@ export default function Home() {
         <div>
           <strong>CIRCUITMATE</strong>
         </div>
+        <a className="footer-admin-link" href="/admin">
+          관리자
+        </a>
       </footer>
 
       {bookingOpen && isSectionVisible('booking') && (
