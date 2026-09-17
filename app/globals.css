@@ -2029,14 +2029,25 @@ textarea {
   align-items: center;
   background: none;
   border: none;
+  border-radius: 0;
+  box-shadow: none;
   color: inherit;
   cursor: pointer;
   display: flex;
   flex-wrap: wrap;
   font: inherit;
   gap: 6px;
+  justify-content: flex-start;
+  min-height: 0;
   padding: 0;
   text-align: left;
+}
+
+.map-address-row:hover,
+.map-address-row:focus-visible {
+  background: none;
+  box-shadow: none;
+  transform: none;
 }
 
 .map-address-row:hover .map-copy-icon,
