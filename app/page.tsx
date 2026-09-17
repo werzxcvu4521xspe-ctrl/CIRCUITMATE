@@ -1098,7 +1098,6 @@ export default function Home() {
                 <p className="eyebrow">Selected Moments</p>
                 <h2>프레임 단위로 기억되는 네 개의 장면</h2>
               </div>
-              <p>레퍼런스의 프로젝트 카드 흐름처럼, 세션을 하나의 스포츠 필름 시퀀스로 보여줍니다.</p>
             </div>
             <div className="moment-grid">
               {selectedMoments.map(([title, desc], index) => (
@@ -1129,7 +1128,6 @@ export default function Home() {
               <p className="eyebrow">{sectionCopy('brand').label}</p>
               <h2>{sectionCopy('brand').title}</h2>
             </div>
-            <p>{sectionCopy('brand').description}</p>
           </div>
           <article className="manifesto-panel" aria-label="서킷메이트 핵심 철학 및 브랜드 선언문">
             <span>Brand Manifesto</span>
@@ -1247,7 +1245,6 @@ export default function Home() {
             <p className="eyebrow">{sectionCopy('recovery').label}</p>
             <h2>{sectionCopy('recovery').title}</h2>
           </div>
-          <p>{sectionCopy('recovery').description}</p>
         </div>
         <div className="recovery-grid">
           {recoveryItems.map(([tag, title, desc]) => (
@@ -1356,7 +1353,6 @@ export default function Home() {
             <p className="eyebrow">{sectionCopy('booking').label}</p>
             <h2>{sectionCopy('booking').title}</h2>
           </div>
-          <p>{sectionCopy('booking').description}</p>
         </div>
         <div className="booking-layout">
           <aside className="slot-panel">
@@ -1438,7 +1434,6 @@ export default function Home() {
             <p className="eyebrow">{sectionCopy('faq').label}</p>
             <h2>{sectionCopy('faq').title}</h2>
           </div>
-          <p>{sectionCopy('faq').description}</p>
         </div>
         <div className="faq-list">
           {faqItems
@@ -1493,7 +1488,6 @@ export default function Home() {
             <p className="eyebrow">{sectionCopy('location').label}</p>
             <h2>{sectionCopy('location').title}</h2>
           </div>
-          <p>{sectionCopy('location').description}</p>
         </div>
         <article className="map-panel">
           {mapConfig?.configured && !mapError ? (
