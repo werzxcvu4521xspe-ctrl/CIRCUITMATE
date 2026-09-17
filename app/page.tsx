@@ -1568,12 +1568,30 @@ export default function Home() {
           <div className="map-actions">
             <p>
               <strong>{mapConfig?.placeName ?? defaultMapPlaceName}</strong>
-              <span className="map-address-row">
+              <button
+                type="button"
+                className="map-address-row"
+                onClick={handleCopyAddress}
+                aria-label={addressCopied ? '주소가 복사되었습니다' : '주소 복사하기'}
+              >
                 <span>{mapConfig?.address ?? defaultMapAddress}</span>
-                <button type="button" className="map-copy-button" onClick={handleCopyAddress}>
-                  {addressCopied ? '복사됨' : '주소 복사'}
-                </button>
-              </span>
+                {addressCopied ? (
+                  <svg className="map-copy-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <path
+                      d="M3 8.5L6.5 12L13 4.5"
+                      stroke="currentColor"
+                      strokeWidth="1.6"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                ) : (
+                  <svg className="map-copy-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <rect x="5.5" y="5.5" width="8" height="8" rx="1.4" stroke="currentColor" strokeWidth="1.4" />
+                    <path d="M3 10.5V3.9C3 3.4 3.4 3 3.9 3H10.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+                  </svg>
+                )}
+              </button>
               <span className="map-note">건물 자체 주차장이 없습니다.</span>
             </p>
             <a href={mapConfig?.searchUrl ?? defaultMapSearchUrl} target="_blank" rel="noreferrer">
