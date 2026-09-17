@@ -3277,6 +3277,13 @@ textarea {
   color: rgba(229, 220, 234, 0.64);
 }
 
+.booking-sheet .sheet-date-grid button.active {
+  background: linear-gradient(180deg, #ff405d, var(--lime));
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow: 0 12px 26px rgba(238, 39, 55, 0.3);
+  color: white;
+}
+
 .booking-sheet .sheet-session-grid button {
   background: rgba(16, 24, 32, 0.66);
   border-color: rgba(229, 220, 234, 0.18);
@@ -3574,6 +3581,13 @@ textarea {
     background: #fff8fd;
     padding-top: 4px;
     z-index: 2;
+  }
+
+  .booking-sheet .sheet-header,
+  .payment-popup-sheet .sheet-header {
+    background:
+      linear-gradient(145deg, rgba(60, 16, 83, 0.97), rgba(16, 24, 32, 0.99)),
+      #17101f;
   }
 
   input,
