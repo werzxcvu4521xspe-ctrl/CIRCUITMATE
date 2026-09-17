@@ -979,20 +979,34 @@ export default function Home() {
         </a>
         <nav aria-label="Primary navigation" className={mobileNavOpen ? 'mobile-open' : undefined}>
           <span className="nav-menu-label eyebrow">Menu</span>
-          {navItems.map(([label, href]) => {
-            const match = /^(\d+\.)\s*(.+)$/.exec(label);
-            return (
-              <a key={label} href={href} onClick={() => setMobileNavOpen(false)}>
+          {navItems.flatMap(([label, href], index) => {
+            const match = /^(\d+)\.\s*(.+)$/.exec(label);
+            const isBooking = href === '#booking';
+            const showDivider = index > 0 && index === Math.ceil(navItems.length / 2);
+            const item = (
+              <a
+                key={label}
+                href={href}
+                className={isBooking ? 'nav-accent' : undefined}
+                onClick={() => setMobileNavOpen(false)}
+              >
                 {match ? (
                   <>
                     <span className="nav-index">{match[1]}</span>
-                    <span className="nav-label">{match[2]}</span>
+                    <span className="nav-label">
+                      {match[2]}
+                      {isBooking && <span className="nav-badge">예약중</span>}
+                    </span>
                   </>
                 ) : (
                   <span className="nav-label">{label}</span>
                 )}
               </a>
             );
+
+            return showDivider
+              ? [<span key={`${label}-divider`} className="nav-divider" aria-hidden="true" />, item]
+              : [item];
           })}
         </nav>
         {isSectionVisible('booking') && (
