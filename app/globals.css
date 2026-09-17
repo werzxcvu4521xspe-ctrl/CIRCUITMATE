@@ -882,6 +882,12 @@ button:hover {
   width: 12px;
 }
 
+.timeline-divider {
+  background: rgba(229, 220, 234, 0.18);
+  height: 1px;
+  margin: 2px 0 24px;
+}
+
 .vertical-timeline time {
   color: var(--lime);
   font-weight: 850;

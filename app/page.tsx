@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, Fragment, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection, type SiteSectionId } from '../lib/site-map';
 import { DEFAULT_FAQ_ITEMS, normalizeFaqItems, type FaqItem } from '../lib/faq';
 import {
@@ -107,6 +107,14 @@ const timeline = [
   ['리커버리', '19:15 - 19:20 (5분)', '과일 케이터링 바', '스탠딩 생과일 뷔페 바 & 전해질 드링크 섭취'],
   ['시상 & 마감', '19:20 - 19:30 (10분)', '서킷 어워즈 & 마무리', '4대 부문 시상식 및 단체 사진 촬영'],
 ];
+
+const TIMELINE_GROUPS: Record<string, number> = {
+  '준비 운동': 0,
+  '메인 서킷': 1,
+  '마무리 운동': 1,
+  '리커버리': 2,
+  '시상 & 마감': 2,
+};
 
 const stations = [
   {
@@ -1165,27 +1173,31 @@ export default function Home() {
         </div>
         <div className="program-layout">
           <div className="vertical-timeline">
-            {timeline.map(([phase, time, title, desc]) => {
+            {timeline.map(([phase, time, title, desc], index) => {
               const match = /^(.*)\s(\([^)]+\))$/.exec(time);
+              const showDivider = index > 0 && TIMELINE_GROUPS[phase] !== TIMELINE_GROUPS[timeline[index - 1][0]];
 
               return (
-                <article key={time}>
-                  <time>
-                    {match ? (
-                      <>
-                        {match[1]}
-                        <span>{match[2]}</span>
-                      </>
-                    ) : (
-                      time
-                    )}
-                  </time>
-                  <div>
-                    <span>{phase}</span>
-                    <h3>{title}</h3>
-                    <p>{desc}</p>
-                  </div>
-                </article>
+                <Fragment key={time}>
+                  {showDivider && <div className="timeline-divider" aria-hidden="true" />}
+                  <article>
+                    <time>
+                      {match ? (
+                        <>
+                          {match[1]}
+                          <span>{match[2]}</span>
+                        </>
+                      ) : (
+                        time
+                      )}
+                    </time>
+                    <div>
+                      <span>{phase}</span>
+                      <h3>{title}</h3>
+                      <p>{desc}</p>
+                    </div>
+                  </article>
+                </Fragment>
               );
             })}
           </div>
