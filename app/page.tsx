@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, Fragment, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection, type SiteSectionId } from '../lib/site-map';
 import { DEFAULT_FAQ_ITEMS, normalizeFaqItems, type FaqItem } from '../lib/faq';
 import {
@@ -109,13 +109,13 @@ const timeline = [
   ['시상 & 마감', '19:20 - 19:30 (10분)', '서킷 어워즈 & 마무리', '4대 부문 시상식 및 단체 사진 촬영'],
 ];
 
-const TIMELINE_GROUPS: Record<string, number> = {
-  '준비 운동': 0,
-  '메인 서킷': 1,
-  '마무리 운동': 1,
-  '리커버리': 2,
-  '시상 & 마감': 2,
-};
+const TIMELINE_SECTIONS = [
+  { phase: '준비 운동', label: '준비 운동', duration: '30분' },
+  { phase: '메인 서킷', label: '메인 서킷', duration: '20분' },
+  { phase: '마무리 운동', label: '마무리 운동', duration: '20분' },
+  { phase: '리커버리', label: '리커버리', duration: '10분' },
+  { phase: '시상 & 마감', label: '시상식', duration: '10분' },
+];
 
 const stations = [
   {
@@ -1229,31 +1229,44 @@ export default function Home() {
         </div>
         <div className="program-layout">
           <div className="vertical-timeline">
-            {timeline.map(([phase, time, title, desc], index) => {
-              const match = /^(.*)\s(\([^)]+\))$/.exec(time);
-              const showDivider = index > 0 && TIMELINE_GROUPS[phase] !== TIMELINE_GROUPS[timeline[index - 1][0]];
+            {TIMELINE_SECTIONS.map((section) => {
+              const items = timeline.filter(([phase]) => phase === section.phase);
+
+              if (items.length === 0) {
+                return null;
+              }
 
               return (
-                <Fragment key={time}>
-                  {showDivider && <div className="timeline-divider" aria-hidden="true" />}
-                  <article>
-                    <time>
-                      {match ? (
-                        <>
-                          <span className="timeline-time-range">{match[1]}</span>
-                          <span className="timeline-duration">{match[2]}</span>
-                        </>
-                      ) : (
-                        <span className="timeline-time-range">{time}</span>
-                      )}
-                    </time>
-                    <div>
-                      <span className="timeline-phase-tag">{phase}</span>
-                      <h3>{title}</h3>
-                      <p>{desc}</p>
-                    </div>
-                  </article>
-                </Fragment>
+                <div className="timeline-group" key={section.phase}>
+                  <div className="timeline-group-heading">
+                    <h3>{section.label}</h3>
+                    <span>{section.duration}</span>
+                  </div>
+                  <div className="timeline-group-items">
+                    {items.map(([, time, title, desc]) => {
+                      const match = /^(.*)\s(\([^)]+\))$/.exec(time);
+
+                      return (
+                        <article key={time}>
+                          <time>
+                            {match ? (
+                              <>
+                                <span className="timeline-time-range">{match[1]}</span>
+                                <span className="timeline-duration">{match[2]}</span>
+                              </>
+                            ) : (
+                              <span className="timeline-time-range">{time}</span>
+                            )}
+                          </time>
+                          <div>
+                            <h4>{title}</h4>
+                            <p>{desc}</p>
+                          </div>
+                        </article>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
           </div>
