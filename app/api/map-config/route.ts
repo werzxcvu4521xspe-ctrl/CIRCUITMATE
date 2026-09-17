@@ -14,10 +14,10 @@ type RuntimeEnv = {
 const defaultPlaceName = '충남대학교 정문 앞 서브웨이 건물 8층';
 const defaultAddress = '대전 유성구 궁동 482-3';
 const defaultSearchUrl = `https://map.naver.com/p/search/${encodeURIComponent(defaultAddress)}`;
-// TODO: 네이버 지도 API 키 연결 시 NAVER_MAP_LAT / NAVER_MAP_LNG 환경변수로
-// 정확한 좌표를 지정해주세요 (현재 값은 이전 장소인 가산디지털밸리 좌표입니다).
-const defaultLat = 37.47936;
-const defaultLng = 126.8822;
+// 기본 좌표: 충남대학교 정문 앞 서브웨이 건물(대전 유성구 궁동 482-3).
+// 다른 장소로 옮기면 NAVER_MAP_LAT / NAVER_MAP_LNG 환경변수로 덮어쓸 수 있습니다.
+const defaultLat = 36.3614186;
+const defaultLng = 127.3450682;
 
 function toTrimmedText(value: unknown) {
   return typeof value === 'string' ? value.trim() : '';
