@@ -1256,13 +1256,8 @@ export default function Home() {
                   </div>
                   <div className="timeline-group-items">
                     {items.map(([, time, title, desc]) => {
-                      const match = /^(.*)\s(\([^)]+\))$/.exec(time);
-
                       return (
                         <article key={time}>
-                          <time>
-                            <span className="timeline-duration">{match ? match[2] : time}</span>
-                          </time>
                           <div>
                             <h4>{title}</h4>
                             <p>{desc}</p>
