@@ -1617,16 +1617,10 @@ export default function Home() {
       <footer className="footer-section">
         <div>
           <strong>CIRCUITMATE</strong>
-          <p>사업자 정보, 이용약관, 개인정보처리방침, 공식 SNS 링크와 실시간 문의 채널이 들어가는 하단 고정 영역입니다.</p>
           <a className="admin-link" href="/admin">
             관리자
           </a>
         </div>
-        {isSectionVisible('booking') && (
-          <button type="button" onClick={() => setBookingOpen(true)}>
-            티켓 구매하기
-          </button>
-        )}
       </footer>
 
       {bookingOpen && isSectionVisible('booking') && (

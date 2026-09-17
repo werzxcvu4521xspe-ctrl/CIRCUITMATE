@@ -2203,7 +2203,7 @@ textarea {
 
 .footer-section::before {
   color: rgba(248, 247, 255, 0.06);
-  content: 'LET US MAKE IT A CIRCUIT NIGHT';
+  content: 'HERE WE GO CIRCUIT NIGHT';
   display: block;
   font-size: clamp(42px, 9.4vw, 130px);
   font-weight: 900;
