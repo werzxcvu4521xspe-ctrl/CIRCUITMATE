@@ -34,6 +34,7 @@ declare global {
       };
     };
     initCircuitmateNaverMap?: () => void;
+    navermap_authFailure?: () => void;
   }
 }
 
@@ -502,6 +503,9 @@ export default function Home() {
     }
 
     window.initCircuitmateNaverMap = renderMap;
+    window.navermap_authFailure = () => {
+      setMapError('네이버 지도 인증에 실패했습니다. Naver Cloud Platform 콘솔에서 Maps API 키의 Web 서비스 URL에 이 사이트 도메인이 등록되어 있는지 확인해주세요.');
+    };
 
     if (document.getElementById('naver-map-sdk')) {
       return;
