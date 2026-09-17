@@ -362,7 +362,6 @@ export default function Home() {
   const [openFaqQuestion, setOpenFaqQuestion] = useState<string | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [sectionProgress, setSectionProgress] = useState<Record<string, number>>({});
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const selectedDateInfo = useMemo(
     () => ticketDates.find((date) => date.id === selectedDate) ?? ticketDates[0],
@@ -411,49 +410,6 @@ export default function Home() {
     elements.forEach((el) => observer.observe(el));
 
     return () => observer.disconnect();
-  }, [navItems]);
-
-  useEffect(() => {
-    const ids = navItems.map(([, href]) => href.replace('#', ''));
-    const elements = ids
-      .map((id) => document.getElementById(id))
-      .filter((el): el is HTMLElement => Boolean(el));
-
-    if (elements.length === 0) {
-      return;
-    }
-
-    let ticking = false;
-
-    function updateProgress() {
-      const scrollY = window.scrollY + 120;
-      const next: Record<string, number> = {};
-
-      elements.forEach((el) => {
-        const top = el.offsetTop;
-        const height = el.offsetHeight || 1;
-        next[el.id] = Math.min(1, Math.max(0, (scrollY - top) / height));
-      });
-
-      setSectionProgress(next);
-      ticking = false;
-    }
-
-    function onScroll() {
-      if (!ticking) {
-        ticking = true;
-        requestAnimationFrame(updateProgress);
-      }
-    }
-
-    updateProgress();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-
-    return () => {
-      window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('resize', onScroll);
-    };
   }, [navItems]);
 
   useEffect(() => {
@@ -1098,25 +1054,6 @@ export default function Home() {
         >
           {mobileNavOpen ? '✕' : '☰'}
         </button>
-        <div className="scroll-gauge" role="navigation" aria-label="섹션 진행률">
-          {navItems.map(([label, href]) => {
-            const id = href.replace('#', '');
-            const cleanLabel = label.replace(/^\d+\.\s*/, '');
-            const fill = Math.round((sectionProgress[id] ?? 0) * 100);
-            return (
-              <a
-                key={label}
-                href={href}
-                className="scroll-gauge-segment"
-                style={{ '--fill': `${fill}%` } as CSSProperties}
-                title={cleanLabel}
-                aria-label={cleanLabel}
-              >
-                <span className="scroll-gauge-fill" />
-              </a>
-            );
-          })}
-        </div>
       </header>
 
       {isSectionVisible('home') && (

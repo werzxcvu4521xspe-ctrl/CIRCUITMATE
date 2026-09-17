@@ -262,48 +262,6 @@ nav .nav-badge {
   white-space: nowrap;
 }
 
-.scroll-gauge {
-  bottom: 0;
-  display: flex;
-  gap: 2px;
-  height: 3px;
-  left: 0;
-  position: absolute;
-  right: 0;
-}
-
-.scroll-gauge-segment {
-  background: rgba(255, 255, 255, 0.12);
-  display: block;
-  flex: 1 1 0;
-  height: 100%;
-  position: relative;
-}
-
-.scroll-gauge-segment::before {
-  bottom: -7px;
-  content: '';
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: -7px;
-}
-
-.scroll-gauge-segment:hover {
-  background: rgba(255, 255, 255, 0.22);
-}
-
-.scroll-gauge-fill {
-  background: linear-gradient(90deg, var(--pantone-1788-c), #ff8a3d);
-  bottom: 0;
-  display: block;
-  left: 0;
-  position: absolute;
-  top: 0;
-  transition: width 0.12s linear;
-  width: var(--fill, 0%);
-}
-
 .header-cta,
 .primary-button,
 .secondary-button,
