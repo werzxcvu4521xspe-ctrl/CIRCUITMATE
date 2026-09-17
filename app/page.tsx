@@ -1488,7 +1488,6 @@ export default function Home() {
             </div>
           </aside>
           <form onSubmit={handleMainBooking} className="form-card">
-            <h3>6.2 티켓 구매자 정보</h3>
             {mainStepStarted ? (
               renderBuyerStepsForm()
             ) : (
