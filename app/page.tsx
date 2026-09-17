@@ -1240,15 +1240,15 @@ export default function Home() {
                     <time>
                       {match ? (
                         <>
-                          {match[1]}
-                          <span>{match[2]}</span>
+                          <span className="timeline-time-range">{match[1]}</span>
+                          <span className="timeline-duration">{match[2]}</span>
                         </>
                       ) : (
-                        time
+                        <span className="timeline-time-range">{time}</span>
                       )}
                     </time>
                     <div>
-                      <span>{phase}</span>
+                      <span className="timeline-phase-tag">{phase}</span>
                       <h3>{title}</h3>
                       <p>{desc}</p>
                     </div>
