@@ -1002,8 +1002,7 @@ export default function Home() {
             className="nav-admin-link"
             onClick={() => setMobileNavOpen(false)}
           >
-            <span className="nav-index">{String(navItems.length + 1).padStart(2, '0')}</span>
-            <span className="nav-label">관리자</span>
+            관리자
           </a>
         </nav>
         {isSectionVisible('booking') && (
