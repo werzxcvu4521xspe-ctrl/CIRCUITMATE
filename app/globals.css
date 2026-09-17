@@ -2563,6 +2563,64 @@ textarea {
   border-color: rgba(229, 220, 234, 0.16);
 }
 
+.sitemap-editor.faq-editor {
+  grid-template-columns: 1fr;
+}
+
+.faq-card-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.faq-card-actions button {
+  min-height: 34px;
+  min-width: 0;
+  padding: 0 12px;
+}
+
+.faq-table-editor {
+  border-top: 1px solid rgba(229, 220, 234, 0.14);
+  display: grid;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 12px;
+}
+
+.faq-table-editor .admin-section-head {
+  align-items: center;
+  margin-bottom: 0;
+}
+
+.faq-table-editor .admin-section-head span {
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+
+.faq-table-editor .admin-section-head button {
+  min-height: 34px;
+  padding: 0 12px;
+}
+
+.faq-table-head-inputs {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.faq-add-button {
+  background: transparent;
+  border: 1px dashed rgba(229, 220, 234, 0.4);
+  color: var(--muted);
+}
+
+.faq-add-button:hover {
+  border-color: var(--pantone-1788-c);
+  color: var(--pantone-1788-c);
+}
+
 .reservation-table-wrap {
   overflow-x: auto;
 }

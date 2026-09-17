@@ -2,11 +2,12 @@
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection } from '../../lib/site-map';
+import { DEFAULT_FAQ_ITEMS, normalizeFaqItems, type FaqItem } from '../../lib/faq';
 import { ticketDates, buildSessionLabel, type TicketDate, type TicketSession } from '../../lib/schedule';
 import { getHolidayName } from '../../lib/holidays';
 
 type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
-type AdminTab = 'reservations' | 'sitemap' | 'reports';
+type AdminTab = 'reservations' | 'sitemap' | 'faq' | 'reports';
 
 type Reservation = {
   id: number;
@@ -46,6 +47,12 @@ const adminTabs: { id: AdminTab; eyebrow: string; label: string; summary: string
     summary: '사이트 메뉴명과 섹션 노출 여부를 관리합니다.',
   },
   {
+    id: 'faq',
+    eyebrow: 'FAQ Editor',
+    label: 'FAQ 관리',
+    summary: '자주 묻는 질문을 추가·수정·관리합니다.',
+  },
+  {
     id: 'reports',
     eyebrow: 'Report Analysis',
     label: '리포트 분석 보고',
@@ -76,6 +83,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [siteMapMessage, setSiteMapMessage] = useState('');
+  const [faqItems, setFaqItems] = useState<FaqItem[]>(DEFAULT_FAQ_ITEMS);
+  const [faqMessage, setFaqMessage] = useState('');
   const [calendarMonth, setCalendarMonth] = useState(() => (ticketDates[0]?.id ?? '2026-09-01').slice(0, 7));
   const [selectedDateId, setSelectedDateId] = useState<string | null>(null);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
@@ -257,16 +266,19 @@ export default function AdminPage() {
     setLoading(true);
     setMessage('');
     setSiteMapMessage('');
+    setFaqMessage('');
 
     try {
-      const [reservationsResponse, siteMapResponse] = await Promise.all([
+      const [reservationsResponse, siteMapResponse, faqResponse] = await Promise.all([
         fetch('/api/reservations', {
           headers: { 'x-admin-password': nextPassword },
         }),
         fetch('/api/site-map'),
+        fetch('/api/faq'),
       ]);
       const data = (await reservationsResponse.json()) as { reservations?: Reservation[]; error?: string };
       const siteMapData = (await siteMapResponse.json()) as { sections?: SiteSection[]; error?: string };
+      const faqData = (await faqResponse.json()) as { items?: FaqItem[]; error?: string };
 
       if (!reservationsResponse.ok) {
         throw new Error(data.error ?? '예약자 목록을 불러오지 못했습니다.');
@@ -276,8 +288,13 @@ export default function AdminPage() {
         throw new Error(siteMapData.error ?? '사이트맵 설정을 불러오지 못했습니다.');
       }
 
+      if (!faqResponse.ok) {
+        throw new Error(faqData.error ?? 'FAQ 설정을 불러오지 못했습니다.');
+      }
+
       setReservations(data.reservations ?? []);
       setSiteMap(normalizeSiteMap(siteMapData.sections));
+      setFaqItems(normalizeFaqItems(faqData.items));
       setAuthorized(true);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '예약자 목록을 불러오지 못했습니다.');
@@ -316,6 +333,144 @@ export default function AdminPage() {
       setSiteMapMessage('사이트맵 설정이 저장되었습니다.');
     } catch (error) {
       setSiteMapMessage(error instanceof Error ? error.message : '사이트맵 설정을 저장하지 못했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function updateFaqField(id: string, field: 'question' | 'note', value: string) {
+    setFaqItems((current) => current.map((item) => (item.id === id ? { ...item, [field]: value } : item)));
+  }
+
+  function updateFaqVisible(id: string, visible: boolean) {
+    setFaqItems((current) => current.map((item) => (item.id === id ? { ...item, visible } : item)));
+  }
+
+  function updateFaqAnswerText(id: string, text: string) {
+    const answer = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    setFaqItems((current) => current.map((item) => (item.id === id ? { ...item, answer } : item)));
+  }
+
+  function updateFaqBulletsText(id: string, text: string) {
+    const bullets = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+
+    setFaqItems((current) =>
+      current.map((item) => (item.id === id ? { ...item, bullets: bullets.length ? bullets : undefined } : item))
+    );
+  }
+
+  function updateFaqTableHead(id: string, index: 0 | 1, value: string) {
+    setFaqItems((current) =>
+      current.map((item) => {
+        if (item.id !== id) {
+          return item;
+        }
+
+        const head: [string, string] = item.table
+          ? [item.table.head[0], item.table.head[1]]
+          : ['', ''];
+        head[index] = value;
+
+        return { ...item, table: { head, rows: item.table?.rows ?? [] } };
+      })
+    );
+  }
+
+  function updateFaqTableRowsText(id: string, text: string) {
+    const rows: [string, string][] = text
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [left, ...rest] = line.split('|');
+
+        return [left?.trim() ?? '', rest.join('|').trim()] as [string, string];
+      });
+
+    setFaqItems((current) =>
+      current.map((item) => {
+        if (item.id !== id) {
+          return item;
+        }
+
+        const head = item.table?.head ?? ['', ''];
+
+        return { ...item, table: { head, rows } };
+      })
+    );
+  }
+
+  function removeFaqTable(id: string) {
+    setFaqItems((current) =>
+      current.map((item) => (item.id === id ? { ...item, table: undefined } : item))
+    );
+  }
+
+  function addFaqItem() {
+    const id = `faq-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+
+    setFaqItems((current) => [
+      ...current,
+      {
+        id,
+        question: '새 질문을 입력하세요',
+        answer: [],
+        visible: true,
+        order: current.length + 1,
+      },
+    ]);
+  }
+
+  function removeFaqItem(id: string) {
+    setFaqItems((current) => (current.length <= 1 ? current : current.filter((item) => item.id !== id)));
+  }
+
+  function moveFaqItem(id: string, direction: -1 | 1) {
+    setFaqItems((current) => {
+      const index = current.findIndex((item) => item.id === id);
+      const targetIndex = index + direction;
+
+      if (index === -1 || targetIndex < 0 || targetIndex >= current.length) {
+        return current;
+      }
+
+      const next = [...current];
+      [next[index], next[targetIndex]] = [next[targetIndex], next[index]];
+
+      return next;
+    });
+  }
+
+  async function saveFaq() {
+    setLoading(true);
+    setFaqMessage('');
+
+    try {
+      const response = await fetch('/api/faq', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': password,
+        },
+        body: JSON.stringify({ items: faqItems }),
+      });
+      const data = (await response.json()) as { items?: FaqItem[]; error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? 'FAQ 설정을 저장하지 못했습니다.');
+      }
+
+      setFaqItems(normalizeFaqItems(data.items));
+      setFaqMessage('FAQ 설정이 저장되었습니다.');
+    } catch (error) {
+      setFaqMessage(error instanceof Error ? error.message : 'FAQ 설정을 저장하지 못했습니다.');
     } finally {
       setLoading(false);
     }
@@ -700,6 +855,126 @@ export default function AdminPage() {
                 ))}
               </div>
               {siteMapMessage && <p className="success-message">{siteMapMessage}</p>}
+            </section>
+          )}
+
+          {activeTab === 'faq' && (
+            <section className="admin-panel admin-sitemap" aria-labelledby="admin-faq-title">
+              <div className="admin-section-head">
+                <div>
+                  <p className="eyebrow">FAQ Editor</p>
+                  <h2 id="admin-faq-title">FAQ 관리</h2>
+                </div>
+                <button type="button" onClick={saveFaq} disabled={loading}>
+                  {loading ? '저장 중' : '변경 저장'}
+                </button>
+              </div>
+              <div className="sitemap-editor faq-editor">
+                {faqItems.map((item, index) => (
+                  <article key={item.id} className={item.visible ? 'is-visible' : 'is-hidden'}>
+                    <div className="sitemap-card-head">
+                      <strong>{`Q${index + 1}`}</strong>
+                      <div className="faq-card-actions">
+                        <label className="switch-row">
+                          <input
+                            type="checkbox"
+                            checked={item.visible}
+                            onChange={(event) => updateFaqVisible(item.id, event.target.checked)}
+                          />
+                          <span>{item.visible ? '노출' : '숨김'}</span>
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => moveFaqItem(item.id, -1)}
+                          disabled={index === 0}
+                          aria-label="위로 이동"
+                        >
+                          ▲
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => moveFaqItem(item.id, 1)}
+                          disabled={index === faqItems.length - 1}
+                          aria-label="아래로 이동"
+                        >
+                          ▼
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => removeFaqItem(item.id)}
+                          disabled={faqItems.length <= 1}
+                        >
+                          삭제
+                        </button>
+                      </div>
+                    </div>
+                    <label>
+                      질문
+                      <input
+                        value={item.question}
+                        onChange={(event) => updateFaqField(item.id, 'question', event.target.value)}
+                      />
+                    </label>
+                    <label>
+                      답변 (줄마다 한 문단)
+                      <textarea
+                        value={item.answer.join('\n')}
+                        onChange={(event) => updateFaqAnswerText(item.id, event.target.value)}
+                        rows={3}
+                      />
+                    </label>
+                    <label>
+                      목록 항목 (줄마다 한 항목, 선택)
+                      <textarea
+                        value={(item.bullets ?? []).join('\n')}
+                        onChange={(event) => updateFaqBulletsText(item.id, event.target.value)}
+                        rows={3}
+                      />
+                    </label>
+                    <label>
+                      참고 문구 (선택)
+                      <input
+                        value={item.note ?? ''}
+                        onChange={(event) => updateFaqField(item.id, 'note', event.target.value)}
+                      />
+                    </label>
+                    <div className="faq-table-editor">
+                      <div className="admin-section-head">
+                        <span>표 (선택 — 취소/환불 정책 등)</span>
+                        {item.table && (
+                          <button type="button" onClick={() => removeFaqTable(item.id)}>
+                            표 삭제
+                          </button>
+                        )}
+                      </div>
+                      <div className="faq-table-head-inputs">
+                        <input
+                          placeholder="왼쪽 열 제목"
+                          value={item.table?.head[0] ?? ''}
+                          onChange={(event) => updateFaqTableHead(item.id, 0, event.target.value)}
+                        />
+                        <input
+                          placeholder="오른쪽 열 제목"
+                          value={item.table?.head[1] ?? ''}
+                          onChange={(event) => updateFaqTableHead(item.id, 1, event.target.value)}
+                        />
+                      </div>
+                      <label>
+                        표 내용 (줄마다 &quot;왼쪽 | 오른쪽&quot;)
+                        <textarea
+                          value={(item.table?.rows ?? []).map(([left, right]) => `${left} | ${right}`).join('\n')}
+                          onChange={(event) => updateFaqTableRowsText(item.id, event.target.value)}
+                          rows={3}
+                        />
+                      </label>
+                    </div>
+                  </article>
+                ))}
+                <button type="button" className="faq-add-button" onClick={addFaqItem}>
+                  + 새 질문 추가
+                </button>
+              </div>
+              {faqMessage && <p className="success-message">{faqMessage}</p>}
             </section>
           )}
 
