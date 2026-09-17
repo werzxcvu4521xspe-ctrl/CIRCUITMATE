@@ -3301,13 +3301,31 @@ textarea {
     display: flex;
     gap: 10px;
     padding: 6px 2px;
-    transition: opacity 0.15s ease, padding-left 0.15s ease;
+    transition: color 0.15s ease, opacity 0.15s ease, padding-left 0.15s ease;
     white-space: normal;
+  }
+
+  nav.mobile-open a:hover,
+  nav.mobile-open a:focus-visible {
+    color: var(--pantone-806-c);
+  }
+
+  nav.mobile-open a:hover .nav-index,
+  nav.mobile-open a:focus-visible .nav-index {
+    color: var(--pantone-806-c);
   }
 
   nav.mobile-open a:active {
     opacity: 0.7;
     padding-left: 6px;
+  }
+
+  nav.mobile-open a.active {
+    color: var(--pantone-806-c);
+  }
+
+  nav.mobile-open a.active .nav-index {
+    color: var(--pantone-806-c);
   }
 
   nav.mobile-open .nav-divider {

@@ -361,6 +361,7 @@ export default function Home() {
   const [addressCopied, setAddressCopied] = useState(false);
   const [openFaqQuestion, setOpenFaqQuestion] = useState<string | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('home');
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const selectedDateInfo = useMemo(
     () => ticketDates.find((date) => date.id === selectedDate) ?? ticketDates[0],
@@ -383,6 +384,33 @@ export default function Home() {
     () => siteMap.filter((section) => section.visible).map((section) => [section.label, section.href] as const),
     [siteMap],
   );
+
+  useEffect(() => {
+    const elements = navItems
+      .map(([, href]) => document.getElementById(href.replace('#', '')))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    if (elements.length === 0) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visible[0]) {
+          setActiveSection(visible[0].target.id);
+        }
+      },
+      { rootMargin: '-45% 0px -50% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] },
+    );
+
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [navItems]);
 
   useEffect(() => {
     let mounted = true;
@@ -982,12 +1010,15 @@ export default function Home() {
           {navItems.flatMap(([label, href], index) => {
             const match = /^(\d+)\.\s*(.+)$/.exec(label);
             const isBooking = href === '#booking';
+            const isActive = href === `#${activeSection}`;
             const showDivider = index > 0 && index === Math.ceil(navItems.length / 2);
+            const linkClassName = [isBooking && 'nav-accent', isActive && 'active'].filter(Boolean).join(' ');
             const item = (
               <a
                 key={label}
                 href={href}
-                className={isBooking ? 'nav-accent' : undefined}
+                className={linkClassName || undefined}
+                aria-current={isActive ? 'true' : undefined}
                 onClick={() => setMobileNavOpen(false)}
               >
                 {match ? (
