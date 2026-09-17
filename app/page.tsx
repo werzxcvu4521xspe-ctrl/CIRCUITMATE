@@ -1029,6 +1029,9 @@ export default function Home() {
         <a className="brand-mark" href="#home" aria-label="Circuitmate home">
           CIRCUIT<span>MATE</span>
         </a>
+        <a className="header-admin-link" href="/admin">
+          관리자
+        </a>
         <nav aria-label="Primary navigation" className={mobileNavOpen ? 'mobile-open' : undefined}>
           <span className="nav-menu-label eyebrow">Menu</span>
           {navItems.flatMap(([label, href], index) => {
@@ -1617,9 +1620,6 @@ export default function Home() {
       <footer className="footer-section">
         <div>
           <strong>CIRCUITMATE</strong>
-          <a className="admin-link" href="/admin">
-            관리자
-          </a>
         </div>
       </footer>
 
