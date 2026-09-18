@@ -46,6 +46,8 @@ export type PricingLogicContent = {
   description: string;
 };
 
+export type SubSectionId = 'keyFigures' | 'previewCards' | 'selectedMoments';
+
 export type ContentData = {
   badgeLoop: string[];
   keyFigures: Tuple3[];
@@ -68,6 +70,7 @@ export type ContentData = {
   passOptions: PassOptionContent[];
   identityIntro: string;
   identityGallery: string[];
+  subsectionVisibility: Record<SubSectionId, boolean>;
 };
 
 export const DEFAULT_CONTENT: ContentData = {
@@ -251,6 +254,11 @@ export const DEFAULT_CONTENT: ContentData = {
     'LIGHT',
     'RECOVERY',
   ],
+  subsectionVisibility: {
+    keyFigures: true,
+    previewCards: true,
+    selectedMoments: true,
+  },
 };
 
 const CONTENT_KEYS = Object.keys(DEFAULT_CONTENT) as (keyof ContentData)[];

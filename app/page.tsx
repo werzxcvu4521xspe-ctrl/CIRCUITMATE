@@ -3,7 +3,7 @@
 import { CSSProperties, FocusEvent, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection, type SiteSectionId } from '../lib/site-map';
 import { DEFAULT_FAQ_ITEMS, normalizeFaqItems, type FaqItem } from '../lib/faq';
-import { DEFAULT_CONTENT, mergeContent, type ContentData, type Tuple2 } from '../lib/content';
+import { DEFAULT_CONTENT, mergeContent, type ContentData, type SubSectionId, type Tuple2 } from '../lib/content';
 import {
   MIN_PARTICIPANTS,
   MAX_PARTICIPANTS,
@@ -43,6 +43,11 @@ declare global {
 }
 
 const momentImages = ['/moment-relay.png', '/moment-interval.png', '/moment-minigame.png', '/moment-recovery.png'];
+const SUBSECTION_TOGGLES: { id: SubSectionId; label: string }[] = [
+  { id: 'keyFigures', label: 'Key Figures (숫자 통계)' },
+  { id: 'previewCards', label: '1.3 Program Preview (가로 카드)' },
+  { id: 'selectedMoments', label: 'Selected Moments (모먼트 갤러리)' },
+];
 const defaultMapPlaceName = '충남대학교 정문 앞 서브웨이 건물 8층';
 const defaultMapAddress = '대전 유성구 궁동 482-3';
 const defaultMapSearchUrl = `https://map.naver.com/p/search/${encodeURIComponent(defaultMapAddress)}`;
@@ -552,6 +557,15 @@ export default function Home() {
 
   function isSectionVisible(id: SiteSectionId) {
     return visibleSections.has(id);
+  }
+
+  function isSubsectionVisible(id: SubSectionId) {
+    return content.subsectionVisibility[id] !== false;
+  }
+
+  function toggleSubsectionVisibility(id: SubSectionId) {
+    const updated = { ...content.subsectionVisibility, [id]: !isSubsectionVisible(id) };
+    saveContentField('subsectionVisibility', updated);
   }
 
   function sectionCopy(id: SiteSectionId) {
@@ -1302,6 +1316,7 @@ export default function Home() {
           </button>
           {visibilityPanelOpen && (
             <div className="cm-visibility-list">
+              <p className="cm-visibility-group-label">섹션</p>
               {siteMap.map((section) => (
                 <label key={section.id} className="cm-visibility-row">
                   <span>{section.label}</span>
@@ -1309,6 +1324,17 @@ export default function Home() {
                     type="checkbox"
                     checked={section.visible}
                     onChange={() => toggleSectionVisibility(section.id)}
+                  />
+                </label>
+              ))}
+              <p className="cm-visibility-group-label">세부 요소</p>
+              {SUBSECTION_TOGGLES.map(({ id, label }) => (
+                <label key={id} className="cm-visibility-row">
+                  <span>{label}</span>
+                  <input
+                    type="checkbox"
+                    checked={isSubsectionVisible(id)}
+                    onChange={() => toggleSubsectionVisibility(id)}
                   />
                 </label>
               ))}
@@ -1413,6 +1439,7 @@ export default function Home() {
             </div>
           </section>
 
+          {isSubsectionVisible('keyFigures') && (
           <section className="section figures-section">
             <div className="section-heading compact">
               <p className="eyebrow">Key Figures</p>
@@ -1428,7 +1455,9 @@ export default function Home() {
               ))}
             </div>
           </section>
+          )}
 
+          {isSubsectionVisible('previewCards') && (
           <section className="section preview-section">
             <div className="section-heading split">
               <div>
@@ -1446,7 +1475,9 @@ export default function Home() {
               ))}
             </div>
           </section>
+          )}
 
+          {isSubsectionVisible('selectedMoments') && (
           <section className="section selected-section">
             <div className="section-heading split">
               <div>
@@ -1467,6 +1498,7 @@ export default function Home() {
               ))}
             </div>
           </section>
+          )}
         </>
       )}
 
