@@ -39,7 +39,7 @@ declare global {
   }
 }
 
-const momentImages = ['/circuitmate-live.png', '/circuitmate-concept.png', '/circuitmate-live.png', '/circuitmate-concept.png'];
+const momentImages = ['/moment-minigame.png', '/moment-interval.png', '/moment-relay.png', '/moment-recovery.png'];
 const defaultMapPlaceName = '충남대학교 정문 앞 서브웨이 건물 8층';
 const defaultMapAddress = '대전 유성구 궁동 482-3';
 const defaultMapSearchUrl = `https://map.naver.com/p/search/${encodeURIComponent(defaultMapAddress)}`;
