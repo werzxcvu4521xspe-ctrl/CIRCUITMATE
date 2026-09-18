@@ -56,6 +56,7 @@ export type PreviewHeadingContent = {
 
 export type BookingSettingsContent = {
   blockHolidays: boolean;
+  blockedSessionIds: string[];
 };
 
 export type ContentData = {
@@ -288,6 +289,7 @@ export const DEFAULT_CONTENT: ContentData = {
   },
   bookingSettings: {
     blockHolidays: true,
+    blockedSessionIds: [],
   },
 };
 

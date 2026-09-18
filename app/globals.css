@@ -1420,6 +1420,18 @@ button:hover {
   border-color: inherit;
 }
 
+.session-list button.is-blocked,
+.sheet-session-grid button.is-blocked {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.session-list button.is-blocked:hover,
+.sheet-session-grid button.is-blocked:hover {
+  border-color: inherit;
+  transform: none;
+}
+
 .date-calendar button em,
 .sheet-date-grid button em {
   color: var(--pantone-1788-c);
@@ -3246,6 +3258,22 @@ textarea {
 
 .admin-calendar-session-list button.is-past.active {
   opacity: 0.85;
+}
+
+.admin-calendar-block-settings {
+  border-top: 1px solid var(--line);
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.admin-calendar-block-settings-title {
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-weight: 750;
+  margin: 0;
+  text-transform: uppercase;
 }
 
 .reservation-table-head {

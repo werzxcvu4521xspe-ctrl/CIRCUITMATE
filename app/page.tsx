@@ -358,14 +358,22 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (isDateBookable(selectedDate)) {
+    if (!isDateBookable(selectedDate)) {
+      const firstBookable = ticketDates.find((item) => isDateBookable(item.id));
+      if (firstBookable) {
+        handleDateSelect(firstBookable.id);
+      }
       return;
     }
-    const firstBookable = ticketDates.find((item) => isDateBookable(item.id));
-    if (firstBookable) {
-      handleDateSelect(firstBookable.id);
+
+    if (!isSessionBookable(selectedSessionId)) {
+      const date = ticketDates.find((item) => item.id === selectedDate);
+      const firstBookableSession = date?.sessions.find((session) => isSessionBookable(session.id));
+      if (firstBookableSession) {
+        setSelectedSessionId(firstBookableSession.id);
+      }
     }
-  }, [content.bookingSettings.blockHolidays, selectedDate]);
+  }, [content.bookingSettings.blockHolidays, content.bookingSettings.blockedSessionIds, selectedDate, selectedSessionId]);
 
   useEffect(() => {
     let mounted = true;
@@ -968,8 +976,34 @@ export default function Home() {
     };
   }
 
+  function isSessionBookable(sessionId: string) {
+    return !(content.bookingSettings.blockedSessionIds ?? []).includes(sessionId);
+  }
+
   function isDateBookable(dateId: string) {
-    return !(content.bookingSettings.blockHolidays && getHolidayName(dateId));
+    if (content.bookingSettings.blockHolidays && getHolidayName(dateId)) {
+      return false;
+    }
+    const date = ticketDates.find((item) => item.id === dateId);
+    if (date && date.sessions.every((session) => !isSessionBookable(session.id))) {
+      return false;
+    }
+    return true;
+  }
+
+  function getSessionDisplayStatus(date: TicketDate, session: TicketSession) {
+    const status = getTicketStatus(getSessionBooked(date, session));
+
+    if (!isSessionBookable(session.id)) {
+      return {
+        ...status,
+        tone: 'soldout',
+        label: '예약 중단',
+        message: '관리자가 이 세션의 예약을 일시 중단했습니다.',
+      };
+    }
+
+    return status;
   }
 
   function handleDateSelect(dateId: string) {
@@ -978,7 +1012,8 @@ export default function Home() {
     }
     const date = ticketDates.find((item) => item.id === dateId) ?? ticketDates[0];
     setSelectedDate(date.id);
-    setSelectedSessionId(date.sessions[0].id);
+    const firstBookableSession = date.sessions.find((session) => isSessionBookable(session.id)) ?? date.sessions[0];
+    setSelectedSessionId(firstBookableSession.id);
   }
 
   const buyerSteps: BuyerStepKey[] = [
@@ -1340,6 +1375,11 @@ export default function Home() {
 
     if (!isDateBookable(selectedDate)) {
       setBookingError('공휴일에는 예약을 받지 않습니다. 다른 날짜를 선택해주세요.');
+      return;
+    }
+
+    if (!isSessionBookable(selectedSessionId)) {
+      setBookingError('관리자가 이 세션의 예약을 중단했습니다. 다른 세션을 선택해주세요.');
       return;
     }
 
@@ -1869,14 +1909,17 @@ export default function Home() {
             </div>
             <div className="session-list" aria-label="티케팅 가능한 세션">
               {selectedDateInfo.sessions.map((session) => {
-                const status = getTicketStatus(getSessionBooked(selectedDateInfo, session));
+                const status = getSessionDisplayStatus(selectedDateInfo, session);
+                const bookable = isSessionBookable(session.id);
 
                 return (
                   <button
                     key={session.id}
                     type="button"
-                    className={selectedSessionId === session.id ? 'active' : ''}
-                    onClick={() => setSelectedSessionId(session.id)}
+                    className={`${selectedSessionId === session.id ? 'active' : ''} ${!bookable ? 'is-blocked' : ''}`.trim()}
+                    onClick={() => bookable && setSelectedSessionId(session.id)}
+                    disabled={!bookable}
+                    aria-disabled={!bookable}
                   >
                     <span>
                       <strong>{session.label}</strong>
@@ -1887,13 +1930,13 @@ export default function Home() {
                 );
               })}
             </div>
-            <div className={`ticket-gauge ${getTicketStatus(selectedSessionBooked).tone}`}>
+            <div className={`ticket-gauge ${getSessionDisplayStatus(selectedDateInfo, selectedTicketSession).tone}`}>
               <div className="gauge-copy">
-                <span>{getTicketStatus(selectedSessionBooked).label}</span>
-                <strong>{getTicketStatus(selectedSessionBooked).message}</strong>
+                <span>{getSessionDisplayStatus(selectedDateInfo, selectedTicketSession).label}</span>
+                <strong>{getSessionDisplayStatus(selectedDateInfo, selectedTicketSession).message}</strong>
               </div>
               <div className="gauge-track" aria-hidden="true">
-                <span style={{ width: `${getTicketStatus(selectedSessionBooked).progress}%` }} />
+                <span style={{ width: `${getSessionDisplayStatus(selectedDateInfo, selectedTicketSession).progress}%` }} />
               </div>
               <p>
                 현재 {selectedSessionBooked}명 신청 · 최소 {MIN_PARTICIPANTS}명 시작 · 최대 {MAX_PARTICIPANTS}명
@@ -2132,15 +2175,17 @@ export default function Home() {
                 <legend>세션 선택</legend>
                 <div className="sheet-session-grid" role="listbox" aria-label="티켓 구매 세션">
                   {selectedDateInfo.sessions.map((session) => {
-                    const sessionBooked = getSessionBooked(selectedDateInfo, session);
-                    const status = getTicketStatus(sessionBooked);
+                    const status = getSessionDisplayStatus(selectedDateInfo, session);
+                    const bookable = isSessionBookable(session.id);
 
                     return (
                       <button
                         key={session.id}
                         type="button"
-                        className={selectedSessionId === session.id ? 'active' : ''}
-                        onClick={() => setSelectedSessionId(session.id)}
+                        className={`${selectedSessionId === session.id ? 'active' : ''} ${!bookable ? 'is-blocked' : ''}`.trim()}
+                        onClick={() => bookable && setSelectedSessionId(session.id)}
+                        disabled={!bookable}
+                        aria-disabled={!bookable}
                       >
                         <span>
                           <strong>{session.label}</strong>

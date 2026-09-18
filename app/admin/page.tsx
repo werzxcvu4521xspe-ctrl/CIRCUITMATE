@@ -92,6 +92,7 @@ export default function AdminPage() {
   const [nowTimestamp, setNowTimestamp] = useState(0);
   const [editViewport, setEditViewport] = useState<'desktop' | 'mobile'>('desktop');
   const [blockHolidays, setBlockHolidays] = useState(DEFAULT_CONTENT.bookingSettings.blockHolidays);
+  const [blockedSessionIds, setBlockedSessionIds] = useState<string[]>(DEFAULT_CONTENT.bookingSettings.blockedSessionIds);
   const [bookingSettingsMessage, setBookingSettingsMessage] = useState('');
   const editFrameRef = useRef<HTMLIFrameElement | null>(null);
 
@@ -322,6 +323,7 @@ export default function AdminPage() {
       setFaqItems(normalizeFaqItems(faqData.items));
       if (contentResponse.ok && contentData.content?.bookingSettings) {
         setBlockHolidays(contentData.content.bookingSettings.blockHolidays);
+        setBlockedSessionIds(contentData.content.bookingSettings.blockedSessionIds ?? []);
       }
       setAuthorized(true);
     } catch (error) {
@@ -338,9 +340,14 @@ export default function AdminPage() {
     );
   }
 
-  async function saveBookingSettings(nextBlockHolidays: boolean) {
-    const previous = blockHolidays;
+  async function saveBookingSettings(next: { blockHolidays?: boolean; blockedSessionIds?: string[] }) {
+    const previousBlockHolidays = blockHolidays;
+    const previousBlockedSessionIds = blockedSessionIds;
+    const nextBlockHolidays = next.blockHolidays ?? blockHolidays;
+    const nextBlockedSessionIds = next.blockedSessionIds ?? blockedSessionIds;
+
     setBlockHolidays(nextBlockHolidays);
+    setBlockedSessionIds(nextBlockedSessionIds);
     setBookingSettingsMessage('');
 
     try {
@@ -350,7 +357,10 @@ export default function AdminPage() {
           'Content-Type': 'application/json',
           'x-admin-password': password,
         },
-        body: JSON.stringify({ key: 'bookingSettings', value: { blockHolidays: nextBlockHolidays } }),
+        body: JSON.stringify({
+          key: 'bookingSettings',
+          value: { blockHolidays: nextBlockHolidays, blockedSessionIds: nextBlockedSessionIds },
+        }),
       });
       const data = (await response.json()) as { error?: string };
 
@@ -358,11 +368,20 @@ export default function AdminPage() {
         throw new Error(data.error ?? '예약 설정을 저장하지 못했습니다.');
       }
 
-      setBookingSettingsMessage(
-        nextBlockHolidays ? '공휴일 예약을 차단합니다.' : '공휴일 예약을 허용합니다.'
-      );
+      if (next.blockedSessionIds !== undefined) {
+        setBookingSettingsMessage(
+          nextBlockedSessionIds.length > 0
+            ? `선택한 세션 ${nextBlockedSessionIds.length}건의 예약을 차단합니다.`
+            : '세션 단위 예약 차단을 모두 해제했습니다.'
+        );
+      } else {
+        setBookingSettingsMessage(
+          nextBlockHolidays ? '공휴일 예약을 차단합니다.' : '공휴일 예약을 허용합니다.'
+        );
+      }
     } catch (error) {
-      setBlockHolidays(previous);
+      setBlockHolidays(previousBlockHolidays);
+      setBlockedSessionIds(previousBlockedSessionIds);
       setBookingSettingsMessage(error instanceof Error ? error.message : '예약 설정을 저장하지 못했습니다.');
     }
   }
@@ -731,7 +750,7 @@ export default function AdminPage() {
                     <input
                       type="checkbox"
                       checked={blockHolidays}
-                      onChange={(event) => saveBookingSettings(event.target.checked)}
+                      onChange={(event) => saveBookingSettings({ blockHolidays: event.target.checked })}
                     />
                     <span>공휴일 예약 차단 {blockHolidays ? '(사용 중 — 공휴일엔 예약 불가)' : '(꺼짐 — 공휴일에도 예약 가능)'}</span>
                   </label>
@@ -779,6 +798,31 @@ export default function AdminPage() {
                         </button>
                       );
                     })}
+                  </div>
+                  <div className="admin-calendar-block-settings">
+                    <p className="admin-calendar-block-settings-title">이 날짜의 세션별 예약 차단</p>
+                    {selectedDate.sessions.map((session) => {
+                      const blocked = blockedSessionIds.includes(session.id);
+
+                      return (
+                        <label key={session.id} className="switch-row">
+                          <input
+                            type="checkbox"
+                            checked={blocked}
+                            onChange={(event) => {
+                              const nextIds = event.target.checked
+                                ? [...blockedSessionIds, session.id]
+                                : blockedSessionIds.filter((id) => id !== session.id);
+                              saveBookingSettings({ blockedSessionIds: nextIds });
+                            }}
+                          />
+                          <span>
+                            {session.label} ({session.time}) 예약 차단{blocked ? ' — 사용 중' : ''}
+                          </span>
+                        </label>
+                      );
+                    })}
+                    {bookingSettingsMessage && <p className="admin-holiday-settings-message">{bookingSettingsMessage}</p>}
                   </div>
                 </div>
               )}
