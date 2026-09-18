@@ -157,7 +157,6 @@ export default function Home() {
   const [editingStepIndex, setEditingStepIndex] = useState<number | null>(null);
   const [agreements, setAgreements] = useState({ gear: false, policy: false, recording: false, sms: false });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [spotlight, setSpotlight] = useState({ x: 50, y: 18 });
   const [mapConfig, setMapConfig] = useState<MapConfig | null>(null);
   const [sessionCounts, setSessionCounts] = useState<Record<string, number> | null>(null);
   const [mapError, setMapError] = useState('');
@@ -167,8 +166,10 @@ export default function Home() {
   const [faqItems, setFaqItems] = useState<FaqItem[]>(DEFAULT_FAQ_ITEMS);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
-  const [bookingProgress, setBookingProgress] = useState(0);
+  const bookingFillRef = useRef<HTMLSpanElement | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const mainRef = useRef<HTMLElement | null>(null);
+  const spotlightFrame = useRef<number | null>(null);
   const canEdit = editMode && adminPassword.length > 0;
   const selectedStationIndex = content.stations.findIndex((station) => station.key === selectedStationKey);
   const selectedStation = selectedStationIndex >= 0 ? content.stations[selectedStationIndex] : content.stations[0];
@@ -263,7 +264,10 @@ export default function Home() {
     function updateBookingProgress() {
       const targetTop = target.getBoundingClientRect().top + window.scrollY;
       const ratio = targetTop > 0 ? window.scrollY / targetTop : 1;
-      setBookingProgress(Math.min(1, Math.max(0, ratio)));
+      const clamped = Math.min(1, Math.max(0, ratio));
+      if (bookingFillRef.current) {
+        bookingFillRef.current.style.width = `${clamped * 100}%`;
+      }
       ticking = false;
     }
 
@@ -1438,22 +1442,37 @@ export default function Home() {
   }
 
   function handlePointer(event: MouseEvent<HTMLElement>) {
-    const rect = event.currentTarget.getBoundingClientRect();
-    setSpotlight({
-      x: Math.round(((event.clientX - rect.left) / rect.width) * 100),
-      y: Math.round(((event.clientY - rect.top) / rect.height) * 100),
+    const target = event.currentTarget;
+    const clientX = event.clientX;
+    const clientY = event.clientY;
+
+    if (spotlightFrame.current !== null) {
+      return;
+    }
+
+    spotlightFrame.current = requestAnimationFrame(() => {
+      spotlightFrame.current = null;
+      const rect = target.getBoundingClientRect();
+      const x = Math.round(((clientX - rect.left) / rect.width) * 100);
+      const y = Math.round(((clientY - rect.top) / rect.height) * 100);
+      const node = mainRef.current;
+      if (node) {
+        node.style.setProperty('--spotlight-x', `${x}%`);
+        node.style.setProperty('--spotlight-y', `${y}%`);
+      }
     });
   }
 
   return (
     <main
       id="home"
+      ref={mainRef}
       className={canEdit ? 'cm-edit-mode' : undefined}
       onMouseMove={handlePointer}
       style={
         {
-          '--spotlight-x': `${spotlight.x}%`,
-          '--spotlight-y': `${spotlight.y}%`,
+          '--spotlight-x': '50%',
+          '--spotlight-y': '18%',
         } as CSSProperties
       }
     >
@@ -1662,7 +1681,7 @@ export default function Home() {
 
       {isSectionVisible('booking') && (
         <button className="floating-cta" type="button" onClick={() => setBookingOpen(true)}>
-          <span className="floating-cta-fill" style={{ width: `${bookingProgress * 100}%` }} />
+          <span className="floating-cta-fill" ref={bookingFillRef} />
           <span className="floating-cta-label">티켓 구매하기</span>
         </button>
       )}
