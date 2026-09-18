@@ -2505,6 +2505,66 @@ textarea {
   margin: 0;
 }
 
+.admin-live-editor {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  margin-bottom: 32px;
+  padding: 20px;
+}
+
+.admin-live-editor-hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 6px 0 0;
+  max-width: 560px;
+}
+
+.viewport-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.viewport-toggle button {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 8px 16px;
+  transition: background-color 0.2s var(--ease-apple), border-color 0.2s var(--ease-apple), color 0.2s var(--ease-apple);
+}
+
+.viewport-toggle button.active {
+  background: var(--pantone-1788-c);
+  border-color: var(--pantone-1788-c);
+  color: var(--ink);
+}
+
+.live-editor-frame-wrap {
+  background: #0a0a0c;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  height: 82vh;
+  margin-top: 16px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.live-editor-frame-wrap.mobile {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 420px;
+}
+
+.live-editor-frame {
+  border: 0;
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
 .admin-palette .palette-panel {
   margin-top: 0;
 }

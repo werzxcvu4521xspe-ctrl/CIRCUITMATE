@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection } from '../../lib/site-map';
 import { DEFAULT_FAQ_ITEMS, normalizeFaqItems, type FaqItem } from '../../lib/faq';
 import { ticketDates, buildSessionLabel, type TicketDate, type TicketSession } from '../../lib/schedule';
@@ -89,6 +89,8 @@ export default function AdminPage() {
   const [selectedDateId, setSelectedDateId] = useState<string | null>(null);
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [nowTimestamp, setNowTimestamp] = useState(0);
+  const [editViewport, setEditViewport] = useState<'desktop' | 'mobile'>('desktop');
+  const editFrameRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
     const updateNow = () => setNowTimestamp(Date.now());
@@ -100,6 +102,24 @@ export default function AdminPage() {
       window.clearInterval(timer);
     };
   }, []);
+
+  function sendEditAuth() {
+    editFrameRef.current?.contentWindow?.postMessage(
+      { type: 'CM_ADMIN_AUTH', password },
+      window.location.origin
+    );
+  }
+
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (event.data && event.data.type === 'CM_EDIT_READY') {
+        sendEditAuth();
+      }
+    }
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [password]);
 
   type CalendarCell = { iso: string; day: number };
 
@@ -815,6 +835,44 @@ export default function AdminPage() {
                   {loading ? '저장 중' : '변경 저장'}
                 </button>
               </div>
+
+              <div className="admin-live-editor">
+                <div className="admin-section-head">
+                  <div>
+                    <p className="eyebrow">Live Editor</p>
+                    <h2>실시간 편집 (WYSIWYG)</h2>
+                    <p className="admin-live-editor-hint">
+                      아래는 실제 사이트 화면입니다. 텍스트를 클릭해 바로 수정한 뒤 다른 곳을 클릭하면 자동으로 저장됩니다.
+                    </p>
+                  </div>
+                  <div className="viewport-toggle" role="group" aria-label="미리보기 화면 크기">
+                    <button
+                      type="button"
+                      className={editViewport === 'desktop' ? 'active' : ''}
+                      onClick={() => setEditViewport('desktop')}
+                    >
+                      데스크탑
+                    </button>
+                    <button
+                      type="button"
+                      className={editViewport === 'mobile' ? 'active' : ''}
+                      onClick={() => setEditViewport('mobile')}
+                    >
+                      모바일
+                    </button>
+                  </div>
+                </div>
+                <div className={`live-editor-frame-wrap ${editViewport}`}>
+                  <iframe
+                    ref={editFrameRef}
+                    src="/?cm_edit=1"
+                    title="서킷메이트 실시간 편집"
+                    className="live-editor-frame"
+                    onLoad={sendEditAuth}
+                  />
+                </div>
+              </div>
+
               <div className="sitemap-editor">
                 {siteMap.map((section) => (
                   <article key={section.id} className={section.visible ? 'is-visible' : 'is-hidden'}>
