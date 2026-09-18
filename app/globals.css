@@ -1335,6 +1335,7 @@ button:active {
 .recovery-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 40px;
+  max-width: 760px;
 }
 
 .recovery-grid article {
