@@ -76,7 +76,7 @@ export type ContentData = {
   passOptions: PassOptionContent[];
   identityIntro: string;
   identityGallery: string[];
-  subsectionVisibility: Record<SubSectionId, boolean>;
+  blockVisibility: Record<SubSectionId, boolean>;
   figuresHeading: HeadingContent;
   previewHeading: PreviewHeadingContent;
   momentsHeading: HeadingContent;
@@ -263,7 +263,7 @@ export const DEFAULT_CONTENT: ContentData = {
     'LIGHT',
     'RECOVERY',
   ],
-  subsectionVisibility: {
+  blockVisibility: {
     keyFigures: true,
     previewCards: true,
     selectedMoments: true,

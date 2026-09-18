@@ -560,12 +560,12 @@ export default function Home() {
   }
 
   function isSubsectionVisible(id: SubSectionId) {
-    return content.subsectionVisibility[id] !== false;
+    return content.blockVisibility[id] !== false;
   }
 
   function toggleSubsectionVisibility(id: SubSectionId) {
-    const updated = { ...content.subsectionVisibility, [id]: !isSubsectionVisible(id) };
-    saveContentField('subsectionVisibility', updated);
+    const updated = { ...content.blockVisibility, [id]: !isSubsectionVisible(id) };
+    saveContentField('blockVisibility', updated);
   }
 
   function sectionCopy(id: SiteSectionId) {
