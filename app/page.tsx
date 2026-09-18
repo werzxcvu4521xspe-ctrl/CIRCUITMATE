@@ -64,9 +64,10 @@ const previewCards = [
 ];
 
 const socialProof = [
-  ['@mate_min', '처음 와도 팀 미션 덕분에 어색함이 금방 풀렸어요.'],
-  ['@courtjun', '테니스 코트 조명과 서킷 루틴 조합이 진짜 새로웠습니다.'],
-  ['@recover_y', '운동 후 리커버리 테이블까지 있어서 모임 완성도가 높았어요.'],
+  ['@shmasus_1', '혼자 갈까 말까 고민했는데, 도착하자마자 팀이 자동으로 정해져서 그냥 바로 몸부터 풀게 됐어요'],
+  ['@gah_y.n', '운동 처음이라 걱정했는데 스스로 난이도를 조절 할 수 있어서 끝까지 제 페이스로 따라갈 수 있었어요. 운동 후 과일 케이터링 바도 신선해서 좋았어요'],
+  ['@awf_sacri', '술 없이도 이렇게 텐션 오르는 모임은 처음이었어요. 덕분에 주말이 상쾌해졌어요'],
+  ['@osrmwt', '순발력 미니게임이랑 팀 이어달리기가 재밌었어요\n마지막 팀 이어달리기에서 다 같이 응원하며 뛴 게 아직도 기억나요.'],
 ];
 
 const selectedMoments = [
@@ -1439,14 +1440,15 @@ export default function Home() {
             <p className="eyebrow">{sectionCopy('review').label}</p>
             <h2>{sectionCopy('review').title}</h2>
           </div>
-          <p>{sectionCopy('review').description}</p>
         </div>
         <div className="social-grid reveal" aria-label="참가자 현장 스케치와 포토 리뷰">
           {socialProof.map(([name, text]) => (
             <article key={name}>
               <div className="photo-tile" />
               <strong>{name}</strong>
-              <p>{text}</p>
+              {text.split('\n').map((line) => (
+                <p key={line}>{line}</p>
+              ))}
             </article>
           ))}
         </div>
