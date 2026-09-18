@@ -1807,11 +1807,6 @@ export default function Home() {
                 현재 {selectedSessionBooked}명 신청 · 최소 {MIN_PARTICIPANTS}명 시작 · 최대 {MAX_PARTICIPANTS}명
               </p>
             </div>
-            <div className="ticket-box">
-              <span>선택 일정</span>
-              <strong>{selectedSessionLabel}</strong>
-              <p>원데이 올패스 티켓 {TICKET_PRICE} · 잔여 {remainingSeats}석</p>
-            </div>
           </aside>
           <form onSubmit={handleMainBooking} className="form-card">
             {mainStepStarted ? (
