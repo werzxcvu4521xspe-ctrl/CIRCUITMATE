@@ -3866,6 +3866,10 @@ textarea {
     white-space: normal;
   }
 
+  nav.mobile-open a::after {
+    content: none;
+  }
+
   nav.mobile-open a:hover,
   nav.mobile-open a:focus-visible {
     color: var(--pantone-1788-c);
