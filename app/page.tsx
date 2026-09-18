@@ -163,6 +163,7 @@ export default function Home() {
   const [mapError, setMapError] = useState('');
   const [addressCopied, setAddressCopied] = useState(false);
   const [openFaqQuestion, setOpenFaqQuestion] = useState<string | null>(null);
+  const [openStoryCard, setOpenStoryCard] = useState<string | null>(null);
   const [faqItems, setFaqItems] = useState<FaqItem[]>(DEFAULT_FAQ_ITEMS);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
@@ -1611,12 +1612,30 @@ export default function Home() {
           </article>
           <div className="story-panel reveal">
             {content.storyPanel.map((card, cardIndex) => (
-              <article key={card.key}>
-                <span {...editStoryLabel(cardIndex)}>{card.label}</span>
-                {card.paragraphs.map((paragraph, paraIndex) => (
-                  <p key={paragraph} {...editStoryParagraph(cardIndex, paraIndex)}>{paragraph}</p>
-                ))}
-              </article>
+              <details key={card.key} className="story-card" open={openStoryCard === card.key}>
+                <summary
+                  onClick={(event) => {
+                    event.preventDefault();
+                    setOpenStoryCard((current) => (current === card.key ? null : card.key));
+                  }}
+                >
+                  <span
+                    {...editStoryLabel(cardIndex)}
+                    onClick={(event) => {
+                      if (canEdit) {
+                        event.stopPropagation();
+                      }
+                    }}
+                  >
+                    {card.label}
+                  </span>
+                </summary>
+                <div className="story-answer">
+                  {card.paragraphs.map((paragraph, paraIndex) => (
+                    <p key={paragraph} {...editStoryParagraph(cardIndex, paraIndex)}>{paragraph}</p>
+                  ))}
+                </div>
+              </details>
             ))}
           </div>
         </section>

@@ -486,7 +486,7 @@ button:hover {
 .metric-grid article,
 .horizontal-cards article,
 .social-grid article,
-.story-panel article,
+.story-panel .story-card,
 .station-detail,
 .mini-game-card,
 .recovery-grid article,
@@ -591,7 +591,7 @@ button:hover {
 
 .horizontal-cards article,
 .social-grid article,
-.story-panel article,
+.story-panel .story-card,
 .recovery-grid article,
 .guide-grid article,
 .awards-slider article {
@@ -645,7 +645,7 @@ button:hover {
   line-height: var(--leading-body);
 }
 
-.story-panel article p + p {
+.story-panel .story-card p + p {
   margin-top: 10px;
 }
 
@@ -834,6 +834,29 @@ button:hover {
 .story-panel {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 40px;
+}
+
+.story-card summary {
+  cursor: pointer;
+  transition: opacity 0.2s var(--ease-apple);
+}
+
+.story-card summary:hover {
+  opacity: 0.72;
+}
+
+.story-card summary > span {
+  margin-bottom: 0;
+}
+
+.story-answer {
+  display: grid;
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.story-card[open] .story-answer {
+  animation: faqAnswerIn 0.35s var(--ease-apple);
 }
 
 .palette-panel {
@@ -3996,7 +4019,7 @@ textarea {
 .metric-grid article,
 .horizontal-cards article,
 .social-grid article,
-.story-panel article,
+.story-panel .story-card,
 .recovery-grid article,
 .guide-grid article,
 .awards-slider article,
@@ -4008,7 +4031,7 @@ textarea {
 .metric-grid article:hover,
 .horizontal-cards article:hover,
 .social-grid article:hover,
-.story-panel article:hover,
+.story-panel .story-card:hover,
 .recovery-grid article:hover,
 .guide-grid article:hover,
 .awards-slider article:hover,
