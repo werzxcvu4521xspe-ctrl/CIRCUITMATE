@@ -1070,14 +1070,17 @@ button:hover {
   margin-bottom: 24px;
   max-height: 560px;
   overflow: hidden;
+  position: relative;
   width: min(100%, 560px);
 }
 
 .station-video-frame video {
   display: block;
   height: 100%;
+  inset: 0;
   object-fit: contain;
   object-position: center center;
+  position: absolute;
   width: 100%;
 }
 
