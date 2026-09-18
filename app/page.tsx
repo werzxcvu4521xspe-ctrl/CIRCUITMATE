@@ -167,6 +167,7 @@ export default function Home() {
   const [faqItems, setFaqItems] = useState<FaqItem[]>(DEFAULT_FAQ_ITEMS);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [bookingProgress, setBookingProgress] = useState(0);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const canEdit = editMode && adminPassword.length > 0;
   const selectedStationIndex = content.stations.findIndex((station) => station.key === selectedStationKey);
@@ -248,6 +249,40 @@ export default function Home() {
       window.removeEventListener('resize', onScroll);
     };
   }, [navItems]);
+
+  useEffect(() => {
+    const bookingEl = document.getElementById('booking');
+
+    if (!bookingEl) {
+      return;
+    }
+
+    const target: HTMLElement = bookingEl;
+    let ticking = false;
+
+    function updateBookingProgress() {
+      const targetTop = target.getBoundingClientRect().top + window.scrollY;
+      const ratio = targetTop > 0 ? window.scrollY / targetTop : 1;
+      setBookingProgress(Math.min(1, Math.max(0, ratio)));
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateBookingProgress);
+      }
+    }
+
+    updateBookingProgress();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, [visibleSections]);
 
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
@@ -1627,7 +1662,8 @@ export default function Home() {
 
       {isSectionVisible('booking') && (
         <button className="floating-cta" type="button" onClick={() => setBookingOpen(true)}>
-          티켓 구매하기
+          <span className="floating-cta-fill" style={{ width: `${bookingProgress * 100}%` }} />
+          <span className="floating-cta-label">티켓 구매하기</span>
         </button>
       )}
 

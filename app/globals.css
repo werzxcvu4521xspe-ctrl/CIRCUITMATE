@@ -326,9 +326,19 @@ button:hover {
 
 .floating-cta {
   bottom: 24px;
+  overflow: hidden;
   position: fixed;
   right: 24px;
   z-index: 40;
+}
+
+.floating-cta-fill {
+  display: none;
+}
+
+.floating-cta-label {
+  position: relative;
+  z-index: 1;
 }
 
 .section {
@@ -4077,9 +4087,22 @@ textarea {
   }
 
   .floating-cta {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(229, 220, 234, 0.22);
     bottom: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     left: 14px;
     right: 14px;
+  }
+
+  .floating-cta-fill {
+    background: linear-gradient(90deg, var(--lime), #ff8a3d);
+    bottom: 0;
+    display: block;
+    left: 0;
+    position: absolute;
+    top: 0;
+    transition: width 0.18s linear;
   }
 
   .admin-page {
