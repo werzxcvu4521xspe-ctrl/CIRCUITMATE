@@ -114,6 +114,7 @@ export default function Home() {
   const [editMode, setEditMode] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [visibilityPanelOpen, setVisibilityPanelOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(ticketDates[0].id);
   const [selectedSessionId, setSelectedSessionId] = useState(ticketDates[0].sessions[0].id);
   const [bookingError, setBookingError] = useState('');
@@ -529,6 +530,26 @@ export default function Home() {
 
   function sectionCopy(id: SiteSectionId) {
     return siteMap.find((section) => section.id === id) ?? DEFAULT_SITE_MAP.find((section) => section.id === id)!;
+  }
+
+  function toggleSectionVisibility(id: SiteSectionId) {
+    const updated = siteMap.map((section) =>
+      section.id === id ? { ...section, visible: !section.visible } : section
+    );
+    setSiteMap(updated);
+
+    if (!canEdit) {
+      return;
+    }
+
+    setSaveStatus('saving');
+    fetch('/api/site-map', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify({ sections: updated }),
+    })
+      .then((response) => setSaveStatus(response.ok ? 'saved' : 'error'))
+      .catch(() => setSaveStatus('error'));
   }
 
   function saveContentField<K extends keyof ContentData>(key: K, value: ContentData[K]) {
@@ -1207,6 +1228,32 @@ export default function Home() {
       {canEdit && saveStatus !== 'idle' && (
         <div className={`cm-save-status cm-save-status-${saveStatus}`} role="status">
           {saveStatus === 'saving' ? '저장 중…' : saveStatus === 'saved' ? '저장됨' : '저장 실패'}
+        </div>
+      )}
+
+      {canEdit && (
+        <div className="cm-visibility-panel">
+          <button
+            type="button"
+            className="cm-visibility-toggle-btn"
+            onClick={() => setVisibilityPanelOpen((prev) => !prev)}
+          >
+            노출 설정 {visibilityPanelOpen ? '▾' : '▸'}
+          </button>
+          {visibilityPanelOpen && (
+            <div className="cm-visibility-list">
+              {siteMap.map((section) => (
+                <label key={section.id} className="cm-visibility-row">
+                  <span>{section.label}</span>
+                  <input
+                    type="checkbox"
+                    checked={section.visible}
+                    onChange={() => toggleSectionVisibility(section.id)}
+                  />
+                </label>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
