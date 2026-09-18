@@ -16,7 +16,7 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
     label: '01. Home',
     href: '#home',
     title: 'CIRCUITMATE',
-    description: '땀 흘린 뒤 찾아오는 가장 건강한 교류',
+    description: '내 몸이 스스로 만들어내는 건강한 활기를 즐기는 곳',
     visible: true,
     order: 1,
   },
