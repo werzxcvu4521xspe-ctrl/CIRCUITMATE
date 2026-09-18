@@ -110,3 +110,25 @@ export async function PATCH(request: Request) {
     return Response.json({ error: toErrorMessage(error) }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    if (!isAuthorized(request)) {
+      return Response.json({ error: '관리자 비밀번호를 확인해주세요.' }, { status: 401 });
+    }
+
+    const payload = (await request.json()) as Record<string, unknown>;
+    const id = Number(payload.id);
+
+    if (!Number.isInteger(id) || id < 1) {
+      return Response.json({ error: '삭제할 예약을 확인해주세요.' }, { status: 400 });
+    }
+
+    const db = getReservationsDb();
+    await db.prepare('DELETE FROM reservations WHERE id = ?').bind(id).run();
+
+    return Response.json({ ok: true });
+  } catch (error) {
+    return Response.json({ error: toErrorMessage(error) }, { status: 500 });
+  }
+}

@@ -586,6 +586,37 @@ export default function AdminPage() {
     }
   }
 
+  async function deleteReservation(id: number) {
+    if (!window.confirm('이 예약을 삭제하시겠습니까? 삭제하면 복구할 수 없습니다.')) {
+      return;
+    }
+
+    setLoading(true);
+    setMessage('');
+
+    try {
+      const response = await fetch('/api/reservations', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': password,
+        },
+        body: JSON.stringify({ id }),
+      });
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? '예약을 삭제하지 못했습니다.');
+      }
+
+      setReservations((current) => current.filter((reservation) => reservation.id !== id));
+    } catch (error) {
+      setMessage(error instanceof Error ? error.message : '예약을 삭제하지 못했습니다.');
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <main className="admin-page">
       <header className="admin-header">
@@ -876,9 +907,19 @@ export default function AdminPage() {
                         {rows.map((reservation) => (
                           <tr key={reservation.id}>
                             <td>
-                              <span className={`status-pill ${reservation.status}`}>
-                                {statusLabels[reservation.status]}
-                              </span>
+                              <div className="status-actions">
+                                {statusOrder.map((status) => (
+                                  <button
+                                    key={status}
+                                    type="button"
+                                    className={`status-pill-button ${status} ${reservation.status === status ? 'active' : ''}`}
+                                    onClick={() => updateStatus(reservation.id, status)}
+                                    disabled={loading || reservation.status === status}
+                                  >
+                                    {statusLabels[status]}
+                                  </button>
+                                ))}
+                              </div>
                             </td>
                             <td>{reservation.name}</td>
                             <td>{reservation.phone}</td>
@@ -893,19 +934,14 @@ export default function AdminPage() {
                             </td>
                             <td>{new Date(reservation.created_at).toLocaleString('ko-KR')}</td>
                             <td>
-                              <div className="status-actions">
-                                {statusOrder.map((status) => (
-                                  <button
-                                    key={status}
-                                    type="button"
-                                    className={reservation.status === status ? 'active' : ''}
-                                    onClick={() => updateStatus(reservation.id, status)}
-                                    disabled={loading || reservation.status === status}
-                                  >
-                                    {statusLabels[status]}
-                                  </button>
-                                ))}
-                              </div>
+                              <button
+                                type="button"
+                                className="delete-button"
+                                onClick={() => deleteReservation(reservation.id)}
+                                disabled={loading}
+                              >
+                                삭제
+                              </button>
                             </td>
                           </tr>
                         ))}
