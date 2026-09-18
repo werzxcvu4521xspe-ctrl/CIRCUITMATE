@@ -342,19 +342,14 @@ button:hover {
 }
 
 .instagram-fab {
-  bottom: 84px;
   color: var(--ink);
   display: inline-flex;
-  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.45));
-  position: fixed;
-  right: 24px;
   transition: color 0.2s ease, transform 0.2s ease;
-  z-index: 40;
 }
 
 .instagram-fab svg {
-  height: 26px;
-  width: 26px;
+  height: 22px;
+  width: 22px;
 }
 
 .instagram-fab:hover {
@@ -2454,6 +2449,12 @@ textarea {
   min-width: 144px;
 }
 
+.footer-right {
+  align-items: center;
+  display: flex;
+  gap: 18px;
+}
+
 .footer-section .footer-admin-link {
   background: none;
   box-shadow: none;
@@ -4124,16 +4125,6 @@ textarea {
     position: absolute;
     top: 0;
     transition: width 0.18s linear;
-  }
-
-  .instagram-fab {
-    bottom: 78px;
-    right: 14px;
-  }
-
-  .instagram-fab svg {
-    height: 22px;
-    width: 22px;
   }
 
   .admin-page {

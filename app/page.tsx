@@ -1667,20 +1667,6 @@ export default function Home() {
         </button>
       )}
 
-      <a
-        className="instagram-fab"
-        href="https://www.instagram.com/circuit.mate"
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="서킷메이트 인스타그램"
-      >
-        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <rect x="2.5" y="2.5" width="19" height="19" rx="6" stroke="currentColor" strokeWidth="1.8" />
-          <circle cx="12" cy="12" r="4.6" stroke="currentColor" strokeWidth="1.8" />
-          <circle cx="17.4" cy="6.6" r="1.15" fill="currentColor" />
-        </svg>
-      </a>
-
       {isSectionVisible('brand') && (
         <section id="brand" className="section brand-section">
           <div className="section-heading split">
@@ -2161,9 +2147,24 @@ export default function Home() {
         <div>
           <strong>CIRCUITMATE</strong>
         </div>
-        <a className="footer-admin-link" href="/admin">
-          관리자
-        </a>
+        <div className="footer-right">
+          <a
+            className="instagram-fab"
+            href="https://www.instagram.com/circuit.mate"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="서킷메이트 인스타그램"
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <rect x="2.5" y="2.5" width="19" height="19" rx="6" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="12" cy="12" r="4.6" stroke="currentColor" strokeWidth="1.8" />
+              <circle cx="17.4" cy="6.6" r="1.15" fill="currentColor" />
+            </svg>
+          </a>
+          <a className="footer-admin-link" href="/admin">
+            관리자
+          </a>
+        </div>
       </footer>
 
       {bookingOpen && isSectionVisible('booking') && (
