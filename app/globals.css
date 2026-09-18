@@ -2975,19 +2975,11 @@ textarea {
   font-weight: 850;
 }
 
-.status-pill-button.pending.active {
-  background: rgba(238, 39, 55, 0.18);
-  color: var(--lime);
-}
-
-.status-pill-button.confirmed.active {
-  background: rgba(93, 71, 119, 0.28);
-  color: var(--pantone-663-c);
-}
-
-.status-pill-button.cancelled.active {
-  background: rgba(255, 0, 144, 0.16);
-  color: #ffb3dd;
+.status-actions .status-pill-button.active {
+  background: #ff8a3d;
+  border-color: #ff8a3d;
+  box-shadow: 0 0 0 1px rgba(255, 138, 61, 0.45);
+  color: #1b0e05;
 }
 
 .delete-button {
@@ -2998,7 +2990,7 @@ textarea {
   font-weight: 800;
   min-height: 34px;
   padding: 0 14px;
-  transition: background 0.2s ease, opacity 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, opacity 0.2s ease;
 }
 
 .delete-button:hover {
@@ -3008,6 +3000,16 @@ textarea {
 .delete-button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+
+.delete-button.confirming {
+  background: #ff2d78;
+  border-color: #ff2d78;
+  color: #1b0e05;
+}
+
+.delete-button.confirming:hover {
+  background: #ff477f;
 }
 
 /* ---------- reservation status table (run sheet palette) ---------- */

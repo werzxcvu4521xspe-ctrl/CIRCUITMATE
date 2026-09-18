@@ -80,6 +80,8 @@ export default function AdminPage() {
   const [authorized, setAuthorized] = useState(false);
   const [activeTab, setActiveTab] = useState<AdminTab>('reservations');
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const deleteConfirmTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [siteMap, setSiteMap] = useState<SiteSection[]>(DEFAULT_SITE_MAP);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -587,10 +589,6 @@ export default function AdminPage() {
   }
 
   async function deleteReservation(id: number) {
-    if (!window.confirm('이 예약을 삭제하시겠습니까? 삭제하면 복구할 수 없습니다.')) {
-      return;
-    }
-
     setLoading(true);
     setMessage('');
 
@@ -615,6 +613,25 @@ export default function AdminPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  function handleDeleteClick(id: number) {
+    if (deleteConfirmTimeoutRef.current) {
+      clearTimeout(deleteConfirmTimeoutRef.current);
+      deleteConfirmTimeoutRef.current = null;
+    }
+
+    if (confirmDeleteId === id) {
+      setConfirmDeleteId(null);
+      void deleteReservation(id);
+      return;
+    }
+
+    setConfirmDeleteId(id);
+    deleteConfirmTimeoutRef.current = setTimeout(() => {
+      setConfirmDeleteId(null);
+      deleteConfirmTimeoutRef.current = null;
+    }, 3500);
   }
 
   return (
@@ -936,11 +953,11 @@ export default function AdminPage() {
                             <td>
                               <button
                                 type="button"
-                                className="delete-button"
-                                onClick={() => deleteReservation(reservation.id)}
+                                className={`delete-button ${confirmDeleteId === reservation.id ? 'confirming' : ''}`}
+                                onClick={() => handleDeleteClick(reservation.id)}
                                 disabled={loading}
                               >
-                                삭제
+                                {confirmDeleteId === reservation.id ? '정말 삭제?' : '삭제'}
                               </button>
                             </td>
                           </tr>
