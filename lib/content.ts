@@ -54,6 +54,10 @@ export type PreviewHeadingContent = {
   description: string;
 };
 
+export type BookingSettingsContent = {
+  blockHolidays: boolean;
+};
+
 export type ContentData = {
   badgeLoop: string[];
   keyFigures: Tuple3[];
@@ -80,6 +84,7 @@ export type ContentData = {
   figuresHeading: HeadingContent;
   previewHeading: PreviewHeadingContent;
   momentsHeading: HeadingContent;
+  bookingSettings: BookingSettingsContent;
 };
 
 export const DEFAULT_CONTENT: ContentData = {
@@ -280,6 +285,9 @@ export const DEFAULT_CONTENT: ContentData = {
   momentsHeading: {
     eyebrow: 'Selected Moments',
     title: '프레임 단위로 기억되는 네 개의 장면',
+  },
+  bookingSettings: {
+    blockHolidays: true,
   },
 };
 

@@ -1342,6 +1342,8 @@ button:hover {
   border: 1px solid rgba(229, 220, 234, 0.12);
   color: rgba(229, 220, 234, 0.64);
   display: flex;
+  flex-direction: column;
+  gap: 4px;
   justify-content: center;
   min-height: 64px;
   padding: 14px 6px;
@@ -1353,6 +1355,32 @@ button:hover {
   border-color: rgba(255, 255, 255, 0.28);
   box-shadow: 0 16px 36px rgba(238, 39, 55, 0.32);
   color: white;
+}
+
+.date-calendar button.is-blocked,
+.sheet-date-grid button.is-blocked {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.date-calendar button.is-blocked:hover,
+.sheet-date-grid button.is-blocked:hover {
+  border-color: inherit;
+}
+
+.date-calendar button em,
+.sheet-date-grid button em {
+  color: var(--pantone-1788-c);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.2;
+}
+
+.date-calendar button.active em,
+.sheet-date-grid button.active em {
+  color: rgba(255, 255, 255, 0.85);
 }
 
 .date-calendar button strong {
@@ -2713,6 +2741,19 @@ textarea {
   width: 18px;
 }
 
+.admin-holiday-settings {
+  border-top: 1px solid var(--dark-line);
+  margin-top: 14px;
+  padding-top: 14px;
+}
+
+.admin-holiday-settings-message {
+  color: var(--pantone-1788-c);
+  font-size: var(--text-sm);
+  font-weight: 700;
+  margin: 8px 0 0;
+}
+
 .sitemap-editor input,
 .sitemap-editor textarea {
   background: rgba(248, 243, 255, 0.9);
@@ -3294,6 +3335,8 @@ textarea {
   box-shadow: none;
   color: rgba(22, 6, 31, 0.62);
   display: flex;
+  flex-direction: column;
+  gap: 4px;
   justify-content: center;
   min-height: 56px;
   padding: 12px 6px;

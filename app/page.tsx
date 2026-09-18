@@ -13,6 +13,7 @@ import {
   type TicketDate,
   type TicketSession,
 } from '../lib/schedule';
+import { getHolidayName } from '../lib/holidays';
 
 declare global {
   interface Window {
@@ -333,6 +334,16 @@ export default function Home() {
       mounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (isDateBookable(selectedDate)) {
+      return;
+    }
+    const firstBookable = ticketDates.find((item) => isDateBookable(item.id));
+    if (firstBookable) {
+      handleDateSelect(firstBookable.id);
+    }
+  }, [content.bookingSettings.blockHolidays, selectedDate]);
 
   useEffect(() => {
     let mounted = true;
@@ -925,7 +936,14 @@ export default function Home() {
     };
   }
 
+  function isDateBookable(dateId: string) {
+    return !(content.bookingSettings.blockHolidays && getHolidayName(dateId));
+  }
+
   function handleDateSelect(dateId: string) {
+    if (!isDateBookable(dateId)) {
+      return;
+    }
     const date = ticketDates.find((item) => item.id === dateId) ?? ticketDates[0];
     setSelectedDate(date.id);
     setSelectedSessionId(date.sessions[0].id);
@@ -1277,6 +1295,11 @@ export default function Home() {
 
   async function handleMainBooking(event: FormEvent<HTMLFormElement>, source: 'booking' | 'quick' = 'booking') {
     event.preventDefault();
+
+    if (!isDateBookable(selectedDate)) {
+      setBookingError('공휴일에는 예약을 받지 않습니다. 다른 날짜를 선택해주세요.');
+      return;
+    }
 
     const ok = await submitReservation({
       session: selectedSessionLabel,
@@ -1762,18 +1785,25 @@ export default function Home() {
           <aside className="slot-panel">
             <h3>6.1 일정 선택</h3>
             <div className="date-calendar" role="listbox" aria-label="토요일 티켓 날짜">
-              {ticketDates.map((date) => (
+              {ticketDates.map((date) => {
+                const holidayName = getHolidayName(date.id);
+                const bookable = isDateBookable(date.id);
+                return (
                 <button
                   key={date.id}
                   type="button"
-                  className={selectedDate === date.id ? 'active' : ''}
+                  className={`${selectedDate === date.id ? 'active' : ''} ${!bookable ? 'is-blocked' : ''}`.trim()}
                   onClick={() => handleDateSelect(date.id)}
+                  disabled={!bookable}
+                  aria-disabled={!bookable}
                 >
                   <strong>
                     {date.label} ({date.day})
                   </strong>
+                  {holidayName && <em>{bookable ? holidayName : `${holidayName} · 예약 불가`}</em>}
                 </button>
-              ))}
+                );
+              })}
             </div>
             <div className="session-list" aria-label="티케팅 가능한 세션">
               {selectedDateInfo.sessions.map((session) => {
@@ -2015,18 +2045,25 @@ export default function Home() {
               <fieldset className="sheet-picker">
                 <legend>일정 선택</legend>
                 <div className="sheet-date-grid" role="listbox" aria-label="티켓 구매 날짜">
-                  {ticketDates.map((date) => (
+                  {ticketDates.map((date) => {
+                    const holidayName = getHolidayName(date.id);
+                    const bookable = isDateBookable(date.id);
+                    return (
                     <button
                       key={date.id}
                       type="button"
-                      className={selectedDate === date.id ? 'active' : ''}
+                      className={`${selectedDate === date.id ? 'active' : ''} ${!bookable ? 'is-blocked' : ''}`.trim()}
                       onClick={() => handleDateSelect(date.id)}
+                      disabled={!bookable}
+                      aria-disabled={!bookable}
                     >
                       <strong>
                         {date.label} ({date.day})
                       </strong>
+                      {holidayName && <em>{bookable ? holidayName : `${holidayName} · 예약 불가`}</em>}
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </fieldset>
               <fieldset className="sheet-picker">

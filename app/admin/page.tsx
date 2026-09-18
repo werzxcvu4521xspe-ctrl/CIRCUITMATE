@@ -5,6 +5,7 @@ import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection } from '../../lib/
 import { DEFAULT_FAQ_ITEMS, normalizeFaqItems, type FaqItem } from '../../lib/faq';
 import { ticketDates, buildSessionLabel, type TicketDate, type TicketSession } from '../../lib/schedule';
 import { getHolidayName } from '../../lib/holidays';
+import { DEFAULT_CONTENT, type ContentData } from '../../lib/content';
 
 type ReservationStatus = 'pending' | 'confirmed' | 'cancelled';
 type AdminTab = 'reservations' | 'sitemap' | 'faq' | 'reports';
@@ -90,6 +91,8 @@ export default function AdminPage() {
   const [selectedSessionId, setSelectedSessionId] = useState<string | null>(null);
   const [nowTimestamp, setNowTimestamp] = useState(0);
   const [editViewport, setEditViewport] = useState<'desktop' | 'mobile'>('desktop');
+  const [blockHolidays, setBlockHolidays] = useState(DEFAULT_CONTENT.bookingSettings.blockHolidays);
+  const [bookingSettingsMessage, setBookingSettingsMessage] = useState('');
   const editFrameRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
@@ -289,16 +292,18 @@ export default function AdminPage() {
     setFaqMessage('');
 
     try {
-      const [reservationsResponse, siteMapResponse, faqResponse] = await Promise.all([
+      const [reservationsResponse, siteMapResponse, faqResponse, contentResponse] = await Promise.all([
         fetch('/api/reservations', {
           headers: { 'x-admin-password': nextPassword },
         }),
         fetch('/api/site-map'),
         fetch('/api/faq'),
+        fetch('/api/content'),
       ]);
       const data = (await reservationsResponse.json()) as { reservations?: Reservation[]; error?: string };
       const siteMapData = (await siteMapResponse.json()) as { sections?: SiteSection[]; error?: string };
       const faqData = (await faqResponse.json()) as { items?: FaqItem[]; error?: string };
+      const contentData = (await contentResponse.json()) as { content?: Partial<ContentData>; error?: string };
 
       if (!reservationsResponse.ok) {
         throw new Error(data.error ?? '예약자 목록을 불러오지 못했습니다.');
@@ -315,6 +320,9 @@ export default function AdminPage() {
       setReservations(data.reservations ?? []);
       setSiteMap(normalizeSiteMap(siteMapData.sections));
       setFaqItems(normalizeFaqItems(faqData.items));
+      if (contentResponse.ok && contentData.content?.bookingSettings) {
+        setBlockHolidays(contentData.content.bookingSettings.blockHolidays);
+      }
       setAuthorized(true);
     } catch (error) {
       setMessage(error instanceof Error ? error.message : '예약자 목록을 불러오지 못했습니다.');
@@ -328,6 +336,35 @@ export default function AdminPage() {
     setSiteMap((current) =>
       current.map((section) => (section.id === id ? { ...section, [field]: value } : section))
     );
+  }
+
+  async function saveBookingSettings(nextBlockHolidays: boolean) {
+    const previous = blockHolidays;
+    setBlockHolidays(nextBlockHolidays);
+    setBookingSettingsMessage('');
+
+    try {
+      const response = await fetch('/api/content', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-admin-password': password,
+        },
+        body: JSON.stringify({ key: 'bookingSettings', value: { blockHolidays: nextBlockHolidays } }),
+      });
+      const data = (await response.json()) as { error?: string };
+
+      if (!response.ok) {
+        throw new Error(data.error ?? '예약 설정을 저장하지 못했습니다.');
+      }
+
+      setBookingSettingsMessage(
+        nextBlockHolidays ? '공휴일 예약을 차단합니다.' : '공휴일 예약을 허용합니다.'
+      );
+    } catch (error) {
+      setBlockHolidays(previous);
+      setBookingSettingsMessage(error instanceof Error ? error.message : '예약 설정을 저장하지 못했습니다.');
+    }
   }
 
   async function saveSiteMap() {
@@ -688,6 +725,18 @@ export default function AdminPage() {
                   <span className="legend-dot is-holiday" /> 공휴일
                   <span className="legend-dot is-empty" /> 세션 없음
                 </p>
+
+                <div className="admin-holiday-settings">
+                  <label className="switch-row">
+                    <input
+                      type="checkbox"
+                      checked={blockHolidays}
+                      onChange={(event) => saveBookingSettings(event.target.checked)}
+                    />
+                    <span>공휴일 예약 차단 {blockHolidays ? '(사용 중 — 공휴일엔 예약 불가)' : '(꺼짐 — 공휴일에도 예약 가능)'}</span>
+                  </label>
+                  {bookingSettingsMessage && <p className="admin-holiday-settings-message">{bookingSettingsMessage}</p>}
+                </div>
               </div>
 
               {selectedDate && (
