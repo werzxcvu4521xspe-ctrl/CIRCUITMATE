@@ -318,6 +318,68 @@ export default function Home() {
   }, [visibleSections]);
 
   useEffect(() => {
+    if (canEdit) {
+      return;
+    }
+
+    const nodes = Array.from(document.querySelectorAll<HTMLElement>('[data-countup]'));
+
+    if (nodes.length === 0) {
+      return;
+    }
+
+    if (typeof window.IntersectionObserver !== 'function') {
+      return;
+    }
+
+    function animateCount(el: HTMLElement) {
+      const raw = el.dataset.countup ?? '';
+      const match = raw.match(/^(-?\d+(?:\.\d+)?)(.*)$/);
+
+      if (!match) {
+        return;
+      }
+
+      const target = parseFloat(match[1]);
+      const suffix = match[2] ?? '';
+      const isInt = Number.isInteger(target);
+      const duration = 1100;
+      const start = performance.now();
+
+      function tick(now: number) {
+        const progress = Math.min(1, (now - start) / duration);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = target * eased;
+        el.textContent = `${isInt ? Math.round(current) : current.toFixed(1)}${suffix}`;
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = raw;
+        }
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            animateCount(entry.target as HTMLElement);
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.4 },
+    );
+
+    nodes.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [visibleSections, canEdit]);
+
+  useEffect(() => {
     let mounted = true;
 
     async function loadSiteMap() {
@@ -1622,11 +1684,11 @@ export default function Home() {
               <p className="eyebrow" {...editHeadingField('figuresHeading', 'eyebrow')}>{content.figuresHeading.eyebrow}</p>
               <h2 {...editHeadingField('figuresHeading', 'title')}>{content.figuresHeading.title}</h2>
             </div>
-            <div className="figures-grid reveal">
+            <div className="figures-grid reveal reveal-stagger">
               {content.keyFigures.map(([index, value, label], i) => (
                 <article key={label}>
                   <span {...editTuple('keyFigures', i, 0)}>{index}</span>
-                  <strong {...editTuple('keyFigures', i, 1)}>{value}</strong>
+                  <strong data-countup={canEdit ? undefined : value} {...editTuple('keyFigures', i, 1)}>{value}</strong>
                   <p {...editTuple('keyFigures', i, 2)}>{label}</p>
                 </article>
               ))}
@@ -1643,7 +1705,7 @@ export default function Home() {
               </div>
               <p {...editPreviewHeadingField('description')}>{content.previewHeading.description}</p>
             </div>
-            <div className="horizontal-cards reveal">
+            <div className="horizontal-cards reveal reveal-stagger">
               {content.previewCards.map(([title, desc], i) => (
                 <article key={title}>
                   <span {...editTuple('previewCards', i, 0)}>{title}</span>
@@ -1662,7 +1724,7 @@ export default function Home() {
                 <h2 {...editHeadingField('momentsHeading', 'title')}>{content.momentsHeading.title}</h2>
               </div>
             </div>
-            <div className="moment-grid reveal">
+            <div className="moment-grid reveal reveal-stagger">
               {content.selectedMoments.map(([title, desc], index) => (
                 <article key={title} className="moment-card">
                   <div className="moment-media">
@@ -1705,7 +1767,7 @@ export default function Home() {
               ))}
             </div>
           </article>
-          <div className="story-panel reveal">
+          <div className="story-panel reveal reveal-stagger">
             {content.storyPanel.map((card, cardIndex) => (
               <details key={card.key} className="story-card" open={openStoryCard === card.key}>
                 <summary
@@ -1829,7 +1891,7 @@ export default function Home() {
             <h2 {...editSiteMapField('recovery', 'title')}>{sectionCopy('recovery').title}</h2>
           </div>
         </div>
-        <div className="recovery-grid reveal">
+        <div className="recovery-grid reveal reveal-stagger">
           {content.recoveryItems.map(([tag, title, desc], i) => (
             <article key={title}>
               <span {...editTuple('recoveryItems', i, 0)}>{tag}</span>
@@ -1838,7 +1900,7 @@ export default function Home() {
             </article>
           ))}
         </div>
-        <div className="guide-grid reveal">
+        <div className="guide-grid reveal reveal-stagger">
           {content.wellnessGuide.map(([title, desc], i) => (
             <article key={title}>
               <strong {...editTuple('wellnessGuide', i, 0)}>{title}</strong>
@@ -1855,7 +1917,7 @@ export default function Home() {
           <p className="eyebrow" {...editSiteMapField('awards', 'label')}>{sectionCopy('awards').label}</p>
           <h2 {...editSiteMapField('awards', 'title')}>{sectionCopy('awards').title}</h2>
         </div>
-        <div className="awards-slider reveal" aria-label="서킷메이트 어워즈 부문">
+        <div className="awards-slider reveal reveal-stagger" aria-label="서킷메이트 어워즈 부문">
           {content.awards.map(([title, desc], i) => (
             <article key={title}>
               <div className="award-icon" aria-hidden="true">{title.slice(0, 1)}</div>
@@ -1877,7 +1939,7 @@ export default function Home() {
           <p {...editSiteMapField('pricing', 'description')}>{sectionCopy('pricing').description}</p>
         </div>
         <div className="value-card">
-          <div className="pass-grid reveal">
+          <div className="pass-grid reveal reveal-stagger">
             {content.passOptions.map((pass, i) => (
               <article key={pass.value} className={pass.value === 'single' ? 'pass-card featured' : 'pass-card monthly'}>
                 <span {...editArrayObjectField('passOptions', i, 'eyebrow')}>{pass.eyebrow}</span>
@@ -1916,7 +1978,7 @@ export default function Home() {
             <h2 {...editSiteMapField('review', 'title')}>{sectionCopy('review').title}</h2>
           </div>
         </div>
-        <div className="social-grid reveal" aria-label="참가자 현장 스케치와 포토 리뷰">
+        <div className="social-grid reveal reveal-stagger" aria-label="참가자 현장 스케치와 포토 리뷰">
           {content.socialProof.map(([name, text], i) => (
             <article key={name}>
               <div className="photo-tile" />
@@ -1938,7 +2000,7 @@ export default function Home() {
             <h2 {...editSiteMapField('booking', 'title')}>{sectionCopy('booking').title}</h2>
           </div>
         </div>
-        <div className="booking-layout reveal">
+        <div className="booking-layout reveal reveal-stagger">
           <aside className="slot-panel">
             <h3>6.1 일정 선택</h3>
             <div className="date-calendar" role="listbox" aria-label="토요일 티켓 날짜">
@@ -2023,7 +2085,7 @@ export default function Home() {
             <h2 {...editSiteMapField('faq', 'title')}>{sectionCopy('faq').title}</h2>
           </div>
         </div>
-        <div className="faq-list reveal">
+        <div className="faq-list reveal reveal-stagger">
           {faqItems
             .filter((item) => item.visible)
             .map((item) => (
@@ -2130,7 +2192,7 @@ export default function Home() {
             <p className="eyebrow" {...editHeadingField('operationHeading', 'eyebrow')}>{content.operationHeading.eyebrow}</p>
             <h2 {...editHeadingField('operationHeading', 'title')}>{content.operationHeading.title}</h2>
           </div>
-          <div className="operation-grid reveal">
+          <div className="operation-grid reveal reveal-stagger">
             {content.operationDetails.map(([title, desc], i) => (
               <article key={title}>
                 <strong {...editTuple('operationDetails', i, 0)}>{title}</strong>

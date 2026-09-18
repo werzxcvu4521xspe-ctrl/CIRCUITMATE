@@ -237,14 +237,34 @@ nav a {
   gap: 6px;
   line-height: 1.2;
   padding: 4px 2px;
+  position: relative;
   transition: color 0.15s ease;
   white-space: nowrap;
+}
+
+nav a::after {
+  background: var(--pantone-1788-c);
+  bottom: -2px;
+  content: '';
+  height: 2px;
+  left: 2px;
+  position: absolute;
+  right: 2px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s var(--ease-apple);
 }
 
 nav a:hover,
 nav a:focus-visible,
 nav a.active {
   color: var(--pantone-1788-c);
+}
+
+nav a:hover::after,
+nav a:focus-visible::after,
+nav a.active::after {
+  transform: scaleX(1);
 }
 
 nav .nav-index {
@@ -310,6 +330,15 @@ button {
 button:hover {
   box-shadow: 0 18px 42px rgba(238, 39, 55, 0.32);
   transform: translateY(-1px);
+}
+
+.header-cta:active,
+.primary-button:active,
+.floating-cta:active,
+.secondary-button:active,
+button:active {
+  transform: scale(0.96);
+  transition-duration: 0.1s;
 }
 
 .secondary-button {
@@ -4179,6 +4208,44 @@ textarea {
   transform: translateY(0);
 }
 
+/* Scroll-triggered reveal, staggered per child (cards, list items) */
+.reveal-stagger {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(28px) scale(0.96);
+}
+
+/* Specificity bump (0,2,0) so this transition isn't clobbered by other
+   single-class hover-transition rules that target the same card elements;
+   the extra properties keep each card's own hover timing intact */
+.reveal-stagger.reveal-stagger > * {
+  transition:
+    opacity 0.6s var(--ease-apple),
+    transform 0.6s var(--ease-apple),
+    box-shadow 0.35s var(--ease-apple),
+    border-color 0.35s var(--ease-apple),
+    background-color 0.35s var(--ease-apple),
+    filter 0.35s var(--ease-apple);
+}
+
+.reveal-stagger.is-visible > * {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.reveal-stagger > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger > *:nth-child(2) { transition-delay: 70ms; }
+.reveal-stagger > *:nth-child(3) { transition-delay: 140ms; }
+.reveal-stagger > *:nth-child(4) { transition-delay: 210ms; }
+.reveal-stagger > *:nth-child(5) { transition-delay: 280ms; }
+.reveal-stagger > *:nth-child(6) { transition-delay: 350ms; }
+.reveal-stagger > *:nth-child(n+7) { transition-delay: 420ms; }
+
 /* Card hover micro-interactions */
 .metric-grid article,
 .horizontal-cards article,
@@ -4201,9 +4268,9 @@ textarea {
 .awards-slider article:hover,
 .operation-grid article:hover,
 .moment-card:hover {
-  border-color: rgba(255, 255, 255, 0.32);
-  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.32);
-  transform: translateY(-6px);
+  border-color: rgba(255, 0, 144, 0.4);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 0, 144, 0.12);
+  transform: translateY(-6px) scale(1.015);
 }
 
 .figures-grid article,
