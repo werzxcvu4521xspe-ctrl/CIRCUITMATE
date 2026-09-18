@@ -1,8 +1,9 @@
 'use client';
 
-import { CSSProperties, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, FocusEvent, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection, type SiteSectionId } from '../lib/site-map';
 import { DEFAULT_FAQ_ITEMS, normalizeFaqItems, type FaqItem } from '../lib/faq';
+import { DEFAULT_CONTENT, mergeContent, type ContentData, type Tuple2 } from '../lib/content';
 import {
   MIN_PARTICIPANTS,
   MAX_PARTICIPANTS,
@@ -38,45 +39,6 @@ declare global {
   }
 }
 
-const badgeLoop = [
-  'Night Court',
-  'Circuit Training',
-  'Wellness Recovery',
-  'Social Relay',
-  'Purple Lights',
-  'Team Energy',
-  'Healthy Exchange',
-];
-
-const keyFigures = [
-  ['01', '180+', '누적 참가자'],
-  ['02', '83%', '1인 참가 비율'],
-  ['03', '6', '서킷 종목'],
-  ['04', '4', '어워즈 부문'],
-  ['05', '150', '분 세션'],
-  ['06', '2', '패스 선택지'],
-];
-
-const previewCards = [
-  ['Warm-up', '관절 가동성, 호흡, 코트 적응'],
-  ['Main Circuit', '하체, 코어, 파워, 밸런스 6스테이션'],
-  ['Team Relay', '순발력 코트 터치 게임과 대형 이어달리기'],
-];
-
-const socialProof = [
-  ['@shmasus_1', '혼자 갈까 말까 고민했는데, 도착하자마자 팀이 자동으로 정해져서 그냥 바로 몸부터 풀게 됐어요'],
-  ['@gah_y.n', '운동 처음이라 걱정했는데 스스로 난이도를 조절 할 수 있어서 끝까지 제 페이스로 따라갈 수 있었어요. 운동 후 과일 케이터링 바도 신선해서 좋았어요'],
-  ['@awf_sacri', '술 없이도 이렇게 텐션 오르는 모임은 처음이었어요. 덕분에 주말이 상쾌해졌어요'],
-  ['@osrmwt', '순발력 미니게임이랑 팀 이어달리기가 재밌었어요\n마지막 팀 이어달리기에서 다 같이 응원하며 뛴 게 아직도 기억나요.'],
-];
-
-const selectedMoments = [
-  ['Opening Rally', '웰컴 드링크와 팀 배정이 시작되는 입장 장면'],
-  ['Station Heat', '보랏빛 조명 아래 이어지는 6스테이션 전신 서킷'],
-  ['Relay Peak', '응원과 기록이 동시에 터지는 팀 이어달리기'],
-  ['Recovery Table', '치킨 샌드위치, 과일컵, 전해질 드링크로 마무리'],
-];
-
 const momentImages = ['/circuitmate-live.png', '/circuitmate-concept.png', '/circuitmate-live.png', '/circuitmate-concept.png'];
 const defaultMapPlaceName = '충남대학교 정문 앞 서브웨이 건물 8층';
 const defaultMapAddress = '대전 유성구 궁동 482-3';
@@ -93,104 +55,6 @@ type MapConfig = {
   customStyleId: string;
   customStyleVersion: string;
 };
-
-const timeline = [
-  ['준비 운동', '18:00 - 18:05 (5분)', '입장 및 출석 확인', '참가자 확인 및 팀 배정, 짐 정리'],
-  ['준비 운동', '18:05 - 18:15 (10분)', '몸풀기 스트레칭', '전신 관절 및 다이내믹 스트레칭'],
-  ['준비 운동', '18:15 - 18:30 (15분)', '순발력 미니게임', '반응속도 콘 터치 게임 & 팀 단합'],
-  ['준비 운동', '18:30 - 18:33 (3분)', '1차 수분 보충', '전해질 음료 섭취 및 호흡 정리'],
-  ['메인 서킷', '18:33 - 18:35 (2분)', '서킷 종목 설명', '5개 구역 동작 시범 및 핵심 큐잉 브리핑'],
-  ['메인 서킷', '18:35 - 18:42 (7분)', '메인 서킷 1라운드', '5개 종목 순환 (종목당 1분 운동 + 30초 휴식/이동)'],
-  ['메인 서킷', '18:42 - 18:45 (3분)', '라운드 간 휴식', '팀별 호흡 조절 및 수분 보충'],
-  ['마무리 운동', '18:52 - 18:55 (3분)', '2차 수분 보충', '호흡 정리 및 이어달리기 순서 결정'],
-  ['마무리 운동', '18:55 - 19:10 (15분)', '팀 이어달리기', '코트를 활용한 팀 대항 이어달리기'],
-  ['마무리 운동', '19:10 - 19:15 (5분)', '마무리 스트레칭', '이어달리기 후 전신 이완 및 호흡 정리'],
-  ['리커버리', '19:15 - 19:20 (5분)', '과일 케이터링 바', '스탠딩 생과일 뷔페 바 & 전해질 드링크 섭취'],
-  ['시상 & 마감', '19:20 - 19:30 (10분)', '서킷 어워즈 & 마무리', '4대 부문 시상식 및 단체 사진 촬영'],
-];
-
-const TIMELINE_SECTIONS = [
-  { phase: '준비 운동', label: '준비 운동', duration: '30분' },
-  { phase: '메인 서킷', label: '메인 서킷', duration: '20분' },
-  { phase: '마무리 운동', label: '마무리 운동', duration: '20분' },
-  { phase: '리커버리', label: '리커버리', duration: '10분' },
-  { phase: '시상 & 마감', label: '시상식', duration: '10분' },
-];
-
-const stations = [
-  {
-    key: 'lunge',
-    title: '런지 트위스트',
-    video: '/station-lunge.m4v',
-    cue: '무릎은 발끝 방향, 회전은 흉추에서 시작',
-    effect: '하체 안정성과 회전 코어를 동시에 깨웁니다.',
-  },
-  {
-    key: 'burpee',
-    title: '버피 점프',
-    video: '/station-burpee.m4v',
-    cue: '착지는 부드럽게, 점프 전 복부 긴장 유지',
-    effect: '짧은 시간 심박과 전신 파워를 끌어올립니다.',
-  },
-  {
-    key: 'press',
-    title: '덤벨 푸쉬 프레스',
-    video: '/station-press.m4v',
-    cue: '다리 반동을 어깨까지 연결하고 허리는 꺾지 않기',
-    effect: '상체 추진력과 코어 연결성을 강화합니다.',
-  },
-  {
-    key: 'plank',
-    title: '플랭크 볼 탭',
-    video: '/station-plank.m4v',
-    cue: '골반 흔들림을 줄이고 손끝은 가볍게 터치',
-    effect: '밸런스와 코어 지구력을 선명하게 만듭니다.',
-  },
-];
-
-const recoveryItems = [
-  ['Vitamin', '제철 과일컵', '수분과 비타민을 동시에 채우는 상큼한 마무리.'],
-  ['Hydrate', '전해질 드링크', '땀으로 빠져나간 수분과 미네랄 밸런스를 회복합니다.'],
-];
-
-const wellnessGuide = [
-  ['회복 루틴', '종아리, 둔근, 어깨 순서로 스트레칭해 다음날 피로를 줄입니다.'],
-];
-
-const brandManifesto = [
-  '에너지는 함께할수록 증폭됩니다.',
-  '여기는 서로의 에너지를 빌리고 나눌 수 있는 거대한 에너지의 장입니다.',
-  '밝은 에너지를 가진 사람들이 모이면, 그 강한 진동은 각자의 에너지를 흔들어 깨웁니다.',
-  '땀 흘리며 서킷을 돌고, 내 몸이 스스로 만들어내는 건강한 활기를 즐기는 것, 그것이 우리가 주고자 하는 핵심 경험입니다.',
-  '토요일 저녁, 서로의 에너지를 나누며 삶에 강렬한 활력을 채워가세요.',
-  '여러분과 함께 활력 가득한 밤을 만들 수 있어 기쁩니다.',
-];
-
-const valueStack = [
-  ['단발 참여', '이번 주 가능한 회차만 결제'],
-  ['손해 제로', '못 나오는 주에는 결제 0원'],
-  ['루틴 고정', '월간 패스는 회당 단가 절감'],
-  ['유연 운영', '잔여 횟수 이월 또는 스케줄 변경'],
-];
-
-const passOptions = [
-  {
-    value: 'single',
-    eyebrow: 'Single Pass',
-    title: '원데이 온디맨드 패스',
-    price: '23,000원',
-    note: '티켓 1매',
-    desc: '최소 인원이 모이면 호스트가 세션을 오픈하는 1회성 티켓입니다. 가능한 날만 구매하고, 못 나오는 주에는 결제 부담이 없습니다.',
-  },
-  {
-    value: 'monthly',
-    eyebrow: 'Optional Monthly Pass',
-    title: '핏 인베스트먼트 먼슬리 패스',
-    price: '월 정기 패스',
-    note: '가격 별도 안내',
-    desc: '매주 꾸준히 참석해 루틴을 만들고 싶은 회원을 위한 선택형 구독 패스입니다. 원데이보다 회당 단가 -15%와 이월/일정 변경 옵션을 제공합니다.',
-  },
-];
 
 const GENDER_OPTIONS = [
   { value: 'male', label: '남' },
@@ -243,22 +107,12 @@ const BUYER_STEP_LABELS: Record<BuyerStepKey, string> = {
   passType: '패스 선택',
 };
 
-const operationDetails = [
-  ['입장 데스크', '참가자 전원에게 팀 컬러 손목 밴드를 배부하고, 혼자 온 참가자도 자연스럽게 해당 컬러 구역으로 이동합니다.'],
-  ['서킷 스테이션', '각 스테이션마다 초급 / 중급 / 고급 3단계 난이도 픽토그램 보드를 거치합니다.'],
-  ['리커버리 전환', '쿨다운 BGM과 함께 과일 바를 오픈합니다.'],
-];
-
-const awards = [
-  ['허슬상', '끝까지 밀어붙인 에너지와 성실한 태도를 기념합니다.'],
-  ['분위기 메이커', '팀의 긴장을 풀고 모두의 몰입을 끌어올린 참가자에게.'],
-  ['베스트 드레서', '코트 조명 아래 가장 선명한 에슬레저 룩을 선정합니다.'],
-  ['챔피언', '미니게임과 릴레이를 종합해 그날의 팀 퍼포먼스를 축하합니다.'],
-];
-
 export default function Home() {
   const [siteMap, setSiteMap] = useState<SiteSection[]>(DEFAULT_SITE_MAP);
-  const [selectedStation, setSelectedStation] = useState(stations[0]);
+  const [content, setContent] = useState<ContentData>(DEFAULT_CONTENT);
+  const [selectedStationKey, setSelectedStationKey] = useState(DEFAULT_CONTENT.stations[0].key);
+  const [editMode, setEditMode] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
   const [selectedDate, setSelectedDate] = useState(ticketDates[0].id);
   const [selectedSessionId, setSelectedSessionId] = useState(ticketDates[0].sessions[0].id);
   const [bookingError, setBookingError] = useState('');
@@ -281,6 +135,9 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
+  const canEdit = editMode && adminPassword.length > 0;
+  const selectedStationIndex = content.stations.findIndex((station) => station.key === selectedStationKey);
+  const selectedStation = selectedStationIndex >= 0 ? content.stations[selectedStationIndex] : content.stations[0];
   const selectedDateInfo = useMemo(
     () => ticketDates.find((date) => date.id === selectedDate) ?? ticketDates[0],
     [selectedDate],
@@ -405,6 +262,53 @@ export default function Home() {
     }
 
     void loadSiteMap();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('cm_edit') === '1') {
+      setEditMode(true);
+    }
+
+    function handleMessage(event: MessageEvent) {
+      if (event.data && event.data.type === 'CM_ADMIN_AUTH' && typeof event.data.password === 'string') {
+        setAdminPassword(event.data.password);
+      }
+    }
+
+    window.addEventListener('message', handleMessage);
+    window.parent?.postMessage({ type: 'CM_EDIT_READY' }, window.location.origin);
+
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+
+    async function loadContent() {
+      try {
+        const response = await fetch('/api/content');
+        const data = (await response.json()) as { content?: Partial<ContentData> };
+
+        if (mounted && response.ok && data.content) {
+          setContent(mergeContent(data.content));
+        }
+      } catch {
+        if (mounted) {
+          setContent(DEFAULT_CONTENT);
+        }
+      }
+    }
+
+    void loadContent();
 
     return () => {
       mounted = false;
@@ -617,6 +521,222 @@ export default function Home() {
     return siteMap.find((section) => section.id === id) ?? DEFAULT_SITE_MAP.find((section) => section.id === id)!;
   }
 
+  function saveContentField<K extends keyof ContentData>(key: K, value: ContentData[K]) {
+    setContent((prev) => ({ ...prev, [key]: value }));
+
+    if (!canEdit) {
+      return;
+    }
+
+    fetch('/api/content', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify({ key, value }),
+    }).catch(() => {});
+  }
+
+  type TupleFieldKey =
+    | 'keyFigures'
+    | 'previewCards'
+    | 'socialProof'
+    | 'selectedMoments'
+    | 'recoveryItems'
+    | 'wellnessGuide'
+    | 'valueStack'
+    | 'operationDetails'
+    | 'awards'
+    | 'timeline';
+
+  function editTuple(key: TupleFieldKey, rowIndex: number, fieldIndex: number) {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        const current = content[key] as unknown as string[][];
+        const updated = current.map((row, i) => (i === rowIndex ? row.map((v, j) => (j === fieldIndex ? next : v)) : row));
+        saveContentField(key, updated as ContentData[typeof key]);
+      },
+    };
+  }
+
+  type StringArrayFieldKey = 'badgeLoop' | 'brandManifesto' | 'identityGallery';
+
+  function editStringItem(key: StringArrayFieldKey, index: number) {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        const current = content[key] as unknown as string[];
+        const updated = current.map((v, i) => (i === index ? next : v));
+        saveContentField(key, updated as ContentData[typeof key]);
+      },
+    };
+  }
+
+  type HeadingFieldKey = 'manifestoHeading' | 'operationHeading';
+
+  function editHeadingField(key: HeadingFieldKey, field: 'eyebrow' | 'title') {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        saveContentField(key, { ...content[key], [field]: next });
+      },
+    };
+  }
+
+  function editPricingLogicField(field: 'eyebrow' | 'heading' | 'description') {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        saveContentField('pricingLogic', { ...content.pricingLogic, [field]: next });
+      },
+    };
+  }
+
+  function editIdentityIntro() {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (next) {
+          saveContentField('identityIntro', next);
+        }
+      },
+    };
+  }
+
+  type ArrayObjectFieldKey = 'timelineSections' | 'stations' | 'passOptions';
+
+  function editArrayObjectField(key: ArrayObjectFieldKey, index: number, field: string) {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        const current = content[key] as unknown as Record<string, unknown>[];
+        const updated = current.map((item, i) => (i === index ? { ...item, [field]: next } : item));
+        saveContentField(key, updated as ContentData[typeof key]);
+      },
+    };
+  }
+
+  function editStoryLabel(cardIndex: number) {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        const updated = content.storyPanel.map((card, i) => (i === cardIndex ? { ...card, label: next } : card));
+        saveContentField('storyPanel', updated);
+      },
+    };
+  }
+
+  function editStoryParagraph(cardIndex: number, paraIndex: number) {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        const updated = content.storyPanel.map((card, i) =>
+          i === cardIndex
+            ? { ...card, paragraphs: card.paragraphs.map((p, j) => (j === paraIndex ? next : p)) }
+            : card,
+        );
+        saveContentField('storyPanel', updated);
+      },
+    };
+  }
+
+  function editReviewField(index: number, field: 'name' | 'text', lineIndex = 0) {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        const updated: Tuple2[] = content.socialProof.map((row, i) => {
+          if (i !== index) {
+            return row;
+          }
+          if (field === 'name') {
+            return [next, row[1]] as Tuple2;
+          }
+          const lines = row[1].split('\n');
+          lines[lineIndex] = next;
+          return [row[0], lines.join('\n')] as Tuple2;
+        });
+        saveContentField('socialProof', updated);
+      },
+    };
+  }
+
   async function handleCopyAddress() {
     const address = mapConfig?.address ?? defaultMapAddress;
 
@@ -759,7 +879,7 @@ export default function Home() {
           : `${partyLabel} (${buyerForm.companionName})`;
       }
       case 'passType':
-        return passOptions.find((pass) => pass.value === buyerForm.passType)?.title ?? '';
+        return content.passOptions.find((pass) => pass.value === buyerForm.passType)?.title ?? '';
       default:
         return '';
     }
@@ -891,7 +1011,7 @@ export default function Home() {
       case 'passType':
         return (
           <div className="pill-options pill-options-detailed" role="radiogroup" aria-label="패스 선택">
-            {passOptions.map((pass) => {
+            {content.passOptions.map((pass) => {
               const isAvailable = pass.value === 'single';
 
               return (
@@ -1060,6 +1180,7 @@ export default function Home() {
   return (
     <main
       id="home"
+      className={canEdit ? 'cm-edit-mode' : undefined}
       onMouseMove={handlePointer}
       style={
         {
@@ -1133,8 +1254,8 @@ export default function Home() {
       {isSectionVisible('home') && (
         <section className="ticker-section" aria-label="서킷메이트 핵심 무드">
           <div className="ticker-track">
-            {[...badgeLoop, ...badgeLoop].map((item, index) => (
-              <span key={`${item}-${index}`}>{item}</span>
+            {[...content.badgeLoop, ...content.badgeLoop].map((item, index) => (
+              <span key={`${item}-${index}`} {...editStringItem('badgeLoop', index % content.badgeLoop.length)}>{item}</span>
             ))}
           </div>
         </section>
@@ -1170,11 +1291,11 @@ export default function Home() {
               <h2>한 번의 밤을 숫자로 읽으면, 운영 흐름이 더 선명해집니다.</h2>
             </div>
             <div className="figures-grid reveal">
-              {keyFigures.map(([index, value, label]) => (
+              {content.keyFigures.map(([index, value, label], i) => (
                 <article key={label}>
-                  <span>{index}</span>
-                  <strong>{value}</strong>
-                  <p>{label}</p>
+                  <span {...editTuple('keyFigures', i, 0)}>{index}</span>
+                  <strong {...editTuple('keyFigures', i, 1)}>{value}</strong>
+                  <p {...editTuple('keyFigures', i, 2)}>{label}</p>
                 </article>
               ))}
             </div>
@@ -1189,10 +1310,10 @@ export default function Home() {
               <p>각 단계는 운동 설명, 핵심 큐잉, 팀 인터랙션이 자연스럽게 이어지도록 구성했습니다.</p>
             </div>
             <div className="horizontal-cards reveal">
-              {previewCards.map(([title, desc]) => (
+              {content.previewCards.map(([title, desc], i) => (
                 <article key={title}>
-                  <span>{title}</span>
-                  <h3>{desc}</h3>
+                  <span {...editTuple('previewCards', i, 0)}>{title}</span>
+                  <h3 {...editTuple('previewCards', i, 1)}>{desc}</h3>
                 </article>
               ))}
             </div>
@@ -1206,14 +1327,14 @@ export default function Home() {
               </div>
             </div>
             <div className="moment-grid reveal">
-              {selectedMoments.map(([title, desc], index) => (
+              {content.selectedMoments.map(([title, desc], index) => (
                 <article key={title} className="moment-card">
                   <div className="moment-media">
                     <img src={momentImages[index]} alt="" />
                     <span>{String(index + 1).padStart(2, '0')}</span>
                   </div>
-                  <h3>{title}</h3>
-                  <p>{desc}</p>
+                  <h3 {...editTuple('selectedMoments', index, 0)}>{title}</h3>
+                  <p {...editTuple('selectedMoments', index, 1)}>{desc}</p>
                 </article>
               ))}
             </div>
@@ -1236,29 +1357,23 @@ export default function Home() {
             </div>
           </div>
           <article className="manifesto-panel reveal" aria-label="서킷메이트 핵심 철학 및 브랜드 선언문">
-            <span>Brand Manifesto</span>
-            <h3>서킷메이트의 핵심 철학 및 브랜드 선언문</h3>
+            <span {...editHeadingField('manifestoHeading', 'eyebrow')}>{content.manifestoHeading.eyebrow}</span>
+            <h3 {...editHeadingField('manifestoHeading', 'title')}>{content.manifestoHeading.title}</h3>
             <div>
-              {brandManifesto.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
+              {content.brandManifesto.map((paragraph, i) => (
+                <p key={paragraph} {...editStringItem('brandManifesto', i)}>{paragraph}</p>
               ))}
             </div>
           </article>
           <div className="story-panel reveal">
-            <article>
-              <span>Mission</span>
-              <p>건강한 몰입, 절제된 분위기, 회복의 시간을 통해 일회성 파티보다 오래 남는 연결을 만듭니다.</p>
-            </article>
-            <article>
-              <span>Community</span>
-              <p>개인의 기록보다 팀의 완주와 응원을 우선하는 웰니스 소셜링 규칙을 운영합니다.</p>
-            </article>
-            <article>
-              <span>Space</span>
-              <p>미래적 낙관을 표현한 1960년대 디자인 컨셉 &apos;스페이스 에이지(Space Age)&apos;를 반영했습니다.</p>
-              <p>일상에서 완전히 분리된 이 비일상의 90분은,</p>
-              <p>평소의 나를 잠시 내려놓고 온전히 움직임과 에너지에만 몰입하게 만들기 위함입니다.</p>
-            </article>
+            {content.storyPanel.map((card, cardIndex) => (
+              <article key={card.key}>
+                <span {...editStoryLabel(cardIndex)}>{card.label}</span>
+                {card.paragraphs.map((paragraph, paraIndex) => (
+                  <p key={paragraph} {...editStoryParagraph(cardIndex, paraIndex)}>{paragraph}</p>
+                ))}
+              </article>
+            ))}
           </div>
         </section>
       )}
@@ -1273,8 +1388,10 @@ export default function Home() {
         </div>
         <div className="program-layout">
           <div className="vertical-timeline">
-            {TIMELINE_SECTIONS.map((section) => {
-              const items = timeline.filter(([phase]) => phase === section.phase);
+            {content.timelineSections.map((section, sectionIndex) => {
+              const items = content.timeline
+                .map((row, i) => ({ row, i }))
+                .filter(({ row }) => row[0] === section.phase);
 
               if (items.length === 0) {
                 return null;
@@ -1283,16 +1400,16 @@ export default function Home() {
               return (
                 <div className="timeline-group" key={section.phase}>
                   <div className="timeline-group-heading">
-                    <h3>{section.label}</h3>
-                    <span>{section.duration}</span>
+                    <h3 {...editArrayObjectField('timelineSections', sectionIndex, 'label')}>{section.label}</h3>
+                    <span {...editArrayObjectField('timelineSections', sectionIndex, 'duration')}>{section.duration}</span>
                   </div>
                   <div className="timeline-group-items">
-                    {items.map(([, time, title, desc]) => {
+                    {items.map(({ row: [, time, title, desc], i }) => {
                       return (
                         <article key={time}>
                           <div>
-                            <h4>{title}</h4>
-                            <p>{desc}</p>
+                            <h4 {...editTuple('timeline', i, 2)}>{title}</h4>
+                            <p {...editTuple('timeline', i, 3)}>{desc}</p>
                           </div>
                         </article>
                       );
@@ -1304,12 +1421,12 @@ export default function Home() {
           </div>
           <div className="station-guide">
             <div className="tab-list" role="tablist" aria-label="서킷 종목 가이드">
-              {stations.map((station) => (
+              {content.stations.map((station) => (
                 <button
                   key={station.key}
                   type="button"
                   className={selectedStation.key === station.key ? 'active' : ''}
-                  onClick={() => setSelectedStation(station)}
+                  onClick={() => setSelectedStationKey(station.key)}
                 >
                   {station.title}
                 </button>
@@ -1329,15 +1446,15 @@ export default function Home() {
                 />
               </div>
               <p>동작 요약</p>
-              <h3>{selectedStation.title}</h3>
+              <h3 {...editArrayObjectField('stations', selectedStationIndex, 'title')}>{selectedStation.title}</h3>
               <dl>
                 <div>
                   <dt>핵심 큐잉</dt>
-                  <dd>{selectedStation.cue}</dd>
+                  <dd {...editArrayObjectField('stations', selectedStationIndex, 'cue')}>{selectedStation.cue}</dd>
                 </div>
                 <div>
                   <dt>효과</dt>
-                  <dd>{selectedStation.effect}</dd>
+                  <dd {...editArrayObjectField('stations', selectedStationIndex, 'effect')}>{selectedStation.effect}</dd>
                 </div>
               </dl>
             </article>
@@ -1355,19 +1472,19 @@ export default function Home() {
           </div>
         </div>
         <div className="recovery-grid reveal">
-          {recoveryItems.map(([tag, title, desc]) => (
+          {content.recoveryItems.map(([tag, title, desc], i) => (
             <article key={title}>
-              <span>{tag}</span>
-              <h3>{title}</h3>
-              <p>{desc}</p>
+              <span {...editTuple('recoveryItems', i, 0)}>{tag}</span>
+              <h3 {...editTuple('recoveryItems', i, 1)}>{title}</h3>
+              <p {...editTuple('recoveryItems', i, 2)}>{desc}</p>
             </article>
           ))}
         </div>
         <div className="guide-grid reveal">
-          {wellnessGuide.map(([title, desc]) => (
+          {content.wellnessGuide.map(([title, desc], i) => (
             <article key={title}>
-              <strong>{title}</strong>
-              <p>{desc}</p>
+              <strong {...editTuple('wellnessGuide', i, 0)}>{title}</strong>
+              <p {...editTuple('wellnessGuide', i, 1)}>{desc}</p>
             </article>
           ))}
         </div>
@@ -1381,11 +1498,11 @@ export default function Home() {
           <h2>{sectionCopy('awards').title}</h2>
         </div>
         <div className="awards-slider reveal" aria-label="서킷메이트 어워즈 부문">
-          {awards.map(([title, desc]) => (
+          {content.awards.map(([title, desc], i) => (
             <article key={title}>
               <div className="award-icon" aria-hidden="true">{title.slice(0, 1)}</div>
-              <h3>{title}</h3>
-              <p>{desc}</p>
+              <h3 {...editTuple('awards', i, 0)}>{title}</h3>
+              <p {...editTuple('awards', i, 1)}>{desc}</p>
             </article>
           ))}
         </div>
@@ -1403,25 +1520,25 @@ export default function Home() {
         </div>
         <div className="value-card">
           <div className="pass-grid reveal">
-            {passOptions.map((pass) => (
+            {content.passOptions.map((pass, i) => (
               <article key={pass.value} className={pass.value === 'single' ? 'pass-card featured' : 'pass-card monthly'}>
-                <span>{pass.eyebrow}</span>
-                <h3>{pass.title}</h3>
-                <strong>{pass.price}</strong>
-                <small>{pass.note}</small>
-                <p>{pass.desc}</p>
+                <span {...editArrayObjectField('passOptions', i, 'eyebrow')}>{pass.eyebrow}</span>
+                <h3 {...editArrayObjectField('passOptions', i, 'title')}>{pass.title}</h3>
+                <strong {...editArrayObjectField('passOptions', i, 'price')}>{pass.price}</strong>
+                <small {...editArrayObjectField('passOptions', i, 'note')}>{pass.note}</small>
+                <p {...editArrayObjectField('passOptions', i, 'desc')}>{pass.desc}</p>
               </article>
             ))}
           </div>
           <div className="earlybird-box">
-            <span>Pricing Logic</span>
-            <strong>혜택</strong>
-            <p>원데이는 원하는 회차의 23,000원 티켓만 구매하고, 월간 패스는 꾸준한 참가자에게 더 낮은 회당 단가와 유연한 일정 변경을 제공합니다.</p>
+            <span {...editPricingLogicField('eyebrow')}>{content.pricingLogic.eyebrow}</span>
+            <strong {...editPricingLogicField('heading')}>{content.pricingLogic.heading}</strong>
+            <p {...editPricingLogicField('description')}>{content.pricingLogic.description}</p>
             <div className="value-list compact">
-              {valueStack.map(([item, desc]) => (
+              {content.valueStack.map(([item, desc], i) => (
                 <div key={item}>
-                  <span>{item}</span>
-                  <strong>{desc}</strong>
+                  <span {...editTuple('valueStack', i, 0)}>{item}</span>
+                  <strong {...editTuple('valueStack', i, 1)}>{desc}</strong>
                 </div>
               ))}
             </div>
@@ -1442,12 +1559,12 @@ export default function Home() {
           </div>
         </div>
         <div className="social-grid reveal" aria-label="참가자 현장 스케치와 포토 리뷰">
-          {socialProof.map(([name, text]) => (
+          {content.socialProof.map(([name, text], i) => (
             <article key={name}>
               <div className="photo-tile" />
-              <strong>{name}</strong>
-              {text.split('\n').map((line) => (
-                <p key={line}>{line}</p>
+              <strong {...editReviewField(i, 'name')}>{name}</strong>
+              {text.split('\n').map((line, lineIndex) => (
+                <p key={line} {...editReviewField(i, 'text', lineIndex)}>{line}</p>
               ))}
             </article>
           ))}
@@ -1647,14 +1764,14 @@ export default function Home() {
         </article>
         <div className="operation-manual">
           <div className="section-heading compact">
-            <p className="eyebrow">Operation Detail</p>
-            <h2>혼자 와도 자연스럽고, 초보도 안전하게 움직이는 현장 운영</h2>
+            <p className="eyebrow" {...editHeadingField('operationHeading', 'eyebrow')}>{content.operationHeading.eyebrow}</p>
+            <h2 {...editHeadingField('operationHeading', 'title')}>{content.operationHeading.title}</h2>
           </div>
           <div className="operation-grid reveal">
-            {operationDetails.map(([title, desc]) => (
+            {content.operationDetails.map(([title, desc], i) => (
               <article key={title}>
-                <strong>{title}</strong>
-                <p>{desc}</p>
+                <strong {...editTuple('operationDetails', i, 0)}>{title}</strong>
+                <p {...editTuple('operationDetails', i, 1)}>{desc}</p>
               </article>
             ))}
           </div>
@@ -1672,11 +1789,11 @@ export default function Home() {
           <p>{sectionCopy('identity').description}</p>
         </div>
         <article className="space-gallery">
-          <p>코트 조명, 탄성 바닥, 탈의실과 정수기 등 편의시설을 사전 안내해 첫 방문의 불안을 줄입니다.</p>
+          <p {...editIdentityIntro()}>{content.identityIntro}</p>
           <div className="gallery-strip">
-            <span>COURT</span>
-            <span>LIGHT</span>
-            <span>RECOVERY</span>
+            {content.identityGallery.map((label, i) => (
+              <span key={label} {...editStringItem('identityGallery', i)}>{label}</span>
+            ))}
           </div>
         </article>
       </section>
@@ -1816,8 +1933,8 @@ export default function Home() {
               <span>선택 일정</span>
               <strong>{selectedSessionLabel}</strong>
               <p>
-                {passOptions.find((pass) => pass.value === buyerForm.passType)?.title} ·{' '}
-                {passOptions.find((pass) => pass.value === buyerForm.passType)?.price}
+                {content.passOptions.find((pass) => pass.value === buyerForm.passType)?.title} ·{' '}
+                {content.passOptions.find((pass) => pass.value === buyerForm.passType)?.price}
               </p>
             </div>
             <div className="payment-qr" aria-label="서킷메이트 티켓 결제 QR 코드">

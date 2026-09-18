@@ -3917,6 +3917,28 @@ textarea {
   animation: faqAnswerIn 0.35s var(--ease-apple);
 }
 
+/* WYSIWYG live-edit affordances (admin Sitemap Management -> real-time editor) */
+.cm-edit-mode [contenteditable="true"] {
+  border-radius: 4px;
+  outline: none;
+  cursor: text;
+  transition: background-color 0.2s var(--ease-apple), box-shadow 0.2s var(--ease-apple);
+}
+
+.cm-edit-mode [contenteditable="true"]:hover {
+  background-color: rgba(238, 39, 55, 0.12);
+  box-shadow: 0 0 0 2px rgba(238, 39, 55, 0.35);
+}
+
+.cm-edit-mode [contenteditable="true"]:focus {
+  background-color: rgba(238, 39, 55, 0.08);
+  box-shadow: 0 0 0 2px var(--pantone-1788-c);
+}
+
+.cm-edit-mode .ticker-track {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
