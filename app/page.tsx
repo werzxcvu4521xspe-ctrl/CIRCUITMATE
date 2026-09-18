@@ -1,6 +1,6 @@
 'use client';
 
-import { CSSProperties, FocusEvent, FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { CSSProperties, FocusEvent, FormEvent, KeyboardEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_SITE_MAP, normalizeSiteMap, type SiteSection, type SiteSectionId } from '../lib/site-map';
 import { DEFAULT_FAQ_ITEMS, normalizeFaqItems, type FaqItem } from '../lib/faq';
 import { DEFAULT_CONTENT, mergeContent, type ContentData, type SubSectionId, type Tuple2 } from '../lib/content';
@@ -14,6 +14,27 @@ import {
   type TicketSession,
 } from '../lib/schedule';
 import { getHolidayName } from '../lib/holidays';
+
+const MANIFESTO_HIGHLIGHT_PHRASE = '내 몸이 스스로 만들어내는 건강한 활기를 즐기는 것';
+
+function renderManifestoParagraph(text: string) {
+  const index = text.indexOf(MANIFESTO_HIGHLIGHT_PHRASE);
+
+  if (index === -1) {
+    return text;
+  }
+
+  const before = text.slice(0, index);
+  const after = text.slice(index + MANIFESTO_HIGHLIGHT_PHRASE.length);
+
+  return (
+    <>
+      {before}
+      <em className="manifesto-highlight">{MANIFESTO_HIGHLIGHT_PHRASE}</em>
+      {after}
+    </>
+  );
+}
 
 declare global {
   interface Window {
@@ -690,7 +711,14 @@ export default function Home() {
 
   type StringArrayFieldKey = 'badgeLoop' | 'brandManifesto' | 'identityGallery';
 
-  function editStringItem(key: StringArrayFieldKey, index: number) {
+  function handleMultilineEditableKeyDown(event: KeyboardEvent<HTMLElement>) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      document.execCommand('insertLineBreak');
+    }
+  }
+
+  function editStringItem(key: StringArrayFieldKey, index: number, options?: { multiline?: boolean }) {
     if (!canEdit) {
       return {};
     }
@@ -698,8 +726,10 @@ export default function Home() {
     return {
       contentEditable: true as const,
       suppressContentEditableWarning: true,
+      ...(options?.multiline ? { onKeyDown: handleMultilineEditableKeyDown } : {}),
       onBlur: (event: FocusEvent<HTMLElement>) => {
-        const next = (event.currentTarget.textContent ?? '').trim();
+        const raw = options?.multiline ? event.currentTarget.innerText : event.currentTarget.textContent;
+        const next = (raw ?? '').trim();
         if (!next) {
           return;
         }
@@ -832,8 +862,9 @@ export default function Home() {
     return {
       contentEditable: true as const,
       suppressContentEditableWarning: true,
+      onKeyDown: handleMultilineEditableKeyDown,
       onBlur: (event: FocusEvent<HTMLElement>) => {
-        const next = (event.currentTarget.textContent ?? '').trim();
+        const next = (event.currentTarget.innerText ?? '').trim();
         if (!next) {
           return;
         }
@@ -1572,7 +1603,9 @@ export default function Home() {
             <h3 {...editHeadingField('manifestoHeading', 'title')}>{content.manifestoHeading.title}</h3>
             <div>
               {content.brandManifesto.map((paragraph, i) => (
-                <p key={paragraph} {...editStringItem('brandManifesto', i)}>{paragraph}</p>
+                <p key={paragraph} {...editStringItem('brandManifesto', i, { multiline: true })}>
+                  {renderManifestoParagraph(paragraph)}
+                </p>
               ))}
             </div>
           </article>
