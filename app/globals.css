@@ -832,8 +832,20 @@ button:hover {
 }
 
 .story-panel {
+  align-items: start;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin-top: 40px;
+}
+
+.story-panel .story-card {
+  min-height: 0;
+  padding: 20px 24px;
+  transition: padding 0.25s var(--ease-apple);
+}
+
+.story-panel .story-card[open] {
+  min-height: 190px;
+  padding: 24px;
 }
 
 .story-card summary {
