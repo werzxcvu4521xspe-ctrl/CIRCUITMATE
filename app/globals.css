@@ -1061,7 +1061,7 @@ button:active {
 .station-guide {
   display: grid;
   gap: 14px;
-  margin-top: 42px;
+  margin: 42px auto 0;
   max-width: 640px;
 }
 
@@ -1334,7 +1334,7 @@ button:active {
 
 .recovery-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-top: 40px;
+  margin: 40px auto 0;
   max-width: 760px;
 }
 
