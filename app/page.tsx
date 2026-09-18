@@ -1112,7 +1112,7 @@ export default function Home() {
                 confirmBuyerStep('name');
               }
             }}
-            placeholder="홍길동"
+            placeholder="이름"
             autoFocus
           />
         );
