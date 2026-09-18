@@ -1338,6 +1338,33 @@ button:active {
   margin-top: 40px;
 }
 
+.recovery-grid article {
+  overflow: hidden;
+}
+
+.recovery-media {
+  aspect-ratio: 4 / 3;
+  border-radius: 8px 8px 0 0;
+  margin: -24px -24px 18px;
+  overflow: hidden;
+  position: relative;
+}
+
+.recovery-media img {
+  display: block;
+  filter: saturate(0.92) contrast(1.05);
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.04);
+  transition: filter 520ms var(--ease-apple), transform 640ms var(--ease-apple);
+  width: 100%;
+}
+
+.recovery-grid article:hover .recovery-media img {
+  filter: saturate(1.15) contrast(1.1);
+  transform: scale(1.1);
+}
+
 .guide-grid {
   grid-template-columns: minmax(0, 1fr);
   margin-top: 16px;

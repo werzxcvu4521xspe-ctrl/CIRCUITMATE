@@ -17,6 +17,8 @@ import { getHolidayName } from '../lib/holidays';
 
 const MANIFESTO_HIGHLIGHT_PHRASE = '내 몸이 스스로 만들어내는 건강한 활기를 즐기는 것';
 
+const RECOVERY_IMAGES = ['/recovery-vitamin.jpg', '/recovery-hydrate.jpg'];
+
 function renderManifestoParagraph(text: string) {
   const index = text.indexOf(MANIFESTO_HIGHLIGHT_PHRASE);
 
@@ -1894,6 +1896,11 @@ export default function Home() {
         <div className="recovery-grid reveal reveal-stagger">
           {content.recoveryItems.map(([tag, title, desc], i) => (
             <article key={title}>
+              {RECOVERY_IMAGES[i] && (
+                <div className="recovery-media">
+                  <img src={RECOVERY_IMAGES[i]} alt={title} loading="lazy" />
+                </div>
+              )}
               <span {...editTuple('recoveryItems', i, 0)}>{tag}</span>
               <h3 {...editTuple('recoveryItems', i, 1)}>{title}</h3>
               <p {...editTuple('recoveryItems', i, 2)}>{desc}</p>
