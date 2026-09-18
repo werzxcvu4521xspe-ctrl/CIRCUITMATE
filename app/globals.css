@@ -3999,6 +3999,31 @@ textarea {
   animation-play-state: paused;
 }
 
+.cm-save-status {
+  background: rgba(20, 20, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  left: 50%;
+  padding: 8px 18px;
+  position: fixed;
+  top: 14px;
+  transform: translateX(-50%);
+  z-index: 9999;
+}
+
+.cm-save-status-saved {
+  border-color: rgba(238, 39, 55, 0.5);
+  color: var(--pantone-1788-c);
+}
+
+.cm-save-status-error {
+  border-color: rgba(255, 120, 120, 0.6);
+  color: #ff8a8a;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

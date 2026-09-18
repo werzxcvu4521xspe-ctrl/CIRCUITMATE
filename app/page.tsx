@@ -113,6 +113,7 @@ export default function Home() {
   const [selectedStationKey, setSelectedStationKey] = useState(DEFAULT_CONTENT.stations[0].key);
   const [editMode, setEditMode] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [selectedDate, setSelectedDate] = useState(ticketDates[0].id);
   const [selectedSessionId, setSelectedSessionId] = useState(ticketDates[0].sessions[0].id);
   const [bookingError, setBookingError] = useState('');
@@ -289,6 +290,15 @@ export default function Home() {
 
     return () => window.removeEventListener('message', handleMessage);
   }, []);
+
+  useEffect(() => {
+    if (saveStatus !== 'saved' && saveStatus !== 'error') {
+      return;
+    }
+
+    const timer = window.setTimeout(() => setSaveStatus('idle'), 2000);
+    return () => window.clearTimeout(timer);
+  }, [saveStatus]);
 
   useEffect(() => {
     let mounted = true;
@@ -528,11 +538,16 @@ export default function Home() {
       return;
     }
 
+    setSaveStatus('saving');
     fetch('/api/content', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
       body: JSON.stringify({ key, value }),
-    }).catch(() => {});
+    })
+      .then((response) => {
+        setSaveStatus(response.ok ? 'saved' : 'error');
+      })
+      .catch(() => setSaveStatus('error'));
   }
 
   type TupleFieldKey =
@@ -1189,6 +1204,12 @@ export default function Home() {
         } as CSSProperties
       }
     >
+      {canEdit && saveStatus !== 'idle' && (
+        <div className={`cm-save-status cm-save-status-${saveStatus}`} role="status">
+          {saveStatus === 'saving' ? '저장 중…' : saveStatus === 'saved' ? '저장됨' : '저장 실패'}
+        </div>
+      )}
+
       <header className="site-header">
         <a className="brand-mark" href="#home" aria-label="Circuitmate home">
           CIRCUIT<span>MATE</span>
