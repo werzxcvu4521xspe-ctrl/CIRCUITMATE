@@ -2473,6 +2473,14 @@ textarea {
   gap: 18px;
 }
 
+.footer-right .instagram-fab {
+  background: none;
+  border-radius: 0;
+  box-shadow: none;
+  min-width: 0;
+  padding: 0;
+}
+
 .footer-section .footer-admin-link {
   background: none;
   box-shadow: none;
@@ -3973,11 +3981,6 @@ textarea {
 
   .gallery-strip {
     grid-template-columns: 1fr;
-  }
-
-  .footer-section {
-    align-items: stretch;
-    flex-direction: column;
   }
 
   .map-actions {
