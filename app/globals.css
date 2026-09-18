@@ -1343,7 +1343,7 @@ button:active {
 }
 
 .recovery-media {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 3 / 4;
   border-radius: 8px 8px 0 0;
   margin: -24px -24px 18px;
   overflow: hidden;
@@ -1355,14 +1355,15 @@ button:active {
   filter: saturate(0.92) contrast(1.05);
   height: 100%;
   object-fit: cover;
-  transform: scale(1.04);
+  object-position: center top;
+  transform: scale(1);
   transition: filter 520ms var(--ease-apple), transform 640ms var(--ease-apple);
   width: 100%;
 }
 
 .recovery-grid article:hover .recovery-media img {
   filter: saturate(1.15) contrast(1.1);
-  transform: scale(1.1);
+  transform: scale(1.04);
 }
 
 .guide-grid {
