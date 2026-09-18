@@ -822,16 +822,12 @@ button:hover {
   color: var(--ink);
 }
 
-.manifesto-panel p:first-child,
-.manifesto-panel p:last-child {
+.manifesto-panel p:first-child {
   color: var(--ink);
   font-size: clamp(24px, 2.4vw, 34px);
   font-weight: 800;
   letter-spacing: -0.015em;
   line-height: 1.32;
-}
-
-.manifesto-panel p:first-child {
   padding-left: 24px;
   position: relative;
 }
@@ -845,10 +841,6 @@ button:hover {
   position: absolute;
   top: 0;
   width: 4px;
-}
-
-.manifesto-panel p:last-child {
-  color: var(--lime);
 }
 
 .manifesto-highlight {
@@ -949,6 +941,7 @@ button:hover {
 }
 
 .program-layout {
+  align-items: start;
   display: grid;
   gap: 20px;
   grid-template-columns: minmax(300px, 0.92fr) minmax(0, 1.08fr);
