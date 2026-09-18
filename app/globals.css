@@ -1076,8 +1076,8 @@ button:hover {
 .station-video-frame video {
   display: block;
   height: 100%;
-  object-fit: cover;
-  object-position: center bottom;
+  object-fit: contain;
+  object-position: center center;
   width: 100%;
 }
 
