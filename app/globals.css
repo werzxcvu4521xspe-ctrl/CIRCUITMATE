@@ -1295,6 +1295,10 @@ button:hover {
   color: rgba(229, 220, 234, 0.72);
 }
 
+.location-section .map-copy-icon {
+  color: rgba(229, 220, 234, 0.68);
+}
+
 .booking-layout {
   display: grid;
   gap: 20px;
