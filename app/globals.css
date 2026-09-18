@@ -3750,12 +3750,13 @@ textarea {
 
   .mobile-nav-toggle {
     align-items: center;
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(229, 220, 234, 0.28);
+    background: none;
+    border: 0;
+    border-radius: 0;
     box-shadow: none;
     color: var(--ink);
     display: inline-flex;
-    font-size: 19px;
+    font-size: 22px;
     justify-content: center;
     min-height: 44px;
     padding: 0;
@@ -3763,8 +3764,9 @@ textarea {
   }
 
   .mobile-nav-toggle:hover {
-    background: rgba(255, 255, 255, 0.14);
+    background: none;
     box-shadow: none;
+    color: rgba(255, 0, 144, 0.85);
     transform: none;
   }
 
