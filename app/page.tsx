@@ -2248,6 +2248,18 @@ export default function Home() {
                   })}
                 </div>
               </fieldset>
+              <div className={`ticket-gauge sheet-ticket-gauge ${getSessionDisplayStatus(selectedDateInfo, selectedTicketSession).tone}`}>
+                <div className="gauge-copy">
+                  <span>{getSessionDisplayStatus(selectedDateInfo, selectedTicketSession).label}</span>
+                  <strong>{getSessionDisplayStatus(selectedDateInfo, selectedTicketSession).message}</strong>
+                </div>
+                <div className="gauge-track" aria-hidden="true">
+                  <span style={{ width: `${getSessionDisplayStatus(selectedDateInfo, selectedTicketSession).progress}%` }} />
+                </div>
+                <p>
+                  현재 {selectedSessionBooked}명 신청 · 최소 {MIN_PARTICIPANTS}명 시작 · 최대 {MAX_PARTICIPANTS}명
+                </p>
+              </div>
               {quickStepStarted ? (
                 renderBuyerStepsForm()
               ) : (

@@ -1573,6 +1573,24 @@ button:hover {
   padding: 18px;
 }
 
+.sheet-ticket-gauge {
+  margin-bottom: 0;
+  padding: 14px 16px;
+}
+
+.sheet-ticket-gauge .gauge-copy {
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.sheet-ticket-gauge .gauge-copy strong {
+  font-size: clamp(17px, 4.4vw, 20px);
+}
+
+.sheet-ticket-gauge p {
+  margin-top: 10px;
+}
+
 .ticket-gauge.closing {
   background:
     linear-gradient(135deg, rgba(255, 0, 144, 0.16), transparent 44%),
