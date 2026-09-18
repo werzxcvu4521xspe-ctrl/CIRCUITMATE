@@ -32,6 +32,9 @@ declare global {
           },
         ) => unknown;
         Marker: new (options: { position: unknown; map: unknown; title?: string }) => unknown;
+        Event: {
+          trigger: (target: unknown, eventName: string) => void;
+        };
       };
     };
     initCircuitmateNaverMap?: () => void;
@@ -416,6 +419,17 @@ export default function Home() {
 
     let cancelled = false;
     let rendered = false;
+    let mapInstance: any = null;
+
+    const syncMapSize = () => {
+      if (!mapInstance || !window.naver?.maps?.Event) {
+        return;
+      }
+      window.naver.maps.Event.trigger(mapInstance, 'resize');
+      if (mapInstance.getCenter) {
+        mapInstance.setCenter(mapInstance.getCenter());
+      }
+    };
 
     const renderMap = () => {
       if (cancelled || rendered) {
@@ -451,11 +465,21 @@ export default function Home() {
           title: mapConfig.placeName,
         });
 
+        mapInstance = map;
         rendered = true;
+        // 모바일에서 지도 컨테이너 크기가 확정되기 전에 지도가 생성되면 내부 캔버스가
+        // 이전 크기(가로로 넘치는 크기)로 고정되는 경우가 있어, 레이아웃 안정화 후
+        // 강제로 리사이즈 이벤트를 트리거해 컨테이너 폭에 맞춘다.
+        window.setTimeout(syncMapSize, 80);
+        window.setTimeout(syncMapSize, 400);
       } catch {
         // 커스텀 스타일(GL) 모듈이 아직 로드되지 않았을 수 있음 — 폴링에서 재시도.
       }
     };
+
+    const handleWindowResize = () => syncMapSize();
+    window.addEventListener('resize', handleWindowResize);
+    window.addEventListener('orientationchange', handleWindowResize);
 
     // 커스텀 스타일(Style Editor)을 쓰려면 기본 maps.js 외에 별도의 GL 모듈 스크립트가 필요함.
     // (submodules=gl 파라미터가 아니라 maps-gl.js를 따로 로드해야 동작함.)
@@ -521,6 +545,8 @@ export default function Home() {
       cancelled = true;
       window.clearInterval(pollId);
       window.clearTimeout(timeoutId);
+      window.removeEventListener('resize', handleWindowResize);
+      window.removeEventListener('orientationchange', handleWindowResize);
     };
   }, [mapConfig]);
 

@@ -55,6 +55,7 @@
 html {
   scroll-behavior: smooth;
   text-size-adjust: 100%;
+  overflow-x: hidden;
 }
 
 body {
@@ -70,6 +71,7 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   word-break: keep-all;
+  overflow-x: hidden;
 }
 
 main {
@@ -1924,7 +1926,13 @@ textarea {
   border: 1px solid rgba(60, 16, 83, 0.16);
   border-radius: 8px;
   margin: 18px 0;
+  max-width: 100%;
   overflow: hidden;
+  width: 100%;
+}
+
+.naver-map-canvas > div {
+  max-width: 100% !important;
 }
 
 .naver-map-canvas {
@@ -3731,6 +3739,17 @@ textarea {
     grid-template-columns: none;
     overflow-x: auto;
     padding-bottom: 12px;
+  }
+
+  .awards-slider {
+    grid-auto-columns: unset;
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    overflow-x: visible;
+  }
+
+  .award-icon {
+    display: none;
   }
 
   .gallery-strip {
