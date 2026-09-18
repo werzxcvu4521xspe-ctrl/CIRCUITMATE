@@ -326,6 +326,7 @@ button:hover {
 
 .floating-cta {
   bottom: 24px;
+  display: none;
   overflow: hidden;
   position: fixed;
   right: 24px;
@@ -4138,6 +4139,7 @@ textarea {
     border: 1px solid rgba(229, 220, 234, 0.22);
     bottom: 14px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    display: inline-flex;
     left: 14px;
     right: 14px;
   }
