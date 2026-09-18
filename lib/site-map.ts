@@ -1,4 +1,4 @@
-export type SiteSectionId = 'home' | 'brand' | 'program' | 'recovery' | 'awards' | 'pricing' | 'review' | 'booking' | 'faq' | 'location' | 'identity';
+export type SiteSectionId = 'home' | 'brand' | 'program' | 'stations' | 'recovery' | 'awards' | 'pricing' | 'review' | 'booking' | 'faq' | 'location' | 'identity';
 
 export type SiteSection = {
   id: SiteSectionId;
@@ -37,6 +37,15 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
     description: '',
     visible: true,
     order: 3,
+  },
+  {
+    id: 'stations',
+    label: 'Stations',
+    href: '#stations',
+    title: '서킷 종목 소개',
+    description: '5개 서킷 스테이션의 동작과 핵심 큐잉을 영상으로 미리 확인하세요.',
+    visible: true,
+    order: 3.5,
   },
   {
     id: 'recovery',

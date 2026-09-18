@@ -19,6 +19,11 @@ const MANIFESTO_HIGHLIGHT_PHRASE = '내 몸이 스스로 만들어내는 건강�
 
 const RECOVERY_IMAGES = ['/recovery-vitamin.jpg', '/recovery-hydrate.jpg'];
 
+function stripSectionIndex(label: string) {
+  const match = /^\d+\.\s*(.+)$/.exec(label);
+  return match ? match[1] : label;
+}
+
 function renderManifestoParagraph(text: string) {
   const index = text.indexOf(MANIFESTO_HIGHLIGHT_PHRASE);
 
@@ -1591,7 +1596,7 @@ export default function Home() {
         <nav aria-label="Primary navigation" className={mobileNavOpen ? 'mobile-open' : undefined}>
           <span className="nav-menu-label eyebrow">Menu</span>
           {navItems.flatMap(([label, href], index) => {
-            const match = /^(\d+)\.\s*(.+)$/.exec(label);
+            const displayLabel = stripSectionIndex(label);
             const isBooking = href === '#booking';
             const isActive = href === `#${activeSection}`;
             const showDivider = index > 0 && index === Math.ceil(navItems.length / 2);
@@ -1604,17 +1609,10 @@ export default function Home() {
                 aria-current={isActive ? 'true' : undefined}
                 onClick={() => setMobileNavOpen(false)}
               >
-                {match ? (
-                  <>
-                    <span className="nav-index">{match[1]}</span>
-                    <span className="nav-label">
-                      {match[2]}
-                      {isBooking && <span className="nav-badge">예약중</span>}
-                    </span>
-                  </>
-                ) : (
-                  <span className="nav-label">{label}</span>
-                )}
+                <span className="nav-label">
+                  {displayLabel}
+                  {isBooking && <span className="nav-badge">예약중</span>}
+                </span>
               </a>
             );
 
@@ -1662,7 +1660,7 @@ export default function Home() {
             <img src="/circuitmate-live.png" alt="보랏빛 실내 코트에서 진행 중인 서킷메이트 현장" className="hero-image" />
             <div className="hero-overlay" />
             <div className="hero-content">
-              <p className="eyebrow" {...editSiteMapField('home', 'label')}>{sectionCopy('home').label}</p>
+              <p className="eyebrow" {...editSiteMapField('home', 'label')}>{stripSectionIndex(sectionCopy('home').label)}</p>
               <h1 {...editSiteMapField('home', 'title')}>{sectionCopy('home').title}</h1>
               <p className="hero-copy" {...editSiteMapField('home', 'description')}>{sectionCopy('home').description}</p>
               <div className="hero-actions">
@@ -1754,7 +1752,7 @@ export default function Home() {
         <section id="brand" className="section brand-section">
           <div className="section-heading split">
             <div>
-              <p className="eyebrow" {...editSiteMapField('brand', 'label')}>{sectionCopy('brand').label}</p>
+              <p className="eyebrow" {...editSiteMapField('brand', 'label')}>{stripSectionIndex(sectionCopy('brand').label)}</p>
               <h2 {...editSiteMapField('brand', 'title')}>{sectionCopy('brand').title}</h2>
             </div>
           </div>
@@ -1804,7 +1802,7 @@ export default function Home() {
       <section id="program" className="section program-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow" {...editSiteMapField('program', 'label')}>{sectionCopy('program').label}</p>
+            <p className="eyebrow" {...editSiteMapField('program', 'label')}>{stripSectionIndex(sectionCopy('program').label)}</p>
             <h2 {...editSiteMapField('program', 'title')}>{sectionCopy('program').title}</h2>
           </div>
         </div>
@@ -1841,46 +1839,57 @@ export default function Home() {
               );
             })}
           </div>
-          <div className="station-guide">
-            <div className="tab-list" role="tablist" aria-label="서킷 종목 가이드">
-              {content.stations.map((station) => (
-                <button
-                  key={station.key}
-                  type="button"
-                  className={selectedStation.key === station.key ? 'active' : ''}
-                  onClick={() => setSelectedStationKey(station.key)}
-                >
-                  {station.title}
-                </button>
-              ))}
-            </div>
-            <article className="station-detail">
-              <div className="station-video-frame">
-                <video
-                  key={selectedStation.video}
-                  src={selectedStation.video}
-                  aria-label={`${selectedStation.title} 동작 영상`}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
-                />
-              </div>
-              <p>동작 요약</p>
-              <h3 {...editArrayObjectField('stations', selectedStationIndex, 'title')}>{selectedStation.title}</h3>
-              <dl>
-                <div>
-                  <dt>핵심 큐잉</dt>
-                  <dd {...editArrayObjectField('stations', selectedStationIndex, 'cue')}>{selectedStation.cue}</dd>
-                </div>
-                <div>
-                  <dt>효과</dt>
-                  <dd {...editArrayObjectField('stations', selectedStationIndex, 'effect')}>{selectedStation.effect}</dd>
-                </div>
-              </dl>
-            </article>
+        </div>
+      </section>
+      )}
+
+      {isSectionVisible('stations') && (
+      <section id="stations" className="section stations-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow" {...editSiteMapField('stations', 'label')}>{stripSectionIndex(sectionCopy('stations').label)}</p>
+            <h2 {...editSiteMapField('stations', 'title')}>{sectionCopy('stations').title}</h2>
           </div>
+        </div>
+        <div className="station-guide reveal">
+          <div className="tab-list" role="tablist" aria-label="서킷 종목 가이드">
+            {content.stations.map((station) => (
+              <button
+                key={station.key}
+                type="button"
+                className={selectedStation.key === station.key ? 'active' : ''}
+                onClick={() => setSelectedStationKey(station.key)}
+              >
+                {station.title}
+              </button>
+            ))}
+          </div>
+          <article className="station-detail">
+            <div className="station-video-frame">
+              <video
+                key={selectedStation.video}
+                src={selectedStation.video}
+                aria-label={`${selectedStation.title} 동작 영상`}
+                autoPlay
+                loop
+                muted
+                playsInline
+                preload="metadata"
+              />
+            </div>
+            <p>동작 요약</p>
+            <h3 {...editArrayObjectField('stations', selectedStationIndex, 'title')}>{selectedStation.title}</h3>
+            <dl>
+              <div>
+                <dt>핵심 큐잉</dt>
+                <dd {...editArrayObjectField('stations', selectedStationIndex, 'cue')}>{selectedStation.cue}</dd>
+              </div>
+              <div>
+                <dt>효과</dt>
+                <dd {...editArrayObjectField('stations', selectedStationIndex, 'effect')}>{selectedStation.effect}</dd>
+              </div>
+            </dl>
+          </article>
         </div>
       </section>
       )}
@@ -1889,7 +1898,7 @@ export default function Home() {
       <section id="recovery" className="section recovery-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow" {...editSiteMapField('recovery', 'label')}>{sectionCopy('recovery').label}</p>
+            <p className="eyebrow" {...editSiteMapField('recovery', 'label')}>{stripSectionIndex(sectionCopy('recovery').label)}</p>
             <h2 {...editSiteMapField('recovery', 'title')}>{sectionCopy('recovery').title}</h2>
           </div>
         </div>
@@ -1921,7 +1930,7 @@ export default function Home() {
       {isSectionVisible('awards') && (
       <section id="awards" className="section awards-section">
         <div className="section-heading">
-          <p className="eyebrow" {...editSiteMapField('awards', 'label')}>{sectionCopy('awards').label}</p>
+          <p className="eyebrow" {...editSiteMapField('awards', 'label')}>{stripSectionIndex(sectionCopy('awards').label)}</p>
           <h2 {...editSiteMapField('awards', 'title')}>{sectionCopy('awards').title}</h2>
         </div>
         <div className="awards-slider reveal reveal-stagger" aria-label="서킷메이트 어워즈 부문">
@@ -1940,7 +1949,7 @@ export default function Home() {
       <section id="pricing" className="section value-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow" {...editSiteMapField('pricing', 'label')}>{sectionCopy('pricing').label}</p>
+            <p className="eyebrow" {...editSiteMapField('pricing', 'label')}>{stripSectionIndex(sectionCopy('pricing').label)}</p>
             <h2 {...editSiteMapField('pricing', 'title')}>{sectionCopy('pricing').title}</h2>
           </div>
           <p {...editSiteMapField('pricing', 'description')}>{sectionCopy('pricing').description}</p>
@@ -1981,7 +1990,7 @@ export default function Home() {
       <section id="review" className="section review-section" aria-label="참가자 후기">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow" {...editSiteMapField('review', 'label')}>{sectionCopy('review').label}</p>
+            <p className="eyebrow" {...editSiteMapField('review', 'label')}>{stripSectionIndex(sectionCopy('review').label)}</p>
             <h2 {...editSiteMapField('review', 'title')}>{sectionCopy('review').title}</h2>
           </div>
         </div>
@@ -2003,7 +2012,7 @@ export default function Home() {
       <section id="booking" className="section booking-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow" {...editSiteMapField('booking', 'label')}>{sectionCopy('booking').label}</p>
+            <p className="eyebrow" {...editSiteMapField('booking', 'label')}>{stripSectionIndex(sectionCopy('booking').label)}</p>
             <h2 {...editSiteMapField('booking', 'title')}>{sectionCopy('booking').title}</h2>
           </div>
         </div>
@@ -2088,7 +2097,7 @@ export default function Home() {
       <section id="faq" className="section faq-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow" {...editSiteMapField('faq', 'label')}>{sectionCopy('faq').label}</p>
+            <p className="eyebrow" {...editSiteMapField('faq', 'label')}>{stripSectionIndex(sectionCopy('faq').label)}</p>
             <h2 {...editSiteMapField('faq', 'title')}>{sectionCopy('faq').title}</h2>
           </div>
         </div>
@@ -2142,7 +2151,7 @@ export default function Home() {
       <section id="location" className="section location-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow" {...editSiteMapField('location', 'label')}>{sectionCopy('location').label}</p>
+            <p className="eyebrow" {...editSiteMapField('location', 'label')}>{stripSectionIndex(sectionCopy('location').label)}</p>
             <h2 {...editSiteMapField('location', 'title')}>{sectionCopy('location').title}</h2>
           </div>
         </div>
@@ -2215,7 +2224,7 @@ export default function Home() {
       <section id="identity" className="section location-section">
         <div className="section-heading split">
           <div>
-            <p className="eyebrow" {...editSiteMapField('identity', 'label')}>{sectionCopy('identity').label}</p>
+            <p className="eyebrow" {...editSiteMapField('identity', 'label')}>{stripSectionIndex(sectionCopy('identity').label)}</p>
             <h2 {...editSiteMapField('identity', 'title')}>{sectionCopy('identity').title}</h2>
           </div>
           <p {...editSiteMapField('identity', 'description')}>{sectionCopy('identity').description}</p>

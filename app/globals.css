@@ -267,10 +267,6 @@ nav a.active::after {
   transform: scaleX(1);
 }
 
-nav .nav-index {
-  display: none;
-}
-
 nav .nav-badge {
   background: rgba(238, 39, 55, 0.14);
   border: 1px solid rgba(238, 39, 55, 0.38);
@@ -584,6 +580,7 @@ button:active {
 
 .preview-section,
 .program-section,
+.stations-section,
 .awards-section,
 .review-section,
 .selected-section,
@@ -974,7 +971,7 @@ button:active {
   align-items: start;
   display: grid;
   gap: 20px;
-  grid-template-columns: minmax(300px, 0.92fr) minmax(0, 1.08fr);
+  grid-template-columns: minmax(0, 1fr);
   margin-top: 42px;
 }
 
@@ -1064,6 +1061,8 @@ button:active {
 .station-guide {
   display: grid;
   gap: 14px;
+  margin-top: 42px;
+  max-width: 640px;
 }
 
 .tab-list {
@@ -3872,11 +3871,6 @@ textarea {
     color: var(--pantone-1788-c);
   }
 
-  nav.mobile-open a:hover .nav-index,
-  nav.mobile-open a:focus-visible .nav-index {
-    color: var(--pantone-1788-c);
-  }
-
   nav.mobile-open a:active {
     opacity: 0.7;
     padding-left: 6px;
@@ -3886,28 +3880,11 @@ textarea {
     color: var(--pantone-1788-c);
   }
 
-  nav.mobile-open a.active .nav-index {
-    color: var(--pantone-1788-c);
-  }
-
   nav.mobile-open .nav-divider {
     background: rgba(229, 220, 234, 0.16);
     display: block;
     height: 1px;
     margin: 14px 2px;
-  }
-
-  nav.mobile-open .nav-index {
-    color: rgba(229, 220, 234, 0.4);
-    display: block;
-    flex-shrink: 0;
-    font-family: var(--font-mono);
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    position: relative;
-    top: 0.35em;
-    width: 16px;
   }
 
   nav.mobile-open .nav-label {
