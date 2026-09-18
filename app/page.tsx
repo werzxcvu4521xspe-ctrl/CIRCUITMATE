@@ -699,7 +699,7 @@ export default function Home() {
     };
   }
 
-  type HeadingFieldKey = 'manifestoHeading' | 'operationHeading';
+  type HeadingFieldKey = 'manifestoHeading' | 'operationHeading' | 'figuresHeading' | 'momentsHeading';
 
   function editHeadingField(key: HeadingFieldKey, field: 'eyebrow' | 'title') {
     if (!canEdit) {
@@ -733,6 +733,24 @@ export default function Home() {
           return;
         }
         saveContentField('pricingLogic', { ...content.pricingLogic, [field]: next });
+      },
+    };
+  }
+
+  function editPreviewHeadingField(field: 'eyebrow' | 'title' | 'description') {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const next = (event.currentTarget.textContent ?? '').trim();
+        if (!next) {
+          return;
+        }
+        saveContentField('previewHeading', { ...content.previewHeading, [field]: next });
       },
     };
   }
@@ -1442,8 +1460,8 @@ export default function Home() {
           {isSubsectionVisible('keyFigures') && (
           <section className="section figures-section">
             <div className="section-heading compact">
-              <p className="eyebrow">Key Figures</p>
-              <h2>한 번의 밤을 숫자로 읽으면, 운영 흐름이 더 선명해집니다.</h2>
+              <p className="eyebrow" {...editHeadingField('figuresHeading', 'eyebrow')}>{content.figuresHeading.eyebrow}</p>
+              <h2 {...editHeadingField('figuresHeading', 'title')}>{content.figuresHeading.title}</h2>
             </div>
             <div className="figures-grid reveal">
               {content.keyFigures.map(([index, value, label], i) => (
@@ -1461,10 +1479,10 @@ export default function Home() {
           <section className="section preview-section">
             <div className="section-heading split">
               <div>
-                <p className="eyebrow">1.3 Program Preview</p>
-                <h2>웜업부터 메인 서킷, 팀 릴레이까지 가로로 훑어보기</h2>
+                <p className="eyebrow" {...editPreviewHeadingField('eyebrow')}>{content.previewHeading.eyebrow}</p>
+                <h2 {...editPreviewHeadingField('title')}>{content.previewHeading.title}</h2>
               </div>
-              <p>각 단계는 운동 설명, 핵심 큐잉, 팀 인터랙션이 자연스럽게 이어지도록 구성했습니다.</p>
+              <p {...editPreviewHeadingField('description')}>{content.previewHeading.description}</p>
             </div>
             <div className="horizontal-cards reveal">
               {content.previewCards.map(([title, desc], i) => (
@@ -1481,8 +1499,8 @@ export default function Home() {
           <section className="section selected-section">
             <div className="section-heading split">
               <div>
-                <p className="eyebrow">Selected Moments</p>
-                <h2>프레임 단위로 기억되는 네 개의 장면</h2>
+                <p className="eyebrow" {...editHeadingField('momentsHeading', 'eyebrow')}>{content.momentsHeading.eyebrow}</p>
+                <h2 {...editHeadingField('momentsHeading', 'title')}>{content.momentsHeading.title}</h2>
               </div>
             </div>
             <div className="moment-grid reveal">

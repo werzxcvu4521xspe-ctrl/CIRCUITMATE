@@ -48,6 +48,12 @@ export type PricingLogicContent = {
 
 export type SubSectionId = 'keyFigures' | 'previewCards' | 'selectedMoments';
 
+export type PreviewHeadingContent = {
+  eyebrow: string;
+  title: string;
+  description: string;
+};
+
 export type ContentData = {
   badgeLoop: string[];
   keyFigures: Tuple3[];
@@ -71,6 +77,9 @@ export type ContentData = {
   identityIntro: string;
   identityGallery: string[];
   subsectionVisibility: Record<SubSectionId, boolean>;
+  figuresHeading: HeadingContent;
+  previewHeading: PreviewHeadingContent;
+  momentsHeading: HeadingContent;
 };
 
 export const DEFAULT_CONTENT: ContentData = {
@@ -258,6 +267,19 @@ export const DEFAULT_CONTENT: ContentData = {
     keyFigures: true,
     previewCards: true,
     selectedMoments: true,
+  },
+  figuresHeading: {
+    eyebrow: 'Key Figures',
+    title: '한 번의 밤을 숫자로 읽으면, 운영 흐름이 더 선명해집니다.',
+  },
+  previewHeading: {
+    eyebrow: '1.3 Program Preview',
+    title: '웜업부터 메인 서킷, 팀 릴레이까지 가로로 훑어보기',
+    description: '각 단계는 운동 설명, 핵심 큐잉, 팀 인터랙션이 자연스럽게 이어지도록 구성했습니다.',
+  },
+  momentsHeading: {
+    eyebrow: 'Selected Moments',
+    title: '프레임 단위로 기억되는 네 개의 장면',
   },
 };
 
