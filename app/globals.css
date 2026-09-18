@@ -1240,15 +1240,7 @@ button:hover {
 }
 
 .award-icon {
-  align-items: center;
-  border: 1px solid rgba(238, 39, 55, 0.48);
-  display: flex;
-  font-size: 30px;
-  font-weight: 880;
-  height: 62px;
-  justify-content: center;
-  margin-bottom: 24px;
-  width: 62px;
+  display: none;
 }
 
 .booking-section {
@@ -3747,10 +3739,6 @@ textarea {
     grid-auto-flow: row;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     overflow-x: visible;
-  }
-
-  .award-icon {
-    display: none;
   }
 
   .gallery-strip {
