@@ -4052,6 +4052,10 @@ textarea {
 }
 
 @media (max-width: 560px) {
+  .footer-section {
+    padding-bottom: 92px;
+  }
+
   .site-header {
     padding: 13px 16px;
   }
