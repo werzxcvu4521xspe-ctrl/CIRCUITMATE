@@ -134,7 +134,7 @@ export default function Home() {
   const [buyerForm, setBuyerForm] = useState<BuyerFormState>(INITIAL_BUYER_FORM);
   const [buyerStepIndex, setBuyerStepIndex] = useState(0);
   const [editingStepIndex, setEditingStepIndex] = useState<number | null>(null);
-  const [agreements, setAgreements] = useState({ gear: false, policy: false, recording: false });
+  const [agreements, setAgreements] = useState({ gear: false, policy: false, recording: false, sms: false });
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [spotlight, setSpotlight] = useState({ x: 50, y: 18 });
   const [mapConfig, setMapConfig] = useState<MapConfig | null>(null);
@@ -1001,7 +1001,7 @@ export default function Home() {
     setBuyerForm(INITIAL_BUYER_FORM);
     setBuyerStepIndex(0);
     setEditingStepIndex(null);
-    setAgreements({ gear: false, policy: false, recording: false });
+    setAgreements({ gear: false, policy: false, recording: false, sms: false });
     setMainStepStarted(false);
     setQuickStepStarted(false);
   }
@@ -1232,7 +1232,7 @@ export default function Home() {
                   setAgreements((prev) => ({ ...prev, gear: event.target.checked }))
                 }
               />
-              실내 운동화, 운동복, 텀블러 준비를 확인했습니다.
+              실내 운동화, 운동복, 텀블러를 준비 해주세요.
             </label>
             <label className="checkbox-row">
               <input
@@ -1254,10 +1254,20 @@ export default function Home() {
               />
               세션 중 촬영된 사진/영상이 기록 및 홍보 목적으로 활용될 수 있음에 동의합니다.
             </label>
+            <label className="checkbox-row">
+              <input
+                type="checkbox"
+                checked={agreements.sms}
+                onChange={(event) =>
+                  setAgreements((prev) => ({ ...prev, sms: event.target.checked }))
+                }
+              />
+              티켓 구매, 대기자 등록 안내를 문자(SMS)로 받는 것에 동의합니다.
+            </label>
             <p className="payment-hint">결제는 신청 접수 후 팝업으로 안내됩니다.</p>
             <button
               type="submit"
-              disabled={bookingSending || !agreements.gear || !agreements.policy || !agreements.recording}
+              disabled={bookingSending || !agreements.gear || !agreements.policy || !agreements.recording || !agreements.sms}
             >
               {bookingSending ? '접수 중' : '구매 안내 받기'}
             </button>
