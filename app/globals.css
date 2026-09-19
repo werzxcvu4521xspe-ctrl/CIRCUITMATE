@@ -3959,11 +3959,24 @@ textarea {
   }
 
   .social-grid {
-    grid-auto-columns: minmax(78vw, 320px);
-    grid-auto-flow: column;
-    grid-template-columns: unset;
-    overflow-x: auto;
-    padding-bottom: 12px;
+    grid-template-columns: 1fr;
+  }
+
+  .social-grid article {
+    align-items: flex-start;
+    display: flex;
+    gap: 16px;
+  }
+
+  .social-grid .photo-tile {
+    aspect-ratio: 1 / 1;
+    flex: 0 0 88px;
+    margin-bottom: 0;
+    width: 88px;
+  }
+
+  .social-grid .social-copy {
+    min-width: 0;
   }
 
   .payment-qr img {

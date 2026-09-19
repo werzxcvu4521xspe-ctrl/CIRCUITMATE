@@ -1998,10 +1998,12 @@ export default function Home() {
           {content.socialProof.map(([name, text], i) => (
             <article key={name}>
               <div className="photo-tile" />
-              <strong {...editReviewField(i, 'name')}>{name}</strong>
-              {text.split('\n').map((line, lineIndex) => (
-                <p key={line} {...editReviewField(i, 'text', lineIndex)}>{line}</p>
-              ))}
+              <div className="social-copy">
+                <strong {...editReviewField(i, 'name')}>{name}</strong>
+                {text.split('\n').map((line, lineIndex) => (
+                  <p key={line} {...editReviewField(i, 'text', lineIndex)}>{line}</p>
+                ))}
+              </div>
             </article>
           ))}
         </div>
