@@ -2095,60 +2095,6 @@ export default function Home() {
       </section>
       )}
 
-      {isSectionVisible('faq') && (
-      <section id="faq" className="section faq-section">
-        <div className="section-heading split">
-          <div>
-            <p className="eyebrow" {...editSiteMapField('faq', 'label')}>{stripSectionIndex(sectionCopy('faq').label)}</p>
-            <h2 {...editSiteMapField('faq', 'title')}>{sectionCopy('faq').title}</h2>
-          </div>
-        </div>
-        <div className="faq-list reveal reveal-stagger">
-          {faqItems
-            .filter((item) => item.visible)
-            .map((item) => (
-            <details key={item.id} open={openFaqQuestion === item.id}>
-              <summary
-                onClick={(event) => {
-                  event.preventDefault();
-                  setOpenFaqQuestion((current) => (current === item.id ? null : item.id));
-                }}
-              >
-                {item.question}
-              </summary>
-              <div className="faq-answer">
-                {item.answer?.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
-                ))}
-                {item.table && (
-                  <div className="faq-policy-table" role="table" aria-label={item.question}>
-                    <div role="row">
-                      <strong role="columnheader">{item.table.head[0]}</strong>
-                      <strong role="columnheader">{item.table.head[1]}</strong>
-                    </div>
-                    {item.table.rows.map(([point, refund]) => (
-                      <div key={point} role="row">
-                        <span role="cell">{point}</span>
-                        <b role="cell">{refund}</b>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                {item.bullets && (
-                  <ul>
-                    {item.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
-                    ))}
-                  </ul>
-                )}
-                {item.note && <p className="faq-note">{item.note}</p>}
-              </div>
-            </details>
-            ))}
-        </div>
-      </section>
-      )}
-
       {isSectionVisible('location') && (
       <section id="location" className="section location-section">
         <div className="section-heading split">
@@ -2218,6 +2164,60 @@ export default function Home() {
               </article>
             ))}
           </div>
+        </div>
+      </section>
+      )}
+
+      {isSectionVisible('faq') && (
+      <section id="faq" className="section faq-section">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow" {...editSiteMapField('faq', 'label')}>{stripSectionIndex(sectionCopy('faq').label)}</p>
+            <h2 {...editSiteMapField('faq', 'title')}>{sectionCopy('faq').title}</h2>
+          </div>
+        </div>
+        <div className="faq-list reveal reveal-stagger">
+          {faqItems
+            .filter((item) => item.visible)
+            .map((item) => (
+            <details key={item.id} open={openFaqQuestion === item.id}>
+              <summary
+                onClick={(event) => {
+                  event.preventDefault();
+                  setOpenFaqQuestion((current) => (current === item.id ? null : item.id));
+                }}
+              >
+                {item.question}
+              </summary>
+              <div className="faq-answer">
+                {item.answer?.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+                {item.table && (
+                  <div className="faq-policy-table" role="table" aria-label={item.question}>
+                    <div role="row">
+                      <strong role="columnheader">{item.table.head[0]}</strong>
+                      <strong role="columnheader">{item.table.head[1]}</strong>
+                    </div>
+                    {item.table.rows.map(([point, refund]) => (
+                      <div key={point} role="row">
+                        <span role="cell">{point}</span>
+                        <b role="cell">{refund}</b>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {item.bullets && (
+                  <ul>
+                    {item.bullets.map((bullet) => (
+                      <li key={bullet}>{bullet}</li>
+                    ))}
+                  </ul>
+                )}
+                {item.note && <p className="faq-note">{item.note}</p>}
+              </div>
+            </details>
+            ))}
         </div>
       </section>
       )}
