@@ -1363,7 +1363,6 @@ button:active {
 
 .recovery-grid article:hover .recovery-media img {
   filter: saturate(1.15) contrast(1.1);
-  transform: scale(1.04);
 }
 
 .guide-grid {
@@ -3958,6 +3957,10 @@ textarea {
     grid-template-columns: 1fr;
   }
 
+  .recovery-grid article:nth-child(2) {
+    order: -1;
+  }
+
   .social-grid {
     grid-template-columns: 1fr;
   }
@@ -4298,6 +4301,10 @@ textarea {
   border-color: rgba(255, 0, 144, 0.4);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.32), 0 0 0 1px rgba(255, 0, 144, 0.12);
   transform: translateY(-6px) scale(1.015);
+}
+
+.recovery-grid article:hover {
+  transform: translateY(-6px);
 }
 
 .figures-grid article,
