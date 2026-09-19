@@ -1365,9 +1365,14 @@ button:active {
   filter: saturate(1.15) contrast(1.1);
 }
 
+.recovery-grid article:nth-child(2) {
+  order: -1;
+}
+
 .guide-grid {
   grid-template-columns: minmax(0, 1fr);
-  margin-top: 16px;
+  margin: 16px auto 0;
+  max-width: 760px;
 }
 
 .guide-grid strong,
@@ -3955,10 +3960,6 @@ textarea {
   .payment-box,
   .form-row {
     grid-template-columns: 1fr;
-  }
-
-  .recovery-grid article:nth-child(2) {
-    order: -1;
   }
 
   .social-grid {
