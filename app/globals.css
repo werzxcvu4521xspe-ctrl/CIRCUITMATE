@@ -2497,8 +2497,10 @@ textarea {
   width: 100%;
 }
 
-.footer-section strong {
-  color: var(--lime);
+.footer-logo {
+  display: block;
+  height: 19px;
+  width: auto;
 }
 
 .footer-section p {

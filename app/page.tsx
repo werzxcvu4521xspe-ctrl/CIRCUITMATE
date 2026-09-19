@@ -2244,7 +2244,7 @@ export default function Home() {
 
       <footer className="footer-section">
         <div>
-          <strong>CIRCUITMATE</strong>
+          <img className="footer-logo" src="/circuitmate-logo.png" alt="CircuitMate" />
         </div>
         <div className="footer-right">
           <a
