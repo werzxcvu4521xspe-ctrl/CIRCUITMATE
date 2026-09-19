@@ -1591,7 +1591,7 @@ export default function Home() {
 
       <header className="site-header">
         <a className="brand-mark" href="#home" aria-label="Circuitmate home">
-          CIRCUIT<span>MATE</span>
+          <img src="/circuitmate-logo.png" alt="CircuitMate" />
         </a>
         <nav aria-label="Primary navigation" className={mobileNavOpen ? 'mobile-open' : undefined}>
           <span className="nav-menu-label eyebrow">Menu</span>
