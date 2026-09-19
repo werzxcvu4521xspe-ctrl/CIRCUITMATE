@@ -214,7 +214,7 @@ summary {
 
 .brand-mark img {
   display: block;
-  height: clamp(28px, 3.4vw, 40px);
+  height: clamp(56px, 6.8vw, 80px);
   width: auto;
 }
 
@@ -2499,7 +2499,7 @@ textarea {
 
 .footer-logo {
   display: block;
-  height: 19px;
+  height: 38px;
   width: auto;
 }
 
