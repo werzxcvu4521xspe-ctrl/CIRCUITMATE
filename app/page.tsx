@@ -174,6 +174,7 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const bookingFillRef = useRef<HTMLSpanElement | null>(null);
+  const heroLogoRef = useRef<HTMLImageElement | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
   const spotlightFrame = useRef<number | null>(null);
@@ -294,6 +295,35 @@ export default function Home() {
       window.removeEventListener('resize', onScroll);
     };
   }, [visibleSections]);
+
+  useEffect(() => {
+    const HERO_FADE_DISTANCE = 120;
+    let ticking = false;
+
+    function updateHeroLogoFade() {
+      if (heroLogoRef.current) {
+        const opacity = Math.max(0, Math.min(1, 1 - window.scrollY / HERO_FADE_DISTANCE));
+        heroLogoRef.current.style.opacity = String(opacity);
+      }
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateHeroLogoFade);
+      }
+    }
+
+    updateHeroLogoFade();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const elements = Array.from(document.querySelectorAll<HTMLElement>('.reveal'));
@@ -1662,6 +1692,12 @@ export default function Home() {
             <div className="hero-content">
               <p className="eyebrow" {...editSiteMapField('home', 'label')}>{stripSectionIndex(sectionCopy('home').label)}</p>
               <h1 {...editSiteMapField('home', 'title')}>{sectionCopy('home').title}</h1>
+              <img
+                ref={heroLogoRef}
+                className="hero-logo-mobile"
+                src="/circuitmate-logo.png"
+                alt={sectionCopy('home').title}
+              />
               <p className="hero-copy" {...editSiteMapField('home', 'description')}>{sectionCopy('home').description}</p>
               <div className="hero-actions">
                 {isSectionVisible('booking') && (
