@@ -450,7 +450,8 @@ button:active {
 .ticker-section {
   background: var(--lime);
   color: var(--button-ink);
-  margin-top: 78px;
+  /* Clears the fixed header: header padding (~28px) + logo height (matches .brand-mark img) + buffer */
+  margin-top: calc(34px + clamp(56px, 6.8vw, 80px));
   overflow: hidden;
   padding: 14px 0;
 }
