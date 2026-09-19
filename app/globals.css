@@ -4153,7 +4153,7 @@ textarea {
     padding-top: 64px;
   }
 
-  .hero-actions .secondary-button {
+  .hero-actions {
     display: none;
   }
 
@@ -4211,6 +4211,26 @@ textarea {
   .map-panel p,
   .faq-list p {
     line-height: 1.78;
+  }
+
+  .floating-cta {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(229, 220, 234, 0.22);
+    bottom: 14px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    display: inline-flex;
+    left: 14px;
+    right: 14px;
+  }
+
+  .floating-cta-fill {
+    background: var(--lime);
+    bottom: 0;
+    display: block;
+    left: 0;
+    position: absolute;
+    top: 0;
+    will-change: width;
   }
 
   .admin-page {
