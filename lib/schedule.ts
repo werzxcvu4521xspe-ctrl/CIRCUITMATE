@@ -14,46 +14,15 @@ export type TicketDate = {
 
 export const MIN_PARTICIPANTS = 10;
 export const MAX_PARTICIPANTS = 20;
-export const TICKET_PRICE = '23,000원';
+export const TICKET_PRICE = '23,000\uc6d0';
 
-export const ticketDates: TicketDate[] = [
-  {
-    id: '2026-09-26',
-    label: '9월 26일',
-    day: '토',
-    sessions: [
-      { id: '2026-09-26-1800', label: '세션 1', time: '18:00-19:30', booked: 6 },
-      { id: '2026-09-26-2000', label: '세션 2', time: '20:00-21:30', booked: 18 },
-    ],
-  },
-  {
-    id: '2026-10-03',
-    label: '10월 3일',
-    day: '토',
-    sessions: [
-      { id: '2026-10-03-1800', label: '세션 1', time: '18:00-19:30', booked: 4 },
-      { id: '2026-10-03-2000', label: '세션 2', time: '20:00-21:30', booked: 10 },
-    ],
-  },
-  {
-    id: '2026-10-10',
-    label: '10월 10일',
-    day: '토',
-    sessions: [
-      { id: '2026-10-10-1800', label: '세션 1', time: '18:00-19:30', booked: 5 },
-      { id: '2026-10-10-2000', label: '세션 2', time: '20:00-21:30', booked: 12 },
-    ],
-  },
-  {
-    id: '2026-10-17',
-    label: '10월 17일',
-    day: '토',
-    sessions: [
-      { id: '2026-10-17-1800', label: '세션 1', time: '18:00-19:30', booked: 2 },
-      { id: '2026-10-17-2000', label: '세션 2', time: '20:00-21:30', booked: 5 },
-    ],
-  },
-];
+/** How far ahead (in days, inclusive of today) sessions open for booking. */
+const SCHEDULE_WINDOW_DAYS = 30;
+
+const SESSION_TEMPLATE = [
+  { label: '\uc138\uc158 1', time: '18:00-19:30' },
+  { label: '\uc138\uc158 2', time: '20:00-21:30' },
+] as const;
 
 /**
  * Returns today's date as a YYYY-MM-DD string in the Asia/Seoul timezone,
@@ -62,6 +31,75 @@ export const ticketDates: TicketDate[] = [
 export function getTodayIsoDate(referenceDate: Date = new Date()): string {
   return referenceDate.toLocaleDateString('sv-SE', { timeZone: 'Asia/Seoul' });
 }
+
+function addDaysToIso(iso: string, days: number): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date(Date.UTC(y, m - 1, d));
+  date.setUTCDate(date.getUTCDate() + days);
+  const yy = date.getUTCFullYear();
+  const mm = String(date.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(date.getUTCDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
+}
+
+function getIsoWeekday(iso: string): number {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+}
+
+function formatKoreanDateLabel(iso: string): string {
+  const [, m, d] = iso.split('-').map(Number);
+  return `${m}\uc6d4 ${d}\uc77c`;
+}
+
+function buildTicketDate(iso: string): TicketDate {
+  return {
+    id: iso,
+    label: formatKoreanDateLabel(iso),
+    day: '\ud1a0',
+    sessions: SESSION_TEMPLATE.map((session) => ({
+      id: `${iso}-${session.time.slice(0, 2)}00`,
+      label: session.label,
+      time: session.time,
+      booked: 0,
+    })),
+  };
+}
+
+/**
+ * Generates every Saturday session slot from the next upcoming Saturday
+ * (today counts if it's a Saturday) through `windowDays` days out. This is
+ * the rolling booking calendar: as soon as a Saturday passes, it drops out
+ * of this list on the next page load and the next Saturday inside the
+ * window automatically appears in its place — no manual date entry needed.
+ * Booked counts start at 0 here; the real numbers come live from
+ * /api/session-counts (see getSessionBooked in app/page.tsx).
+ */
+export function generateTicketDates(
+  referenceDate: Date = new Date(),
+  windowDays: number = SCHEDULE_WINDOW_DAYS,
+): TicketDate[] {
+  const todayIso = getTodayIsoDate(referenceDate);
+  const windowEndIso = addDaysToIso(todayIso, windowDays);
+
+  let cursor = todayIso;
+  while (getIsoWeekday(cursor) !== 6) {
+    cursor = addDaysToIso(cursor, 1);
+  }
+
+  const dates: TicketDate[] = [];
+  while (cursor <= windowEndIso) {
+    dates.push(buildTicketDate(cursor));
+    cursor = addDaysToIso(cursor, 7);
+  }
+  return dates;
+}
+
+/**
+ * The live rolling schedule window (ascending, soonest first), regenerated
+ * on every page load so it always reflects "today" in KST.
+ */
+export const ticketDates: TicketDate[] = generateTicketDates();
 
 /**
  * A date is "past" the day after it occurs (KST) — the event day itself
@@ -73,9 +111,7 @@ export function isDatePast(dateId: string, referenceDate: Date = new Date()): bo
 
 /**
  * Ticket dates that haven't passed yet, sorted with the newest (furthest
- * out) date first. Past dates automatically drop off this list as the
- * calendar moves forward — no manual removal needed. New dates still need
- * to be appended to `ticketDates` above as they're scheduled.
+ * out) date first for display in the booking UI.
  */
 export function getUpcomingTicketDates(referenceDate: Date = new Date()): TicketDate[] {
   const todayIso = getTodayIsoDate(referenceDate);
