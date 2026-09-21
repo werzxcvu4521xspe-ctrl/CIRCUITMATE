@@ -10,6 +10,8 @@ import {
   TICKET_PRICE,
   ticketDates,
   buildSessionLabel,
+  getUpcomingTicketDates,
+  isDatePast,
   type TicketDate,
   type TicketSession,
 } from '../lib/schedule';
@@ -152,8 +154,11 @@ export default function Home() {
   const [adminPassword, setAdminPassword] = useState('');
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [visibilityPanelOpen, setVisibilityPanelOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(ticketDates[0].id);
-  const [selectedSessionId, setSelectedSessionId] = useState(ticketDates[0].sessions[0].id);
+  const upcomingTicketDates = getUpcomingTicketDates();
+  const [selectedDate, setSelectedDate] = useState(upcomingTicketDates[0]?.id ?? ticketDates[0].id);
+  const [selectedSessionId, setSelectedSessionId] = useState(
+    upcomingTicketDates[0]?.sessions[0].id ?? ticketDates[0].sessions[0].id,
+  );
   const [bookingError, setBookingError] = useState('');
   const [bookingSending, setBookingSending] = useState(false);
   const [bookingOpen, setBookingOpen] = useState(false);
@@ -1119,6 +1124,9 @@ export default function Home() {
   }
 
   function isDateBookable(dateId: string) {
+    if (isDatePast(dateId)) {
+      return false;
+    }
     if (content.bookingSettings.blockHolidays && getHolidayName(dateId)) {
       return false;
     }
@@ -2055,7 +2063,7 @@ export default function Home() {
           <aside className="slot-panel">
             <h3>6.1 일정 선택</h3>
             <div className="date-calendar" role="listbox" aria-label="토요일 티켓 날짜">
-              {ticketDates.map((date) => {
+              {upcomingTicketDates.map((date) => {
                 const holidayName = getHolidayName(date.id);
                 const bookable = isDateBookable(date.id);
                 return (
@@ -2333,7 +2341,7 @@ export default function Home() {
               <fieldset className="sheet-picker">
                 <legend>일정 선택</legend>
                 <div className="sheet-date-grid" role="listbox" aria-label="티켓 구매 날짜">
-                  {ticketDates.map((date) => {
+                  {upcomingTicketDates.map((date) => {
                     const holidayName = getHolidayName(date.id);
                     const bookable = isDateBookable(date.id);
                     return (
