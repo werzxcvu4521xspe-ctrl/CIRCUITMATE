@@ -420,9 +420,7 @@ button:active {
 }
 
 .hero-overlay {
-  background:
-    linear-gradient(90deg, rgba(16, 16, 18, 0.98) 0%, rgba(60, 16, 83, 0.64) 44%, rgba(238, 39, 55, 0.12) 82%),
-    linear-gradient(0deg, #1d1d1f 0%, rgba(16, 24, 32, 0) 42%);
+  background: linear-gradient(0deg, #1d1d1f 0%, rgba(16, 24, 32, 0) 42%);
 }
 
 .hero-content {
