@@ -16,8 +16,8 @@ export const MIN_PARTICIPANTS = 10;
 export const MAX_PARTICIPANTS = 20;
 export const TICKET_PRICE = '23,000\uc6d0';
 
-/** How far ahead (in days, inclusive of today) sessions open for booking. */
-const SCHEDULE_WINDOW_DAYS = 30;
+/** How many upcoming Saturdays stay open for booking at once (~1 month). */
+const SCHEDULE_WEEKS_AHEAD = 4;
 
 const SESSION_TEMPLATE = [
   { label: '\uc138\uc158 1', time: '18:00-19:30' },
@@ -67,20 +67,20 @@ function buildTicketDate(iso: string): TicketDate {
 }
 
 /**
- * Generates every Saturday session slot from the next upcoming Saturday
- * (today counts if it's a Saturday) through `windowDays` days out. This is
- * the rolling booking calendar: as soon as a Saturday passes, it drops out
- * of this list on the next page load and the next Saturday inside the
- * window automatically appears in its place — no manual date entry needed.
- * Booked counts start at 0 here; the real numbers come live from
- * /api/session-counts (see getSessionBooked in app/page.tsx).
+ * Generates the next `weeksAhead` Saturday session slots starting from the
+ * next upcoming Saturday (today counts if it's a Saturday). This is the
+ * rolling booking calendar: as soon as a Saturday passes, it drops out of
+ * this list on the next page load and the next Saturday automatically
+ * appears in its place, always keeping the same number of weeks open — no
+ * manual date entry needed. Booked counts start at 0 here; the real
+ * numbers come live from /api/session-counts (see getSessionBooked in
+ * app/page.tsx).
  */
 export function generateTicketDates(
   referenceDate: Date = new Date(),
-  windowDays: number = SCHEDULE_WINDOW_DAYS,
+  weeksAhead: number = SCHEDULE_WEEKS_AHEAD,
 ): TicketDate[] {
   const todayIso = getTodayIsoDate(referenceDate);
-  const windowEndIso = addDaysToIso(todayIso, windowDays);
 
   let cursor = todayIso;
   while (getIsoWeekday(cursor) !== 6) {
@@ -88,7 +88,7 @@ export function generateTicketDates(
   }
 
   const dates: TicketDate[] = [];
-  while (cursor <= windowEndIso) {
+  for (let i = 0; i < weeksAhead; i += 1) {
     dates.push(buildTicketDate(cursor));
     cursor = addDaysToIso(cursor, 7);
   }
@@ -110,15 +110,15 @@ export function isDatePast(dateId: string, referenceDate: Date = new Date()): bo
 }
 
 /**
- * Ticket dates that haven't passed yet, sorted with the newest (furthest
- * out) date first for display in the booking UI.
+ * Ticket dates that haven't passed yet, sorted with the nearest (soonest)
+ * date first for display in the booking UI.
  */
 export function getUpcomingTicketDates(referenceDate: Date = new Date()): TicketDate[] {
   const todayIso = getTodayIsoDate(referenceDate);
   return ticketDates
     .filter((date) => date.id >= todayIso)
     .slice()
-    .sort((a, b) => (a.id < b.id ? 1 : a.id > b.id ? -1 : 0));
+    .sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
 }
 
 export function buildSessionLabel(
