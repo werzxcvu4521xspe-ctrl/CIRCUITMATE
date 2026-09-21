@@ -174,7 +174,7 @@ export default function Home() {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
   const bookingFillRef = useRef<HTMLSpanElement | null>(null);
-  const heroLogoRef = useRef<HTMLImageElement | null>(null);
+  const heroLogoRef = useRef<HTMLParagraphElement | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mainRef = useRef<HTMLElement | null>(null);
   const spotlightFrame = useRef<number | null>(null);
@@ -1692,12 +1692,9 @@ export default function Home() {
             <div className="hero-content">
               <p className="eyebrow" {...editSiteMapField('home', 'label')}>{stripSectionIndex(sectionCopy('home').label)}</p>
               <h1 {...editSiteMapField('home', 'title')}>{sectionCopy('home').title}</h1>
-              <img
-                ref={heroLogoRef}
-                className="hero-logo-mobile"
-                src="/circuitmate-logo.png"
-                alt={sectionCopy('home').title}
-              />
+              <p ref={heroLogoRef} className="hero-logo-mobile">
+                서킷 메이트
+              </p>
               <p className="hero-copy" {...editSiteMapField('home', 'description')}>{sectionCopy('home').description}</p>
               <div className="hero-actions">
                 {isSectionVisible('booking') && (
