@@ -1,4 +1,4 @@
-export type SiteSectionId = 'home' | 'brand' | 'program' | 'stations' | 'recovery' | 'awards' | 'pricing' | 'review' | 'booking' | 'faq' | 'location' | 'identity';
+export type SiteSectionId = 'home' | 'brand' | 'program' | 'stations' | 'recovery' | 'awards' | 'pricing' | 'review' | 'booking' | 'faq' | 'location' | 'identity' | 'about';
 
 export type SiteSection = {
   id: SiteSectionId;
@@ -22,7 +22,7 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
   },
   {
     id: 'brand',
-    label: '02. Brand',
+    label: '02. 프로그램',
     href: '#brand',
     title: '건강한 땀과 진정성 있는 교류를 만드는 나이트 웰니스 커뮤니티',
     description: '서킷메이트는 운동을 매개로 낯선 사람들이 서로의 에너지를 안전하게 나누는 새로운 스포츠 소셜 문화를 지향합니다.',
@@ -67,7 +67,7 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
   },
   {
     id: 'pricing',
-    label: '06. Pricing',
+    label: '06. 가격',
     href: '#pricing',
     title: '필요한 날만 결제하거나, 루틴으로 투자하거나',
     description: '서킷메이트는 단발 참여의 부담 없는 진입과 꾸준한 참석을 위한 선택형 월간 패스를 함께 운영합니다.',
@@ -76,7 +76,7 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
   },
   {
     id: 'review',
-    label: '07. Review',
+    label: '07. 후기',
     href: '#review',
     title: '안전하고 깨끗한 웰니스 스포츠 파티라는 약속',
     description: '혼자 와도 자연스럽고, 땀 흘린 뒤에도 건강한 에너지로 연결되는 경험을 후기 흐름으로 보여줍니다.',
@@ -85,7 +85,7 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
   },
   {
     id: 'booking',
-    label: '08. Booking',
+    label: '08. 예약',
     href: '#booking',
     title: '일정 선택부터 티켓 구매까지 한 번에',
     description: '날짜/시간 선택, 잔여 티켓 확인, 구매자 정보, 체크리스트 동의, 결제 안내를 단계별로 배치했습니다.',
@@ -94,7 +94,7 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
   },
   {
     id: 'location',
-    label: '09. Location',
+    label: '09. 안내',
     href: '#location',
     title: '오시는 길',
     description: '네이버 지도 연동과 입장부터 회복까지 현장 운영 흐름을 고려한 길찾기 안내를 담았습니다.',
@@ -118,6 +118,15 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
     description: '실내테니스팡의 보랏빛 코트 무드와 편의시설을 사전에 안내합니다.',
     visible: true,
     order: 11,
+  },
+  {
+    id: 'about',
+    label: '12. About',
+    href: '/about',
+    title: '빌드업하는 밤, 서킷메이트가 믿는 웰니스',
+    description: '브랜드 스토리와 이미지를 담은 별도 소개 페이지입니다.',
+    visible: true,
+    order: 12,
   },
 ];
 

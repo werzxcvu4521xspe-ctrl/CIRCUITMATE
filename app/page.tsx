@@ -79,6 +79,18 @@ const SUBSECTION_TOGGLES: { id: SubSectionId; label: string }[] = [
   { id: 'previewCards', label: '1.3 Program Preview (가로 카드)' },
   { id: 'selectedMoments', label: 'Selected Moments (모먼트 갤러리)' },
 ];
+// Sub-sections folded into the merged 프로그램/안내 nav groups — their content still
+// renders (each keeps its own isSectionVisible admin toggle), they just
+// don't get their own top-level nav link anymore.
+const NAV_HIDDEN_SECTION_IDS: SiteSectionId[] = ['program', 'stations', 'recovery', 'awards', 'faq', 'identity'];
+
+type ProgramQuickNavItem = { id: 'program' | 'stations' | 'recovery' | 'awards'; href: string; label: string };
+const PROGRAM_QUICKNAV_ITEMS: ProgramQuickNavItem[] = [
+  { id: 'program', href: '#program', label: '타임라인' },
+  { id: 'stations', href: '#stations', label: '종목' },
+  { id: 'recovery', href: '#recovery', label: '리커버리' },
+  { id: 'awards', href: '#awards', label: '시상식' },
+];
 const defaultMapPlaceName = '충남대학교 정문 앞 서브웨이 건물 8층';
 const defaultMapAddress = '대전 유성구 궁동 482-3';
 const defaultMapSearchUrl = `https://map.naver.com/p/search/${encodeURIComponent(defaultMapAddress)}`;
@@ -178,6 +190,7 @@ export default function Home() {
   const [faqItems, setFaqItems] = useState<FaqItem[]>(DEFAULT_FAQ_ITEMS);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('home');
+  const [activeProgramSection, setActiveProgramSection] = useState<ProgramQuickNavItem['id']>('program');
   const bookingFillRef = useRef<HTMLSpanElement | null>(null);
   const heroLogoRef = useRef<HTMLParagraphElement | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -200,16 +213,20 @@ export default function Home() {
   const selectedSessionBooked = getSessionBooked(selectedDateInfo, selectedTicketSession);
   const remainingSeats = MAX_PARTICIPANTS - selectedSessionBooked;
   const visibleSections = useMemo(
-    () =>
-      new Set(
-        siteMap.filter((section) => section.visible && section.id !== 'identity').map((section) => section.id)
-      ),
+    () => new Set(siteMap.filter((section) => section.visible).map((section) => section.id)),
     [siteMap],
+  );
+  const manifestoTeaserParagraph = useMemo(
+    () =>
+      content.brandManifesto.find((paragraph) => paragraph.includes(MANIFESTO_HIGHLIGHT_PHRASE)) ??
+      content.brandManifesto[0] ??
+      '',
+    [content.brandManifesto],
   );
   const navItems = useMemo(
     () =>
       siteMap
-        .filter((section) => section.visible && section.id !== 'identity')
+        .filter((section) => section.visible && !NAV_HIDDEN_SECTION_IDS.includes(section.id))
         .map((section) => [section.label, section.href] as const),
     [siteMap],
   );
@@ -263,6 +280,51 @@ export default function Home() {
       window.removeEventListener('resize', onScroll);
     };
   }, [navItems]);
+
+  useEffect(() => {
+    const quicknavIds = PROGRAM_QUICKNAV_ITEMS.map((item) => item.id);
+    const quicknavElements = quicknavIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => Boolean(el));
+
+    if (quicknavElements.length === 0) {
+      return;
+    }
+
+    let ticking = false;
+
+    function updateActiveProgramSection() {
+      const line = window.innerHeight * 0.35;
+      let current = quicknavElements[0].id as ProgramQuickNavItem['id'];
+
+      for (const el of quicknavElements) {
+        if (el.getBoundingClientRect().top <= line) {
+          current = el.id as ProgramQuickNavItem['id'];
+        } else {
+          break;
+        }
+      }
+
+      setActiveProgramSection(current);
+      ticking = false;
+    }
+
+    function onScroll() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateActiveProgramSection);
+      }
+    }
+
+    updateActiveProgramSection();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+    };
+  }, []);
 
   useEffect(() => {
     const bookingEl = document.getElementById('booking');
@@ -1797,45 +1859,23 @@ export default function Home() {
               <h2 {...editSiteMapField('brand', 'title')}>{sectionCopy('brand').title}</h2>
             </div>
           </div>
-          <article className="manifesto-panel reveal" aria-label="서킷메이트 핵심 철학 및 브랜드 선언문">
+          <article className="manifesto-panel manifesto-teaser reveal" aria-label="서킷메이트 핵심 철학 요약">
             <span {...editHeadingField('manifestoHeading', 'eyebrow')}>{content.manifestoHeading.eyebrow}</span>
             <h3 {...editHeadingField('manifestoHeading', 'title')}>{content.manifestoHeading.title}</h3>
             <div>
-              {content.brandManifesto.map((paragraph, i) => (
-                <p key={paragraph} {...editStringItem('brandManifesto', i, { multiline: true })}>
-                  {renderManifestoParagraph(paragraph)}
-                </p>
-              ))}
+              <p>{renderManifestoParagraph(manifestoTeaserParagraph)}</p>
             </div>
+            <a className="manifesto-more-link" href="/about">
+              브랜드 스토리 더 보기 <span aria-hidden="true">→</span>
+            </a>
           </article>
-          <div className="story-panel reveal reveal-stagger">
-            {content.storyPanel.map((card, cardIndex) => (
-              <details key={card.key} className="story-card" open={openStoryCard === card.key}>
-                <summary
-                  onClick={(event) => {
-                    event.preventDefault();
-                    setOpenStoryCard((current) => (current === card.key ? null : card.key));
-                  }}
-                >
-                  <span
-                    {...editStoryLabel(cardIndex)}
-                    onClick={(event) => {
-                      if (canEdit) {
-                        event.stopPropagation();
-                      }
-                    }}
-                  >
-                    {card.label}
-                  </span>
-                </summary>
-                <div className="story-answer">
-                  {card.paragraphs.map((paragraph, paraIndex) => (
-                    <p key={paragraph} {...editStoryParagraph(cardIndex, paraIndex)}>{paragraph}</p>
-                  ))}
-                </div>
-              </details>
+          <nav className="program-quicknav" aria-label="프로그램 섹션 바로가기">
+            {PROGRAM_QUICKNAV_ITEMS.map((item) => (
+              <a key={item.id} href={item.href} className={activeProgramSection === item.id ? 'active' : undefined}>
+                {item.label}
+              </a>
             ))}
-          </div>
+          </nav>
         </section>
       )}
 
