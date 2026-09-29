@@ -243,15 +243,15 @@ export const DEFAULT_CONTENT: ContentData = {
   pricingLogic: {
     eyebrow: 'Pricing Logic',
     heading: '혜택',
-    description: '원데이는 원하는 회차의 23,000원 티켓만 구매하고, 월간 패스는 꾸준한 참가자에게 더 낮은 회당 단가와 유연한 일정 변경을 제공합니다.',
+    description: '원데이는 원하는 회차의 26,000원 티켓만 구매하고, 월간 패스는 꾸준한 참가자에게 더 낮은 회당 단가와 유연한 일정 변경을 제공합니다.',
   },
   passOptions: [
   {
     value: 'single',
     eyebrow: 'Single Pass',
     title: '원데이 온디맨드 패스',
-    price: '23,000원',
-    note: '티켓 1매',
+    price: '26,000원',
+    note: '티켓 1매 - 대학생 할인 가격 = 일반 회원 32,000원',
     desc: '최소 인원이 모이면 호스트가 세션을 오픈하는 1회성 티켓입니다. 가능한 날만 구매하고, 못 나오는 주에는 결제 부담이 없습니다.',
   },
   {
