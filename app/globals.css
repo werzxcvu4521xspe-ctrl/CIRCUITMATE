@@ -1277,11 +1277,14 @@ button:active {
   display: grid;
   gap: 0;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: auto auto auto auto minmax(0, 1fr);
 }
 
 .pass-card {
   border-right: 1px solid var(--dark-line);
   display: grid;
+  grid-row: span 5;
+  grid-template-rows: subgrid;
   min-height: 360px;
   padding: clamp(24px, 4vw, 38px);
 }
@@ -4110,11 +4113,14 @@ textarea {
 
   .pass-grid {
     grid-template-columns: 1fr;
+    grid-template-rows: none;
   }
 
   .pass-card {
     border-bottom: 1px solid var(--dark-line);
     border-right: 0;
+    grid-row: auto;
+    grid-template-rows: none;
     min-height: 0;
   }
 
