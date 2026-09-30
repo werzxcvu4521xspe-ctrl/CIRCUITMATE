@@ -2013,6 +2013,7 @@ export default function Home() {
         <div className="section-heading">
           <p className="eyebrow" {...editSiteMapField('awards', 'label')}>{stripSectionIndex(sectionCopy('awards').label)}</p>
           <h2 {...editSiteMapField('awards', 'title')}>{sectionCopy('awards').title}</h2>
+          <p {...editSiteMapField('awards', 'description')}>{sectionCopy('awards').description}</p>
         </div>
         <div className="awards-slider reveal reveal-stagger" aria-label="서킷메이트 어워즈 부문">
           {content.awards.map(([title, desc], i) => (

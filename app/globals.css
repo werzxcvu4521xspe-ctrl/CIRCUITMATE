@@ -500,6 +500,15 @@ button:active {
   max-width: 1060px;
 }
 
+.section-heading > p {
+  color: var(--muted);
+  font-size: clamp(16px, 1.2vw, 19px);
+  font-weight: 500;
+  line-height: 1.7;
+  margin-top: 14px;
+  max-width: 640px;
+}
+
 .section-heading.compact {
   max-width: 720px;
 }

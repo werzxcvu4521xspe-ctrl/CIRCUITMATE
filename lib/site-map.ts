@@ -61,7 +61,7 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
     label: '05. Awards',
     href: '#awards',
     title: '시상식의 취지와 유쾌한 분위기를 전하는 네 가지 부문',
-    description: '현장 분위기를 끌어올리는 어워즈와 포토 타임을 한 흐름으로 운영합니다.',
+    description: '각 팀은 팀원 투표로 그날의 MVP 1명을 뽑습니다. 허슬상·분위기 메이커·베스트 드레서·챔피언 네 가지 부문 중 팀원에게 해당하는 상을 골라 쪽지에 적어 직접 전달하는 방식으로 투표합니다.',
     visible: true,
     order: 5,
   },
