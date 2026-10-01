@@ -910,9 +910,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       suppressContentEditableWarning: true,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.textContent ?? '').trim();
-        if (!next) {
-          return;
-        }
         const updated = siteMap.map((section) =>
           section.id === id ? { ...section, [field]: next } : section
         );
@@ -995,9 +992,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       suppressContentEditableWarning: true,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.textContent ?? '').trim();
-        if (!next) {
-          return;
-        }
         const current = content[key] as unknown as string[][];
         const updated = current.map((row, i) => (i === rowIndex ? row.map((v, j) => (j === fieldIndex ? next : v)) : row));
         saveContentField(key, updated as ContentData[typeof key]);
@@ -1026,9 +1020,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const raw = options?.multiline ? event.currentTarget.innerText : event.currentTarget.textContent;
         const next = (raw ?? '').trim();
-        if (!next) {
-          return;
-        }
         const current = content[key] as unknown as string[];
         const updated = current.map((v, i) => (i === index ? next : v));
         saveContentField(key, updated as ContentData[typeof key]);
@@ -1069,9 +1060,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const raw = options?.multiline ? event.currentTarget.innerText : event.currentTarget.textContent;
         const next = (raw ?? '').trim();
-        if (!next) {
-          return;
-        }
         const updated = faqItems.map((item) => (item.id === id ? applyFn(item, next) : item));
         persistFaqItems(updated);
       },
@@ -1090,9 +1078,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       suppressContentEditableWarning: true,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.textContent ?? '').trim();
-        if (!next) {
-          return;
-        }
         saveContentField(key, { ...content[key], [field]: next });
       },
     };
@@ -1108,9 +1093,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       suppressContentEditableWarning: true,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.textContent ?? '').trim();
-        if (!next) {
-          return;
-        }
         saveContentField('pricingLogic', { ...content.pricingLogic, [field]: next });
       },
     };
@@ -1126,9 +1108,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       suppressContentEditableWarning: true,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.textContent ?? '').trim();
-        if (!next) {
-          return;
-        }
         saveContentField('previewHeading', { ...content.previewHeading, [field]: next });
       },
     };
@@ -1146,9 +1125,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       suppressContentEditableWarning: true,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.textContent ?? '').trim();
-        if (!next) {
-          return;
-        }
         const current = content[key] as unknown as Record<string, unknown>[];
         const updated = current.map((item, i) => (i === index ? { ...item, [field]: next } : item));
         saveContentField(key, updated as ContentData[typeof key]);
@@ -1166,9 +1142,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       suppressContentEditableWarning: true,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.textContent ?? '').trim();
-        if (!next) {
-          return;
-        }
         const updated = content.storyPanel.map((card, i) => (i === cardIndex ? { ...card, label: next } : card));
         saveContentField('storyPanel', updated);
       },
@@ -1186,9 +1159,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       onKeyDown: handleMultilineEditableKeyDown,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.innerText ?? '').trim();
-        if (!next) {
-          return;
-        }
         const updated = content.storyPanel.map((card, i) =>
           i === cardIndex
             ? { ...card, paragraphs: card.paragraphs.map((p, j) => (j === paraIndex ? next : p)) }
@@ -1209,9 +1179,6 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
       suppressContentEditableWarning: true,
       onBlur: (event: FocusEvent<HTMLElement>) => {
         const next = (event.currentTarget.textContent ?? '').trim();
-        if (!next) {
-          return;
-        }
         const updated: Tuple2[] = content.socialProof.map((row, i) => {
           if (i !== index) {
             return row;
