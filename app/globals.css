@@ -500,7 +500,7 @@ button:active {
   max-width: 1060px;
 }
 
-.section-heading > p {
+.section-heading > p:not(.eyebrow) {
   color: var(--muted);
   font-size: clamp(16px, 1.2vw, 19px);
   font-weight: 500;

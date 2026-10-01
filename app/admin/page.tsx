@@ -638,7 +638,7 @@ export default function AdminPage() {
     <main className="admin-page">
       <header className="admin-header">
         <a className="brand-mark" href="/" aria-label="Circuitmate home">
-          CIRCUITMATE
+          <img src="/circuitmate-logo.png" alt="CircuitMate" />
         </a>
         <a className="secondary-button" href="/">
           사이트로 돌아가기
