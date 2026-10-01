@@ -679,6 +679,12 @@ button:active {
   margin-top: 28px;
 }
 
+.social-grid article {
+  min-height: 150px;
+  padding: 18px;
+  position: relative;
+}
+
 .photo-tile {
   aspect-ratio: 4 / 3;
   background:
@@ -686,11 +692,42 @@ button:active {
     linear-gradient(90deg, rgba(238, 39, 55, 0.18) 1px, transparent 1px),
     var(--court);
   background-size: auto, 30px 30px, auto;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .social-grid strong {
   color: var(--lime);
+  font-size: var(--text-sm);
+}
+
+.social-grid p {
+  font-size: var(--text-sm);
+}
+
+.review-delete-btn {
+  align-items: center;
+  background: rgba(16, 13, 24, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 50%;
+  color: var(--ink);
+  cursor: pointer;
+  display: flex;
+  font-size: 16px;
+  height: 26px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  transition: background 0.2s var(--ease-apple), border-color 0.2s var(--ease-apple);
+  width: 26px;
+  z-index: 2;
+}
+
+.review-delete-btn:hover {
+  background: rgba(238, 39, 55, 0.85);
+  border-color: rgba(238, 39, 55, 0.85);
 }
 
 .social-grid p,
@@ -4226,9 +4263,9 @@ textarea {
 
   .social-grid .photo-tile {
     aspect-ratio: 1 / 1;
-    flex: 0 0 88px;
+    flex: 0 0 76px;
     margin-bottom: 0;
-    width: 88px;
+    width: 76px;
   }
 
   .social-grid .social-copy {

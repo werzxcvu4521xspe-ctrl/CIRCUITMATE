@@ -1222,6 +1222,14 @@ export default function Home() {
     };
   }
 
+  function deleteReviewEntry(index: number) {
+    if (!canEdit) {
+      return;
+    }
+    const updated = content.socialProof.filter((_, i) => i !== index);
+    saveContentField('socialProof', updated);
+  }
+
   async function handleCopyAddress() {
     const address = mapConfig?.address ?? defaultMapAddress;
 
@@ -2267,6 +2275,16 @@ export default function Home() {
         <div className="social-grid reveal reveal-stagger" aria-label="참가자 현장 스케치와 포토 리뷰">
           {content.socialProof.map(([name, text], i) => (
             <article key={name}>
+              {canEdit && (
+                <button
+                  type="button"
+                  className="review-delete-btn"
+                  onClick={() => deleteReviewEntry(i)}
+                  aria-label="이 후기 삭제"
+                >
+                  ×
+                </button>
+              )}
               <div className="photo-tile" />
               <div className="social-copy">
                 <strong {...editReviewField(i, 'name')}>{name}</strong>
