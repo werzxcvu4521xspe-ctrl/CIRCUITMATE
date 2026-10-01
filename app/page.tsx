@@ -954,6 +954,48 @@ export default function Home() {
     };
   }
 
+  function persistFaqItems(updated: FaqItem[]) {
+    setFaqItems(updated);
+
+    if (!canEdit) {
+      return;
+    }
+
+    setSaveStatus('saving');
+    fetch('/api/faq', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json', 'x-admin-password': adminPassword },
+      body: JSON.stringify({ items: updated }),
+    })
+      .then((response) => setSaveStatus(response.ok ? 'saved' : 'error'))
+      .catch(() => setSaveStatus('error'));
+  }
+
+  function editFaqField(
+    id: string,
+    applyFn: (item: FaqItem, next: string) => FaqItem,
+    options?: { multiline?: boolean }
+  ) {
+    if (!canEdit) {
+      return {};
+    }
+
+    return {
+      contentEditable: true as const,
+      suppressContentEditableWarning: true,
+      ...(options?.multiline ? { onKeyDown: handleMultilineEditableKeyDown } : {}),
+      onBlur: (event: FocusEvent<HTMLElement>) => {
+        const raw = options?.multiline ? event.currentTarget.innerText : event.currentTarget.textContent;
+        const next = (raw ?? '').trim();
+        if (!next) {
+          return;
+        }
+        const updated = faqItems.map((item) => (item.id === id ? applyFn(item, next) : item));
+        persistFaqItems(updated);
+      },
+    };
+  }
+
   type HeadingFieldKey = 'manifestoHeading' | 'operationHeading' | 'figuresHeading' | 'momentsHeading';
 
   function editHeadingField(key: HeadingFieldKey, field: 'eyebrow' | 'title') {
@@ -2269,34 +2311,115 @@ export default function Home() {
                   setOpenFaqQuestion((current) => (current === item.id ? null : item.id));
                 }}
               >
-                {item.question}
+                <span
+                  {...editFaqField(item.id, (it, next) => ({ ...it, question: next }))}
+                  onClick={(event) => {
+                    if (canEdit) {
+                      event.preventDefault();
+                      event.stopPropagation();
+                    }
+                  }}
+                >
+                  {item.question}
+                </span>
               </summary>
               <div className="faq-answer">
-                {item.answer?.map((paragraph) => (
-                  <p key={paragraph}>{paragraph}</p>
+                {item.answer?.map((paragraph, index) => (
+                  <p
+                    key={`${item.id}-answer-${index}`}
+                    {...editFaqField(
+                      item.id,
+                      (it, next) => ({ ...it, answer: it.answer.map((p, i) => (i === index ? next : p)) }),
+                      { multiline: true }
+                    )}
+                  >
+                    {paragraph}
+                  </p>
                 ))}
                 {item.table && (
                   <div className="faq-policy-table" role="table" aria-label={item.question}>
                     <div role="row">
-                      <strong role="columnheader">{item.table.head[0]}</strong>
-                      <strong role="columnheader">{item.table.head[1]}</strong>
+                      <strong
+                        role="columnheader"
+                        {...editFaqField(item.id, (it, next) => ({
+                          ...it,
+                          table: it.table ? { ...it.table, head: [next, it.table.head[1]] as [string, string] } : it.table,
+                        }))}
+                      >
+                        {item.table.head[0]}
+                      </strong>
+                      <strong
+                        role="columnheader"
+                        {...editFaqField(item.id, (it, next) => ({
+                          ...it,
+                          table: it.table ? { ...it.table, head: [it.table.head[0], next] as [string, string] } : it.table,
+                        }))}
+                      >
+                        {item.table.head[1]}
+                      </strong>
                     </div>
-                    {item.table.rows.map(([point, refund]) => (
-                      <div key={point} role="row">
-                        <span role="cell">{point}</span>
-                        <b role="cell">{refund}</b>
+                    {item.table.rows.map(([point, refund], rowIndex) => (
+                      <div key={`${item.id}-row-${rowIndex}`} role="row">
+                        <span
+                          role="cell"
+                          {...editFaqField(item.id, (it, next) => ({
+                            ...it,
+                            table: it.table
+                              ? {
+                                  ...it.table,
+                                  rows: it.table.rows.map((row, i) =>
+                                    i === rowIndex ? ([next, row[1]] as [string, string]) : row
+                                  ),
+                                }
+                              : it.table,
+                          }))}
+                        >
+                          {point}
+                        </span>
+                        <b
+                          role="cell"
+                          {...editFaqField(item.id, (it, next) => ({
+                            ...it,
+                            table: it.table
+                              ? {
+                                  ...it.table,
+                                  rows: it.table.rows.map((row, i) =>
+                                    i === rowIndex ? ([row[0], next] as [string, string]) : row
+                                  ),
+                                }
+                              : it.table,
+                          }))}
+                        >
+                          {refund}
+                        </b>
                       </div>
                     ))}
                   </div>
                 )}
                 {item.bullets && (
                   <ul>
-                    {item.bullets.map((bullet) => (
-                      <li key={bullet}>{bullet}</li>
+                    {item.bullets.map((bullet, index) => (
+                      <li
+                        key={`${item.id}-bullet-${index}`}
+                        {...editFaqField(
+                          item.id,
+                          (it, next) => ({
+                            ...it,
+                            bullets: it.bullets ? it.bullets.map((b, i) => (i === index ? next : b)) : it.bullets,
+                          }),
+                          { multiline: true }
+                        )}
+                      >
+                        {bullet}
+                      </li>
                     ))}
                   </ul>
                 )}
-                {item.note && <p className="faq-note">{item.note}</p>}
+                {item.note && (
+                  <p className="faq-note" {...editFaqField(item.id, (it, next) => ({ ...it, note: next }))}>
+                    {item.note}
+                  </p>
+                )}
               </div>
             </details>
             ))}
