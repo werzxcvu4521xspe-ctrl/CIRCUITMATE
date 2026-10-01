@@ -700,10 +700,6 @@ button:active {
   font-size: var(--text-sm);
 }
 
-.social-grid p {
-  font-size: var(--text-sm);
-}
-
 .review-delete-btn {
   align-items: center;
   background: rgba(16, 13, 24, 0.55);
@@ -744,6 +740,10 @@ button:active {
   font-size: var(--text-base);
   font-weight: 500;
   line-height: var(--leading-body);
+}
+
+.social-grid p {
+  font-size: var(--text-sm);
 }
 
 .story-panel .story-card p + p {
