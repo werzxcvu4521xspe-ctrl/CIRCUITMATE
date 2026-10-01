@@ -79,8 +79,6 @@ export type ContentData = {
   valueStack: Tuple2[];
   pricingLogic: PricingLogicContent;
   passOptions: PassOptionContent[];
-  identityIntro: string;
-  identityGallery: string[];
   blockVisibility: Record<SubSectionId, boolean>;
   figuresHeading: HeadingContent;
   previewHeading: PreviewHeadingContent;
@@ -263,12 +261,6 @@ export const DEFAULT_CONTENT: ContentData = {
     desc: '매주 꾸준히 참여하는 회원을 위한 4회권 정기 패스로, 티켓 단가가 약 10% 할인됩니다.',
   },
 ],
-  identityIntro: '코트 조명, 탄성 바닥, 탈의실과 정수기 등 편의시설을 사전 안내해 첫 방문의 불안을 줄입니다.',
-  identityGallery: [
-    'COURT',
-    'LIGHT',
-    'RECOVERY',
-  ],
   blockVisibility: {
     keyFigures: true,
     previewCards: true,

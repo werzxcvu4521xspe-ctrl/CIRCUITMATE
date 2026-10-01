@@ -82,7 +82,7 @@ const SUBSECTION_TOGGLES: { id: SubSectionId; label: string }[] = [
 // Sub-sections folded into the merged 프로그램/안내 nav groups — their content still
 // renders (each keeps its own isSectionVisible admin toggle), they just
 // don't get their own top-level nav link anymore.
-const NAV_HIDDEN_SECTION_IDS: SiteSectionId[] = ['program', 'stations', 'recovery', 'awards', 'faq', 'identity'];
+const NAV_HIDDEN_SECTION_IDS: SiteSectionId[] = ['program', 'stations', 'recovery', 'awards', 'faq'];
 
 type ProgramQuickNavItem = { id: 'program' | 'stations' | 'recovery' | 'awards'; href: string; label: string };
 const PROGRAM_QUICKNAV_ITEMS: ProgramQuickNavItem[] = [
@@ -999,7 +999,7 @@ export default function Home() {
     };
   }
 
-  type StringArrayFieldKey = 'badgeLoop' | 'brandManifesto' | 'identityGallery';
+  type StringArrayFieldKey = 'badgeLoop' | 'brandManifesto';
 
   function handleMultilineEditableKeyDown(event: KeyboardEvent<HTMLElement>) {
     if (event.key === 'Enter') {
@@ -1124,23 +1124,6 @@ export default function Home() {
           return;
         }
         saveContentField('previewHeading', { ...content.previewHeading, [field]: next });
-      },
-    };
-  }
-
-  function editIdentityIntro() {
-    if (!canEdit) {
-      return {};
-    }
-
-    return {
-      contentEditable: true as const,
-      suppressContentEditableWarning: true,
-      onBlur: (event: FocusEvent<HTMLElement>) => {
-        const next = (event.currentTarget.textContent ?? '').trim();
-        if (next) {
-          saveContentField('identityIntro', next);
-        }
       },
     };
   }
@@ -2180,14 +2163,6 @@ export default function Home() {
             <span {...editPricingLogicField('eyebrow')}>{content.pricingLogic.eyebrow}</span>
             <strong {...editPricingLogicField('heading')}>{content.pricingLogic.heading}</strong>
             <p {...editPricingLogicField('description')}>{content.pricingLogic.description}</p>
-            <div className="value-list compact">
-              {content.valueStack.map(([item, desc], i) => (
-                <div key={item}>
-                  <span {...editTuple('valueStack', i, 0)}>{item}</span>
-                  <strong {...editTuple('valueStack', i, 1)}>{desc}</strong>
-                </div>
-              ))}
-            </div>
             <button type="button" onClick={() => setBookingOpen(true)}>
               티켓 구매하기
             </button>
@@ -2510,26 +2485,6 @@ export default function Home() {
             </details>
             ))}
         </div>
-      </section>
-      )}
-
-      {isSectionVisible('identity') && (
-      <section id="identity" className="section location-section">
-        <div className="section-heading split">
-          <div>
-            <p className="eyebrow" {...editSiteMapField('identity', 'label')}>{stripSectionIndex(sectionCopy('identity').label)}</p>
-            <h2 {...editSiteMapField('identity', 'title')}>{sectionCopy('identity').title}</h2>
-          </div>
-          <p {...editSiteMapField('identity', 'description')}>{sectionCopy('identity').description}</p>
-        </div>
-        <article className="space-gallery">
-          <p {...editIdentityIntro()}>{content.identityIntro}</p>
-          <div className="gallery-strip">
-            {content.identityGallery.map((label, i) => (
-              <span key={label} {...editStringItem('identityGallery', i)}>{label}</span>
-            ))}
-          </div>
-        </article>
       </section>
       )}
 

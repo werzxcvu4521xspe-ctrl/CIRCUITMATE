@@ -1,4 +1,4 @@
-export type SiteSectionId = 'home' | 'brand' | 'program' | 'stations' | 'recovery' | 'awards' | 'pricing' | 'review' | 'booking' | 'faq' | 'location' | 'identity' | 'about';
+export type SiteSectionId = 'home' | 'brand' | 'program' | 'stations' | 'recovery' | 'awards' | 'pricing' | 'review' | 'booking' | 'faq' | 'location' | 'about';
 
 export type SiteSection = {
   id: SiteSectionId;
@@ -109,15 +109,6 @@ export const DEFAULT_SITE_MAP: SiteSection[] = [
     description: '환불 규정, 준비물, 초보자 안내 등 참가 전 자주 묻는 질문을 모았습니다.',
     visible: true,
     order: 10,
-  },
-  {
-    id: 'identity',
-    label: '11. Identity',
-    href: '#identity',
-    title: '공간 아이덴티티',
-    description: '실내테니스팡의 보랏빛 코트 무드와 편의시설을 사전에 안내합니다.',
-    visible: true,
-    order: 11,
   },
   {
     id: 'about',
