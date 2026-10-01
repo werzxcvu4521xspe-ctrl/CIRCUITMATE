@@ -2196,30 +2196,6 @@ export default function Home() {
       </section>
       )}
 
-      {isSectionVisible('review') && (
-      <section id="review" className="section review-section" aria-label="참가자 후기">
-        <div className="section-heading split">
-          <div>
-            <p className="eyebrow" {...editSiteMapField('review', 'label')}>{stripSectionIndex(sectionCopy('review').label)}</p>
-            <h2 {...editSiteMapField('review', 'title')}>{sectionCopy('review').title}</h2>
-          </div>
-        </div>
-        <div className="social-grid reveal reveal-stagger" aria-label="참가자 현장 스케치와 포토 리뷰">
-          {content.socialProof.map(([name, text], i) => (
-            <article key={name}>
-              <div className="photo-tile" />
-              <div className="social-copy">
-                <strong {...editReviewField(i, 'name')}>{name}</strong>
-                {text.split('\n').map((line, lineIndex) => (
-                  <p key={line} {...editReviewField(i, 'text', lineIndex)}>{line}</p>
-                ))}
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-      )}
-
       {isSectionVisible('booking') && (
       <section id="booking" className="section booking-section">
         <div className="section-heading split">
@@ -2301,6 +2277,30 @@ export default function Home() {
               </button>
             )}
           </form>
+        </div>
+      </section>
+      )}
+
+      {isSectionVisible('review') && (
+      <section id="review" className="section review-section" aria-label="참가자 후기">
+        <div className="section-heading split">
+          <div>
+            <p className="eyebrow" {...editSiteMapField('review', 'label')}>{stripSectionIndex(sectionCopy('review').label)}</p>
+            <h2 {...editSiteMapField('review', 'title')}>{sectionCopy('review').title}</h2>
+          </div>
+        </div>
+        <div className="social-grid reveal reveal-stagger" aria-label="참가자 현장 스케치와 포토 리뷰">
+          {content.socialProof.map(([name, text], i) => (
+            <article key={name}>
+              <div className="photo-tile" />
+              <div className="social-copy">
+                <strong {...editReviewField(i, 'name')}>{name}</strong>
+                {text.split('\n').map((line, lineIndex) => (
+                  <p key={line} {...editReviewField(i, 'text', lineIndex)}>{line}</p>
+                ))}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
       )}
