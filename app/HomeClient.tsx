@@ -2117,7 +2117,7 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
         </div>
         <div className="booking-layout reveal reveal-stagger">
           <aside className="slot-panel">
-            <h3>6.1 일정 선택</h3>
+            <h3>일정 선택</h3>
             <div className="date-calendar" role="listbox" aria-label="토요일 티켓 날짜">
               {upcomingTicketDates.map((date) => {
                 const holidayName = getHolidayName(date.id);
