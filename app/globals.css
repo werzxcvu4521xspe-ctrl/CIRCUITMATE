@@ -4244,9 +4244,8 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .recovery-media {
-    border-radius: 8px;
-    margin: -24px 0 18px;
+  .recovery-grid {
+    padding: 0 16px;
   }
 
   .manifesto-panel {
