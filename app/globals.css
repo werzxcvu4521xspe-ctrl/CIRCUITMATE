@@ -1542,7 +1542,7 @@ button:active {
 .award-vote-flow {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin-top: 40px;
 }
 
@@ -1591,8 +1591,9 @@ button:active {
 .award-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  margin-top: 20px;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 20px auto 0;
+  max-width: 440px;
 }
 
 .award-card {
@@ -4331,10 +4332,6 @@ textarea {
     overflow-x: visible;
   }
 
-  .award-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .gallery-strip {
     grid-template-columns: 1fr;
   }
@@ -4418,10 +4415,6 @@ textarea {
 
   .award-vote-step:not(:last-child)::after {
     display: none;
-  }
-
-  .award-grid {
-    grid-template-columns: 1fr;
   }
 
   .site-header {

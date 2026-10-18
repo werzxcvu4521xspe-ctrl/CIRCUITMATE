@@ -98,70 +98,25 @@ const AWARD_VOTE_STEPS: AwardVoteStep[] = [
   {
     number: '01',
     title: '경기가 끝나면',
-    desc: '메인 서킷과 팀 릴레이가 모두 끝난 뒤, 같은 팀원끼리 서로 투표해 그날의 MVP 1명을 정합니다.',
+    desc: '메인 서킷과 팀 릴레이가 모두 끝나면, 같은 팀원끼리 쪽지에 이름을 적어 투표합니다.',
   },
   {
     number: '02',
-    title: '어울리는 부문 고르기',
-    desc: '베스트 드레서·챔피언·분위기 메이커·허슬상 중, 그 팀원에게 가장 잘 어울리는 부문 하나를 고릅니다.',
-  },
-  {
-    number: '03',
-    title: '쪽지로 직접 전달',
-    desc: '고른 부문을 쪽지에 적어 시상식 전 해당 팀원에게 직접 건네주면 투표가 완료됩니다.',
+    title: '쪽지로 바로 완료',
+    desc: '가장 많은 쪽지를 받은 팀원이 그날의 MVP로 선정됩니다.',
   },
 ];
 
-function getAwardIcon(title: string) {
-  const common = {
-    fill: 'none' as const,
-    stroke: 'currentColor',
-    strokeWidth: 1.6,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-    viewBox: '0 0 24 24',
-  };
-
-  if (title.includes('허슬')) {
-    return (
-      <svg {...common}>
-        <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" />
-      </svg>
-    );
-  }
-
-  if (title.includes('분위기')) {
-    return (
-      <svg {...common}>
-        <circle cx="12" cy="12" r="4" />
-        <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
-      </svg>
-    );
-  }
-
-  if (title.includes('드레서')) {
-    return (
-      <svg {...common}>
-        <path d="M8 4 4 7l2 3 2-1v9h8v-9l2 1 2-3-4-3-2 2h-4L8 4Z" />
-      </svg>
-    );
-  }
-
-  if (title.includes('챔피언')) {
-    return (
-      <svg {...common}>
-        <path d="M8 4h8v4a4 4 0 0 1-8 0V4Z" />
-        <path d="M8 5H5a1 1 0 0 0-1 1v1a3 3 0 0 0 3 3" />
-        <path d="M16 5h3a1 1 0 0 1 1 1v1a3 3 0 0 1-3 3" />
-        <path d="M12 12v4" />
-        <path d="M9 20h6" />
-        <path d="M10 16h4l1 4H9l1-4Z" />
-      </svg>
-    );
-  }
-
+function getAwardIcon() {
   return (
-    <svg {...common}>
+    <svg
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.6}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      viewBox="0 0 24 24"
+    >
       <path d="M12 2 14.9 8.6 22 9.3 16.8 14 18.3 21 12 17.3 5.7 21 7.2 14 2 9.3 9.1 8.6 12 2Z" />
     </svg>
   );
@@ -2106,10 +2061,10 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
             </div>
           ))}
         </div>
-        <div className="award-grid reveal reveal-stagger" aria-label="서킷메이트 어워즈 부문">
-          {content.awards.map(([title, desc], i) => (
+        <div className="award-grid reveal reveal-stagger" aria-label="서킷메이트 MVP 쪽지 투표">
+          {content.awards.slice(0, 1).map(([title, desc], i) => (
             <article className="award-card" key={title}>
-              <div className="award-card-icon" aria-hidden="true">{getAwardIcon(title)}</div>
+              <div className="award-card-icon" aria-hidden="true">{getAwardIcon()}</div>
               <span className="award-card-tag">MVP 쪽지 투표</span>
               <h3 {...editTuple('awards', i, 0)}>{title}</h3>
               <p {...editTuple('awards', i, 1)}>{desc}</p>
