@@ -1942,12 +1942,11 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
                     <span {...editArrayObjectField('timelineSections', sectionIndex, 'duration')}>{section.duration}</span>
                   </div>
                   <div className="timeline-group-items">
-                    {items.map(({ row: [, time, title, desc], i }) => {
+                    {items.map(({ row: [, time, title], i }) => {
                       return (
                         <article key={time}>
                           <div>
                             <h4 {...editTuple('timeline', i, 2)}>{title}</h4>
-                            <p {...editTuple('timeline', i, 3)}>{desc}</p>
                           </div>
                         </article>
                       );
@@ -1956,6 +1955,11 @@ export default function HomeClient({ initialContent, initialSiteMap, initialFaqI
                 </div>
               );
             })}
+          </div>
+          <div className="program-detail-link">
+            <a className="secondary-button" href="/program">
+              자세히 보기
+            </a>
           </div>
         </div>
       </section>
